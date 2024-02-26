@@ -8,13 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
 public class ModifierInstance {
-//    public static final Codec<ModifierInstance> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-//            IModifier.CODEC.get().fieldOf("modifier").forGetter(ModifierInstance::getModifier),
-//            Codec.INT.fieldOf("amplifier").forGetter(ModifierInstance::getAmplifier)
-//    ).apply(instance, ModifierInstance::new));
-
     public static final Codec<ModifierInstance> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-            Codec.STRING.fieldOf("modifier").forGetter(modifierInstance -> modifierInstance.getModifier().getRegistryName().toString()),
+            Codec.STRING.fieldOf("modifier").forGetter(ModifierInstance::getModifierRegistryName),
             Codec.INT.fieldOf("amplifier").forGetter(ModifierInstance::getAmplifier)
     ).apply(instance, ModifierInstance::new));
 
@@ -36,6 +31,10 @@ public class ModifierInstance {
 
     public IModifier getModifier() {
         return modifier;
+    }
+
+    public String getModifierRegistryName() {
+        return modifier.getRegistryName().toString();
     }
 
     public int getAmplifier() {

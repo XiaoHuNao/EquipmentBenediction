@@ -2,7 +2,7 @@ package com.pancake.equipment_benediction.client.gui.hud;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IModifier;
-import com.pancake.equipment_benediction.common.init.ModGameRules;
+import com.pancake.equipment_benediction.common.config.ModConfig;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.Minecraft;
@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.world.level.GameRules;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -25,8 +24,7 @@ public class ModifierDeBugHudRenderer {
     };
 
     public static void render(ForgeGui forgeGui, GuiGraphics guiGraphics, int width, int height, LocalPlayer player) {
-        GameRules gameRules = player.level().getGameRules();
-        if (gameRules.getRule(ModGameRules.DE_BUG_HUD).get()) {
+        if (!ModConfig.enableModifierHudDebug.get()) {
             return;
         }
 

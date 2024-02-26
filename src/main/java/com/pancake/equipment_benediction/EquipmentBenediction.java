@@ -2,8 +2,8 @@ package com.pancake.equipment_benediction;
 
 import com.mojang.logging.LogUtils;
 import com.pancake.equipment_benediction.client.gui.hud.ModifierDeBugHudRenderer;
+import com.pancake.equipment_benediction.common.config.ModConfig;
 import com.pancake.equipment_benediction.common.init.ModEntities;
-import com.pancake.equipment_benediction.common.init.ModGameRules;
 import com.pancake.equipment_benediction.common.init.ModModifiers;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import net.minecraft.core.Registry;
@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -31,6 +32,8 @@ public class EquipmentBenediction {
         MinecraftForge.EVENT_BUS.register(this);
 
 
+        ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, ModConfig.SPEC);
+
         if (FMLEnvironment.dist.isClient()) {
             modEventBus.addListener(ModifierDeBugHudRenderer::registerOverlay);
         }
@@ -39,7 +42,6 @@ public class EquipmentBenediction {
     @SubscribeEvent
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
         ModMessages.register();
-        ModGameRules.registerRules();
     }
 
     public static ResourceLocation asResource(String path) {
