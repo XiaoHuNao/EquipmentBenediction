@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
@@ -134,20 +135,28 @@ public class ModifierHelper {
 
 
         fromTag.forEach((tag) -> {
-            parse(tag).ifPresent((instance) -> {
-                removePlayerModifier(instance, player);
-                ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, false), (ServerPlayer) player);
-            });
+            removePlayerModifierWithUpdate(player, tag);
         });
 
         if (checkSlot(slot)) {
-            toTag.forEach((tag) -> {
-                parse(tag).ifPresent((instance) -> {
-                    addPlayerModifier(instance, player);
-                    ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
-                });
-            });
+            addPlayerModifierWithUpdate(player, toTag);
         }
+    }
+
+    public static void removePlayerModifierWithUpdate(Player player, Tag tag) {
+        parse(tag).ifPresent((instance) -> {
+            removePlayerModifier(instance, player);
+            ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, false), (ServerPlayer) player);
+        });
+    }
+
+    public static void addPlayerModifierWithUpdate(Player player, ListTag toTag) {
+        toTag.forEach((tag) -> {
+            parse(tag).ifPresent((instance) -> {
+                addPlayerModifier(instance, player);
+                ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
+            });
+        });
     }
 
     public static void updateTickModifiers(Player player) {
@@ -159,98 +168,6 @@ public class ModifierHelper {
                 });
         });
     }
-
-//    private void addEffectModifier(Player player) {
-//        this.effectModifiers.forEach((effect, modifier) -> {
-//            player.addEffect(modifier);
-//        });
-//    }
-//
-//    private void addAttributeModifier(Player player) {
-//        this.attributeModifiers.forEach((attribute, modifier) -> {
-//            AttributeInstance attributeInstance = player.getAttribute(attribute);
-//            if (attributeInstance != null){
-//                attributeInstance.addTransientModifier(modifier);
-//            }
-//        });
-//    }
-
-//
-//
-//    public static void applyModifier(ModifierInstance instance, ListTag tags) {
-//        tags.forEach((tag) -> {
-//            parse(tag).ifPresent((modifierInstance) -> {
-//                if (modifierInstance.getModifier().equals(instance.getModifier())) {
-//                    updateModifier(modifierInstance, instance);
-//                }else {
-//                    encodeStart(instance).ifPresent(tags::add);
-//                }
-//            });
-//        });
-//    }
-
-
-
-
-
-
-//
-//    public static void addModifier(ModifierInstance instance,ItemStack stack) {
-//        applyModifier(instance, getModifierTags(stack));
-//    }
-
-//
-//    public static void removeAllModifier(ListTag tags) {
-//        tags.clear();
-//    }
-//
-//    public static void updateModifier(ItemStack from, ItemStack to,EquipmentSlot slot, Player player) {
-//        ListTag fromTag = ModifierHelper.getModifierTags(from);
-//        ListTag toTag = ModifierHelper.getModifierTags(to);
-//        ListTag playerTag = ModifierHelper.getModifierTags(player);
-//
-//        fromTag.forEach((tag) -> {
-//            parse(tag).ifPresent((instance) -> {
-//                removeModifier(instance,player);
-//            });
-//        });
-//
-//        if (checkSlot(slot)) {
-//            toTag.forEach((tag) -> {
-//                parse(tag)
-//                    .ifPresent((instance) -> {
-//                        addModifier(instance, player);
-//                    });
-//            });
-//        }
-//    }
-//
-//    public static void removeModifier(ModifierInstance instance, ListTag tags) {
-//        tags.forEach((tag) -> {
-//            parse(tag)
-//                .ifPresent((modifierInstance) -> {
-//                    if (modifierInstance.getModifier().equals(instance.getModifier())) {
-//                        tags.remove(tag);
-//                    }
-//                });
-//        });
-//    }
-//
-//    public static void removeModifier(ModifierInstance instance,ItemStack stack) {
-//        removeAllModifier(getModifierTags(stack));
-//    }
-//
-
-//
-//    public static void updateTickModifiers(Player player) {
-//        ListTag listTag = getModifierTags(player);
-//        listTag.forEach((tag) -> {
-//            parse(tag)
-//                .ifPresent((instance) -> {
-//                    instance.getModifier().getHandler().getTickConsumer().accept(player, instance);
-//                });
-//        });
-//    }
 
     public static boolean checkSlot(EquipmentSlot stack) {
         EquipmentSlot[] slots = new EquipmentSlot[] {

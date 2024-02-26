@@ -33,40 +33,8 @@ public class PlayerEvent {
         }
 
         if (player.isShiftKeyDown()) {
-            ItemStack mainHandItem = player.getMainHandItem();
-            ModifierInstance instance = new ModifierInstance(ModModifiers.MODIFIER_REGISTRY.get().getValue(ResourceLocation.tryParse("kubejs:magnetic")), 0);
-            ModifierHelper.addItemStackModifier(instance,mainHandItem);
+
         }
-//        ModifierHelper.encodeStart(instance).ifPresent((tag) -> {
-//            ModifierHelper.parse(tag).ifPresent((instance1) -> {
-//                IModifier modifier = instance1.getModifier();
-//                System.out.println(modifier.getRegistryName());
-//            });
-//        });
-//
-//        IForgeRegistry<IModifier> iModifiers = ModModifiers.MODIFIER_REGISTRY.get();
-//        iModifiers.getValues().forEach(modifier -> System.out.println(modifier.getRegistryName()));
-
-//        IModifier value = ModModifiers.MODIFIER_REGISTRY.get().getValue(ResourceLocation.tryParse("kubejs:stealth_speed"));
-
-//        MagneticModifier value = ModModifiers.MAGNETIC.get();
-//        if (value != null) {
-//            Component displayName = value.getDisplayName();
-//
-//            //发送聊天信息
-//            player.displayClientMessage(displayName, true);
-//        }
     }
 
-    @SubscribeEvent
-    public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
-//        event.player.getMainHandItem().getOrCreateTag().getList("Modifiers", 10).forEach(x -> System.out.println("Item :" + x));
-//        event.player.getPersistentData().getList("Modifiers", 10).forEach(x -> System.out.println("Player :" + x));
-
-        Player player = event.player;
-        if (player.level().isClientSide()) return;
-
-//        ListTag modifierTags = ModifierHelper.getModifierListTag(player);
-//        System.out.println("onTickPlayerTick :" + modifierTags);
-    }
 }

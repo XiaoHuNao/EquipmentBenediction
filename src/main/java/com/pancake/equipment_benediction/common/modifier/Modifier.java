@@ -1,6 +1,10 @@
 package com.pancake.equipment_benediction.common.modifier;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.init.ModModifiers;
 import net.minecraft.Util;
@@ -11,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.*;
 
