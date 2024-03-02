@@ -1,9 +1,4 @@
 {
   "equipment_set.equipment_benediction.title": "套装:",
-  "equipment_benediction.description": "按住Shift键查看详细词条或套装",
-
-  "modifier.kubejs.magnetic": "磁引",
-  "modifier.kubejs.magnetic.description": "会吸引周围的掉落物品",
-  "equipment_set.kubejs.diamond_set": "钻石套",
-  "equipment_set.kubejs.diamond_set.description": "增加20%的移动速度"
+  "equipment_benediction.description": "按住Shift键查看详细词条或套装"
 }

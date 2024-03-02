@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public interface IModifier extends ICodec<IModifier> {
-//    Supplier<Codec<IModifier>> CODEC = () -> ModModifiers.MODIFIER_REGISTRY.get().getCodec()
-//            .dispatch("modifier", IModifier::type, IModifier::codec);
     BonusHandler<ModifierInstance> getHandler();
 
     Component getDisplayName();
