@@ -1,8 +1,7 @@
 package com.pancake.equipment_benediction.common.modifier;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
-import net.minecraft.nbt.NbtOps;
+import com.pancake.equipment_benediction.common.bonus.BonusHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,16 +17,14 @@ public class MagneticModifier extends Modifier{
     public static final ResourceLocation IDENTIFIER = EquipmentBenediction.asResource("magnetic");
 
     @Override
-    public void init(ModifierHandler.Builder handle) {
+    public void init(BonusHandler<ModifierInstance> handle) {
 //        handle.addTick((player,modifierInstance) -> {
-//            ModifierHelper.getModifierListTag(player).forEach((nbt) -> {
-//                ModifierInstance.CODEC.parse(NbtOps.INSTANCE,nbt)
-//                        .resultOrPartial(EquipmentBenediction.LOGGER::error)
-//                        .ifPresent((instance) -> {
-//                            if (instance.getModifier() instanceof MagneticModifier) {
-//                                applyVelocity(player, instance.getAmplifier(), ItemEntity.class, 3, 0.05f, 100);
-//                            }
-//                        });
+//            ModifierHelper.getPlayerModifierListTag(player).forEach((nbt) -> {
+//                ModifierHelper.parse(nbt).ifPresent((instance) -> {
+//                    if (instance.getModifier() instanceof MagneticModifier) {
+//                        applyVelocity(player, instance.getAmplifier(), ItemEntity.class, 3, 0.05f, 100);
+//                    }
+//                });
 //            });
 //        });
 
@@ -35,23 +32,17 @@ public class MagneticModifier extends Modifier{
             Player player = event.player;
             if (player.level().isClientSide()) return;
 
-            ModifierHelper.getPlayerModifierListTag(player).forEach((nbt) -> {
-                ModifierInstance.CODEC.parse(NbtOps.INSTANCE,nbt)
-                        .resultOrPartial(EquipmentBenediction.LOGGER::error)
-                        .ifPresent((instance) -> {
-                            if (instance.getModifier() instanceof MagneticModifier) {
-                                applyVelocity(player, instance.getAmplifier(), ItemEntity.class, 3, 0.05f, 100);
-                            }
-                        });
+
+            ModifierHelper.getPlayerListTag(player).forEach((nbt) -> {
+                ModifierHelper.parse(nbt).ifPresent((instance) -> {
+                    if (instance.getModifier() instanceof MagneticModifier) {
+                        applyVelocity(player, instance.getAmplifier(), ItemEntity.class, 3, 0.05f, 100);
+                    }
+                });
             });
         });
 
     }
-
-//    @Override
-//    public ResourceLocation getRegistryName() {
-//        return ModModifiers.MAGNETIC.getId();
-//    }
 
     public static <T extends Entity> void applyVelocity(LivingEntity entity, int amplifier, Class<T> targetClass, int minRange, float speed, int maxPush) {
         double x = entity.getX();

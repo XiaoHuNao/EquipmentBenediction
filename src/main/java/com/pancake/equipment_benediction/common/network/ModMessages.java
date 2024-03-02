@@ -1,15 +1,13 @@
 package com.pancake.equipment_benediction.common.network;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
-import com.pancake.equipment_benediction.common.network.message.ItemStackModifierSyncS2CPacket;
+import com.pancake.equipment_benediction.common.network.message.PlayerEquipmentSetSyncS2CPacket;
 import com.pancake.equipment_benediction.common.network.message.PlayerModifierSyncS2CPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import org.lwjgl.system.windows.MSG;
 
 public class ModMessages {
     private static SimpleChannel INSTANCE;
@@ -30,15 +28,16 @@ public class ModMessages {
         INSTANCE = net;
 
 
-        net.messageBuilder(ItemStackModifierSyncS2CPacket.class,id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ItemStackModifierSyncS2CPacket::new)
-                .encoder(ItemStackModifierSyncS2CPacket::toBytes)
-                .consumerMainThread(ItemStackModifierSyncS2CPacket::handle)
-                .add();
         net.messageBuilder(PlayerModifierSyncS2CPacket.class,id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(PlayerModifierSyncS2CPacket::new)
                 .encoder(PlayerModifierSyncS2CPacket::toBytes)
                 .consumerMainThread(PlayerModifierSyncS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(PlayerEquipmentSetSyncS2CPacket.class,id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PlayerEquipmentSetSyncS2CPacket::new)
+                .encoder(PlayerEquipmentSetSyncS2CPacket::toBytes)
+                .consumerMainThread(PlayerEquipmentSetSyncS2CPacket::handle)
                 .add();
     }
 

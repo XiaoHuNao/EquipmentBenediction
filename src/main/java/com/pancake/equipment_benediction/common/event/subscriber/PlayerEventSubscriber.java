@@ -2,8 +2,10 @@ package com.pancake.equipment_benediction.common.event.subscriber;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.common.capability.LastInventoryCap;
+import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.pancake.equipment_benediction.common.event.PlayerEquipmentChangeEvent;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +28,7 @@ public class PlayerEventSubscriber {
         if (!(entity instanceof Player player) || player.level().isClientSide()) return;
 
         ModifierHelper.updateModifier(from, to, slot,player);
+        EquipmentSetHelper.updateSet(from, to,player);
     }
 
     @SubscribeEvent
@@ -35,7 +38,18 @@ public class PlayerEventSubscriber {
             if (player.level().isClientSide()) return;
 
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::update);
-            ModifierHelper.updateTickModifiers(player);
+            ModifierHelper.getPlayerListTag(player).forEach((tag) -> {
+                ModifierHelper.parse(tag).ifPresent((instance) -> {
+                    instance.getModifier().getHandler().getTickBonus().accept(player,instance);
+                });
+            });
+
+
+            EquipmentSetHelper.getPlayerListTag(player).forEach((tag) -> {
+                EquipmentSetHelper.parse(tag).ifPresent((set) -> {
+                    set.getHandler().getTickBonus().accept(player,set);
+                });
+            });
         }
     }
 

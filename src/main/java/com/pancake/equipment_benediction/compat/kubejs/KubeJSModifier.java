@@ -1,9 +1,8 @@
 package com.pancake.equipment_benediction.compat.kubejs;
 
-import com.pancake.equipment_benediction.api.ForgeEventConsumer;
 import com.pancake.equipment_benediction.api.IModifier;
+import com.pancake.equipment_benediction.common.bonus.BonusHandler;
 import com.pancake.equipment_benediction.common.modifier.Modifier;
-import com.pancake.equipment_benediction.common.modifier.ModifierHandler;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -14,26 +13,25 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class KubeJSModifier extends Modifier {
     public KubeJSModifier(Builder builder) {
         super();
-        this.handler = builder.handler.build();
+        this.handler = builder.handler;
         this.textColor = builder.textColor;
     }
 
 
     @Override
-    public void init(ModifierHandler.Builder handle) {
+    public void init(BonusHandler<ModifierInstance> handle) {
     }
 
-    public static class Builder extends BuilderBase<IModifier>{
-        private ModifierHandler.Builder handler;
+    public static class Builder extends BonusHandlerBuilder<IModifier,ModifierInstance>{
         private int textColor;
 
         public Builder(ResourceLocation location) {
             super(location);
-            this.handler = new ModifierHandler.Builder();
         }
 
         @Override
@@ -45,26 +43,6 @@ public class KubeJSModifier extends Modifier {
         public IModifier createObject() {
             return new KubeJSModifier(this);
         }
-        public Builder addEffectModifier(MobEffect effect, int duration, int amplifier) {
-            this.handler.addEffectModifier(effect, duration, amplifier);
-            return this;
-        }
-
-        public Builder addAttributeModifier(Attribute attribute, String uuid, double value, AttributeModifier.Operation operation) {
-            this.handler.addAttributeModifier(attribute, uuid, value, operation);
-            return this;
-        }
-
-        public Builder addEvent(String eventClass, ForgeEventConsumer<?> consumer) {
-            this.handler.addEvent(eventClass, consumer);
-            return this;
-        }
-
-        public Builder addTick(BiConsumer<Player, ModifierInstance> consumer) {
-            this.handler.addTick(consumer);
-            return this;
-        }
-
         public Builder textColor(int textColor) {
             this.textColor = textColor;
             return this;

@@ -28,7 +28,7 @@ public class ModifierDeBugHudRenderer {
             return;
         }
 
-        ListTag modifierTags = ModifierHelper.getPlayerModifierListTag(player);
+        ListTag modifierTags = ModifierHelper.getPlayerListTag(player);
         modifierTags.forEach((tag) -> {
             ModifierInstance.CODEC.parse(NbtOps.INSTANCE, tag)
                     .resultOrPartial(EquipmentBenediction.LOGGER::error)
