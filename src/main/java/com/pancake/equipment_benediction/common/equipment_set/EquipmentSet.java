@@ -9,6 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class EquipmentSet implements IEquipmentSet {
@@ -20,8 +21,6 @@ public abstract class EquipmentSet implements IEquipmentSet {
     private String translationKey;
     private Component description;
     private Component displayName;
-
-
 
 
     public EquipmentSet() {
@@ -99,6 +98,11 @@ public abstract class EquipmentSet implements IEquipmentSet {
             description = Component.translatable(getTranslationKey() + ".description").withStyle(style -> style.withColor(0x7a7b78));
         }
         return description;
+    }
+
+    @Override
+    public boolean checkEquippable(LivingEntity livingEntity) {
+        return getGroup().checkEquippable(livingEntity);
     }
 
 }

@@ -1,24 +1,18 @@
 package com.pancake.equipment_benediction.common.equipment_set;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
-import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.common.network.message.PlayerEquipmentSetSyncS2CPacket;
-import com.pancake.equipment_benediction.common.network.message.PlayerModifierSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
 

@@ -1,6 +1,7 @@
 package com.pancake.equipment_benediction.common.equippable;
 
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -10,12 +11,14 @@ public class VanillaIEquippable extends Equippable<EquipmentSlot> {
     }
 
     @Override
-    public boolean checkEquippable(Player player, Ingredient ingredient) {
-        return ingredient.test(player.getItemBySlot(slotType));
+    public boolean checkEquippable(LivingEntity livingEntity, Ingredient ingredient) {
+        return ingredient.test(livingEntity.getItemBySlot(slotType));
     }
 
     public static VanillaIEquippable of(String slotType) {
         return new VanillaIEquippable(EquipmentSlot.byName(slotType));
     }
-
+    public static VanillaIEquippable of(EquipmentSlot slotType) {
+        return new VanillaIEquippable(slotType);
+    }
 }
