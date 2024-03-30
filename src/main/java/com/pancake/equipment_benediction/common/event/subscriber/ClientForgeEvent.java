@@ -7,6 +7,7 @@ import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
+import com.pancake.equipment_benediction.common.config.ModConfig;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
@@ -48,6 +49,10 @@ public class ClientForgeEvent {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
+        if (!ModConfig.enableEquipmentSetTooltip.get()){
+            return;
+        }
+
         ItemStack itemStack = event.getItemStack();
         List<Component> toolTip = event.getToolTip();
         ModifierHelper.getItemStackListTag(itemStack).forEach((nbt) -> {
@@ -71,11 +76,13 @@ public class ClientForgeEvent {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     @OnlyIn(Dist.CLIENT)
     public static void onRenderTooltips(RenderTooltipEvent.GatherComponents event) {
+        if (!ModConfig.enableEquipmentSetTooltip.get()){
+            return;
+        }
+
         LocalPlayer player = Minecraft.getInstance().player;
         List<Either<FormattedText, TooltipComponent>> tooltipElements = event.getTooltipElements();
         ItemStack itemStack = event.getItemStack();
-
-
         if (EquipmentSetHelper.hasSet(itemStack)) {
             Object[] array = EquipmentSetHelper.getSet(itemStack).toArray();
             for (int i = 0; i < array.length; i++) {

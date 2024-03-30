@@ -7,6 +7,8 @@ import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class KubeJSEquipmentSet extends EquipmentSet {
@@ -43,8 +45,17 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         }
 
         public Builder addGroup(IEquippable<?> equippable, Ingredient ingredient) {
-            this.group.addGroup(equippable,ingredient);
+            this.group.addGroup(equippable, ingredient);
             return this;
+        }
+        public Builder addGroup(IEquippable<?> equippable, Item item) {
+            return addGroup(equippable, Ingredient.of(item));
+        }
+        public Builder addGroup(IEquippable<?> equippable, Item... items) {
+            return addGroup(equippable, Ingredient.of(items));
+        }
+        public Builder addGroup(IEquippable<?> equippable, TagKey<Item> tagKey) {
+            return addGroup(equippable, Ingredient.of(tagKey));
         }
         public Builder textColor(int textColor) {
             this.textColor = textColor;
