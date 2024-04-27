@@ -26,9 +26,8 @@ public class KubeJSEquipmentSet extends EquipmentSet {
 
 
     public static class Builder  extends BonusHandlerBuilder<IEquipmentSet,IEquipmentSet> {
-        private int textColor;
-
         public EquippableGroup group = EquippableGroup.create();
+        private int textColor;
 
         public Builder(ResourceLocation location) {
             super(location);
@@ -56,6 +55,10 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         }
         public Builder addGroup(IEquippable<?> equippable, TagKey<Item> tagKey) {
             return addGroup(equippable, Ingredient.of(tagKey));
+        }
+        public Builder addBlacklist(IEquippable<?> equippable) {
+            this.group.addBlacklist(equippable);
+            return this;
         }
         public Builder textColor(int textColor) {
             this.textColor = textColor;

@@ -3,7 +3,12 @@ package com.pancake.equipment_benediction.common.equipment_set;
 import com.google.common.collect.ImmutableList;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
+import com.pancake.equipment_benediction.api.IModifier;
+import com.pancake.equipment_benediction.common.equippable.Equippable;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
+import com.pancake.equipment_benediction.common.init.ModModifiers;
+import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
+import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.common.network.message.PlayerEquipmentSetSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -41,12 +46,20 @@ public class EquipmentSetHelper {
         return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
     }
 
-    public static void updateSet(ItemStack from, ItemStack to, Player player) {
+    public static void updateSet(ItemStack from, ItemStack to, Equippable<?> equippable, Player player) {
+        ModEquipmentSet.EQUIPMENT_SET_MAP.entries().forEach((entry) -> {
+            IEquipmentSet set = entry.getValue();
+            if (set.getGroup().checkBlacklist(equippable) && hasSet(player,set)) {
+                removePlayerSetWithUpdate(set, player);
+            }
+        });
+
+
+
         if (hasSet(from)) {
             getSet(from).forEach((set) -> {
                 if (!set.getGroup().checkEquippable(player)) {
                     removePlayerSetWithUpdate(set, player);
-                    set.clear(player);
                 }
             });
         }
@@ -54,7 +67,6 @@ public class EquipmentSetHelper {
             getSet(to).forEach((set) -> {
                 if (set.getGroup().checkEquippable(player) && !hasSet(player, set)) {
                     addPlayerSet(set, player);
-                    set.apply(player);
                 }
             });
         }
@@ -80,6 +92,7 @@ public class EquipmentSetHelper {
         encodeStart(set).ifPresent((nbt) -> {
             ListTag listTag = getPlayerListTag(player);
             listTag.add(nbt);
+            set.apply(player);
             player.getPersistentData().put("EquipmentSet", listTag);
         });
     }
@@ -93,6 +106,7 @@ public class EquipmentSetHelper {
         ListTag listTag = getPlayerListTag(player);
         listTag.removeIf((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
         player.getPersistentData().put("EquipmentSet", listTag);
+        set.clear(player);
         ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
     }
 }

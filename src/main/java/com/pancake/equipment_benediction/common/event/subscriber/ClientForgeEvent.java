@@ -60,7 +60,7 @@ public class ClientForgeEvent {
                     .resultOrPartial(EquipmentBenediction.LOGGER::error)
                     .ifPresent((instance) -> {
                         IModifier modifier = instance.getModifier();
-                        if (modifier.getDescription() == null || modifier.getDisplayName() == null) return;
+                        if (modifier == null || modifier.getDescription() == null || modifier.getDisplayName() == null) return;
                         if (Screen.hasShiftDown()) {
                             toolTip.add(modifier.getDisplayName());
                             toolTip.add(modifier.getDescription());

@@ -1,7 +1,9 @@
 package com.pancake.equipment_benediction.common.modifier;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
+import com.pancake.equipment_benediction.api.IEquippable;
 import com.pancake.equipment_benediction.api.IModifier;
+import com.pancake.equipment_benediction.common.init.ModModifiers;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.common.network.message.PlayerModifierSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -113,17 +115,29 @@ public class ModifierHelper {
         }
     }
 
-    public static void updateModifier(ItemStack from, ItemStack to, EquipmentSlot slot, Player player) {
+    public static void updateModifier(ItemStack from, ItemStack to, IEquippable<?> equippable, Player player) {
         ListTag fromTag = ModifierHelper.getItemStackListTag(from);
         ListTag toTag = ModifierHelper.getItemStackListTag(to);
+
+        ModModifiers.MODIFIER_REGISTRY.get().getEntries().forEach((entry) -> {
+            IModifier modifier = entry.getValue();
+            if (modifier.getGroup().checkBlacklist(equippable) && ModifierHelper.hasModifier(player,modifier)) {
+                ModifierHelper.removePlayerModifier(new ModifierInstance(modifier,0),player);
+//                playerListTag.forEach((tag) -> {
+//                    ModifierHelper.parse(tag).ifPresent((instance) -> {
+//                        if (instance.getModifier().equals(modifier)) {
+//                            ModifierHelper.removePlayerModifierWithUpdate(player, tag);
+//                        }
+//                    });
+//                });
+            }
+        });
 
         fromTag.forEach((tag) -> {
             removePlayerModifierWithUpdate(player, tag);
         });
 
-        if (checkSlot(slot)) {
-            addPlayerModifierWithUpdate(player, toTag);
-        }
+        addPlayerModifierWithUpdate(player, toTag);
     }
 
     public static void removePlayerModifierWithUpdate(Player player, Tag tag) {
@@ -136,31 +150,14 @@ public class ModifierHelper {
 
     public static void addPlayerModifierWithUpdate(Player player, ListTag toTag) {
         toTag.forEach((tag) -> {
+
             parse(tag).ifPresent((instance) -> {
-                if (addPlayerModifier(instance, player)) {
+                IModifier modifier = instance.getModifier();
+                if (modifier != null && modifier.checkEquippable(player) && addPlayerModifier(instance, player)) {
                     ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
                 }
             });
         });
-    }
-
-
-    public static boolean checkSlot(EquipmentSlot stack) {
-        EquipmentSlot[] slots = new EquipmentSlot[] {
-                EquipmentSlot.HEAD,
-                EquipmentSlot.CHEST,
-                EquipmentSlot.LEGS,
-                EquipmentSlot.FEET,
-                EquipmentSlot.MAINHAND,
-                EquipmentSlot.OFFHAND
-        };
-
-        for (EquipmentSlot slot : slots) {
-            if (slot == stack) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static boolean hasModifier(ItemStack itemStack) {

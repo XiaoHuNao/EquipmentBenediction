@@ -3,17 +3,20 @@ package com.pancake.equipment_benediction.common.modifier;
 import com.mojang.serialization.Codec;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
+import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.init.ModModifiers;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
 public abstract class Modifier implements IModifier {
     protected BonusHandler<ModifierInstance> handler = new BonusHandler<>();
+    public EquippableGroup group = EquippableGroup.create();
     protected int textColor = 0xe74c3c;
     private String translationKey;
     private Component description;
@@ -21,10 +24,14 @@ public abstract class Modifier implements IModifier {
 
 
     public Modifier() {
-        init(handler);
+        init(handler,group);
     }
 
-    public abstract void init(BonusHandler<ModifierInstance> handle);
+    public abstract void init(BonusHandler<ModifierInstance> handle, EquippableGroup group);
+    @Override
+    public EquippableGroup getGroup() {
+        return group;
+    }
     @Override
     public BonusHandler<ModifierInstance> getHandler() {
         return handler;
@@ -100,5 +107,9 @@ public abstract class Modifier implements IModifier {
         getHandler().getBonuses().forEach((type, bonus) -> {
             bonus.clear(player);
         });
+    }
+    @Override
+    public boolean checkEquippable(LivingEntity livingEntity) {
+        return group.checkEquippable(livingEntity);
     }
 }

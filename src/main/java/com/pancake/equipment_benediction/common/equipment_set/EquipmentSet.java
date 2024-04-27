@@ -102,7 +102,7 @@ public abstract class EquipmentSet implements IEquipmentSet {
 
     @Override
     public boolean checkEquippable(LivingEntity livingEntity) {
-        return getGroup().checkEquippable(livingEntity);
+        return group.checkEquippable(livingEntity);
     }
 
 }
