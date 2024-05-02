@@ -3,8 +3,6 @@ package com.pancake.equipment_benediction.common.network.message;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
-import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
-import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -24,12 +22,12 @@ public class PlayerEquipmentSetSyncS2CPacket {
 
 
     public PlayerEquipmentSetSyncS2CPacket(FriendlyByteBuf buf){
-        this.set = buf.readJsonWithCodec(ModEquipmentSet.EQUIPMENT_SET_REGISTRY.get().getCodec());
+        this.set = buf.readJsonWithCodec(ModEquipmentSet.REGISTRY.get().getCodec());
         this.flag = buf.readBoolean();
     }
 
     public void toBytes(FriendlyByteBuf buf){
-        buf.writeJsonWithCodec(ModEquipmentSet.EQUIPMENT_SET_REGISTRY.get().getCodec(),set);
+        buf.writeJsonWithCodec(ModEquipmentSet.REGISTRY.get().getCodec(),set);
         buf.writeBoolean(flag);
     }
 

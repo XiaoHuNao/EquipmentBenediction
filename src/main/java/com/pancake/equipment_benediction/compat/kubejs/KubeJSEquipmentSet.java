@@ -47,15 +47,6 @@ public class KubeJSEquipmentSet extends EquipmentSet {
             this.group.addGroup(equippable, ingredient);
             return this;
         }
-        public Builder addGroup(IEquippable<?> equippable, Item item) {
-            return addGroup(equippable, Ingredient.of(item));
-        }
-        public Builder addGroup(IEquippable<?> equippable, Item... items) {
-            return addGroup(equippable, Ingredient.of(items));
-        }
-        public Builder addGroup(IEquippable<?> equippable, TagKey<Item> tagKey) {
-            return addGroup(equippable, Ingredient.of(tagKey));
-        }
         public Builder addBlacklist(IEquippable<?> equippable) {
             this.group.addBlacklist(equippable);
             return this;

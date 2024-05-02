@@ -46,4 +46,20 @@ public class CurioEquippable extends Equippable<ISlotType> {
             throw new IllegalArgumentException("Invalid slot '" + slotType);
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof CurioEquippable curioEquippable) {
+            return this.slotType.equals((curioEquippable.slotType));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return slotType.hashCode();
+    }
 }

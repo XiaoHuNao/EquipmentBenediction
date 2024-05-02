@@ -12,4 +12,6 @@ public interface IEquippable<T> {
     boolean checkEquippable(LivingEntity player, Ingredient ingredient);
 
     T getSlotType();
+
+    boolean equals(Object obj);
 }

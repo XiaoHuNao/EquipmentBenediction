@@ -19,7 +19,7 @@ public class EquippableGroup {
 
     private final LinkedHashMap<IEquippable<?>, Ingredient> EQUIPAGES = Maps.newLinkedHashMap();
     //黑名单
-    private LinkedList<IEquippable<?>> BLACKLIST = Lists.newLinkedList();
+    private final LinkedList<IEquippable<?>> BLACKLIST = Lists.newLinkedList();
 
     public EquippableGroup addGroup(IEquippable<?> equippable, Ingredient ingredient) {
         this.EQUIPAGES.put(equippable, ingredient);
@@ -60,7 +60,7 @@ public class EquippableGroup {
     }
 
     public boolean checkBlacklist(IEquippable<?> equippable) {
-        return BLACKLIST.stream().anyMatch(equippable1 -> equippable1.getSlotType() == equippable.getSlotType());
+        return BLACKLIST.stream().anyMatch(equippable1 -> equippable1.equals(equippable));
     }
 
 

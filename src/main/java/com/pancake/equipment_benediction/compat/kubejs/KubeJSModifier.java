@@ -22,9 +22,10 @@ import java.util.function.Consumer;
 
 public class KubeJSModifier extends Modifier {
     public KubeJSModifier(Builder builder) {
-        super();
+        super(builder.rarity, builder.level);
         this.handler = builder.handler;
         this.textColor = builder.textColor;
+        this.group = builder.group;
     }
 
 
@@ -34,24 +35,22 @@ public class KubeJSModifier extends Modifier {
     }
 
     public static class Builder extends BonusHandlerBuilder<IModifier,ModifierInstance>{
-        public EquippableGroup group = EquippableGroup.create();
+        private EquippableGroup group = EquippableGroup.create();
         private int textColor;
+        private int rarity;
+        private int level;
 
         public Builder(ResourceLocation location) {
             super(location);
         }
+        public Builder properties(int rarity, int level) {
+            this.rarity = rarity;
+            this.level = level;
+            return this;
+        }
         public Builder addGroup(IEquippable<?> equippable, Ingredient ingredient) {
             this.group.addGroup(equippable, ingredient);
             return this;
-        }
-        public Builder addGroup(IEquippable<?> equippable, Item item) {
-            return addGroup(equippable, Ingredient.of(item));
-        }
-        public Builder addGroup(IEquippable<?> equippable, Item... items) {
-            return addGroup(equippable, Ingredient.of(items));
-        }
-        public Builder addGroup(IEquippable<?> equippable, TagKey<Item> tagKey) {
-            return addGroup(equippable, Ingredient.of(tagKey));
         }
         public Builder addBlacklist(IEquippable<?> equippable) {
             this.group.addBlacklist(equippable);

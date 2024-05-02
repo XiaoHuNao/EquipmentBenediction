@@ -3,7 +3,7 @@ package com.pancake.equipment_benediction.common.modifier;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquippable;
 import com.pancake.equipment_benediction.api.IModifier;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
+import com.pancake.equipment_benediction.common.init.ModModifier;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.common.network.message.PlayerModifierSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -11,14 +11,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class ModifierHelper {
     public static ListTag getListTag(CompoundTag tag) {
-        return tag != null ? tag.getList("Modifiers", 10) : new ListTag();
+        return tag != null ? tag.getList("Modifiers", Tag.TAG_COMPOUND) : new ListTag();
     }
      public static ListTag getItemStackListTag(ItemStack stack) {
         return getListTag(stack.getTag());
@@ -81,6 +80,10 @@ public class ModifierHelper {
             Optional<ModifierInstance> optional = parse(tag);
             if (optional.isPresent()) {
                 ModifierInstance modifierInstance = optional.get();
+                if (modifierInstance.getModifier() == null || instance.getModifier() == null){
+                    return false;
+                }
+
                 if (modifierInstance.getModifier().equals(instance.getModifier())) {
                     return tags.remove(tag);
                 }
@@ -119,17 +122,10 @@ public class ModifierHelper {
         ListTag fromTag = ModifierHelper.getItemStackListTag(from);
         ListTag toTag = ModifierHelper.getItemStackListTag(to);
 
-        ModModifiers.MODIFIER_REGISTRY.get().getEntries().forEach((entry) -> {
+        ModModifier.REGISTRY.get().getEntries().forEach((entry) -> {
             IModifier modifier = entry.getValue();
-            if (modifier.getGroup().checkBlacklist(equippable) && ModifierHelper.hasModifier(player,modifier)) {
+            if (! modifier.getGroup().checkEquippable(player) && ModifierHelper.hasModifier(player,modifier)) {
                 ModifierHelper.removePlayerModifier(new ModifierInstance(modifier,0),player);
-//                playerListTag.forEach((tag) -> {
-//                    ModifierHelper.parse(tag).ifPresent((instance) -> {
-//                        if (instance.getModifier().equals(modifier)) {
-//                            ModifierHelper.removePlayerModifierWithUpdate(player, tag);
-//                        }
-//                    });
-//                });
             }
         });
 
@@ -143,7 +139,8 @@ public class ModifierHelper {
     public static void removePlayerModifierWithUpdate(Player player, Tag tag) {
         parse(tag).ifPresent((instance) -> {
             if (removePlayerModifier(instance, player)) {
-                ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, false), (ServerPlayer) player);
+                //TODO
+//                ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, false), (ServerPlayer) player);
             }
         });
     }
@@ -154,7 +151,8 @@ public class ModifierHelper {
             parse(tag).ifPresent((instance) -> {
                 IModifier modifier = instance.getModifier();
                 if (modifier != null && modifier.checkEquippable(player) && addPlayerModifier(instance, player)) {
-                    ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
+                    //TODO
+//                    ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
                 }
             });
         });

@@ -3,9 +3,8 @@ package com.pancake.equipment_benediction.common.modifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.pancake.equipment_benediction.api.IModifier;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
+import com.pancake.equipment_benediction.common.init.ModModifier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 
 public class ModifierInstance {
     public static final Codec<ModifierInstance> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
@@ -26,7 +25,7 @@ public class ModifierInstance {
     }
 
     public ModifierInstance(String modifier, int amplifier) {
-        this(ModModifiers.MODIFIER_REGISTRY.get().getValue(ResourceLocation.tryParse(modifier)), amplifier);
+        this(ModModifier.REGISTRY.get().getValue(ResourceLocation.tryParse(modifier)), amplifier);
     }
 
     public IModifier getModifier() {

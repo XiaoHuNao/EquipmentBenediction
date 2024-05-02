@@ -4,9 +4,10 @@ import com.mojang.serialization.Codec;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
 import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
+import com.pancake.equipment_benediction.common.init.ModModifier;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,13 +18,20 @@ import java.util.*;
 public abstract class Modifier implements IModifier {
     protected BonusHandler<ModifierInstance> handler = new BonusHandler<>();
     public EquippableGroup group = EquippableGroup.create();
-    protected int textColor = 0xe74c3c;
+
+    private final int rarity;
+    private final int level;
+
+
+    protected int textColor = 0x7a7b78;
     private String translationKey;
-    private Component description;
-    private Component displayName;
+    private MutableComponent description;
+    private MutableComponent displayName;
 
 
-    public Modifier() {
+    public Modifier(int rarity, int level) {
+        this.rarity = rarity;
+        this.level = level;
         init(handler,group);
     }
 
@@ -35,6 +43,16 @@ public abstract class Modifier implements IModifier {
     @Override
     public BonusHandler<ModifierInstance> getHandler() {
         return handler;
+    }
+
+    @Override
+    public int getRarity() {
+        return rarity;
+    }
+
+    @Override
+    public int getLevel() {
+        return level;
     }
 
     @Override
@@ -82,17 +100,17 @@ public abstract class Modifier implements IModifier {
     }
     @Override
     public ResourceLocation getRegistryName() {
-        return ModModifiers.MODIFIER_REGISTRY.get().getKey(this);
+        return ModModifier.REGISTRY.get().getKey(this);
     }
 
     @Override
     public Codec<IModifier> codec() {
-        return Codec.unit(() ->ModModifiers.MODIFIER_REGISTRY.get().getValue(getRegistryName()));
+        return Codec.unit(() -> ModModifier.REGISTRY.get().getValue(getRegistryName()));
     }
 
     @Override
     public IModifier type() {
-        return ModModifiers.MODIFIER_REGISTRY.get().getValue(getRegistryName());
+        return ModModifier.REGISTRY.get().getValue(getRegistryName());
     }
 
     @Override

@@ -4,16 +4,16 @@ import com.mojang.logging.LogUtils;
 import com.pancake.equipment_benediction.client.gui.hud.ModifierDeBugHudRenderer;
 import com.pancake.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
 import com.pancake.equipment_benediction.common.config.ModConfig;
-import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
+import com.pancake.equipment_benediction.common.init.*;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.compat.curios.event.subscriber.CurioPlayerEventSubscriber;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -24,8 +24,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 
-import java.util.function.Function;
-
 @Mod(EquipmentBenediction.MOD_ID)
 public class EquipmentBenediction {
     public static final String MOD_ID = "equipment_benediction";
@@ -34,9 +32,14 @@ public class EquipmentBenediction {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::onFMLCommonSetup);
         modEventBus.addListener(this::onRegisterClientTooltipComponentFactories);
-        ModModifiers.MODIFIER.register(modEventBus);
+        ModModifier.MODIFIER.register(modEventBus);
         ModEquipmentSet.EQUIPMENT_SET.register(modEventBus);
+        ModItem.ITEMS.register(modEventBus);
+        ModBlock.BLOCKS.register(modEventBus);
+        ModBlockEntity.BLOCK_ENTITY.register(modEventBus);
+        ModQuality.QUALITY.register(modEventBus);
 
+        modEventBus.addListener(this::onCreativeModeTabContents);
         MinecraftForge.EVENT_BUS.register(this);
 
 
@@ -56,6 +59,8 @@ public class EquipmentBenediction {
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
         ModMessages.register();
         ModEquipmentSet.setup();
+        ModModifier.setup();
+        ModQuality.setup();
     }
 
     public static ResourceLocation asResource(String path) {
@@ -71,4 +76,10 @@ public class EquipmentBenediction {
         event.register(EquipmentSetTooltipComponent.class, equipmentSetTooltipComponent -> equipmentSetTooltipComponent);
     }
 
+    @SubscribeEvent
+    public void onCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(ModBlock.REFORGED_BLOCK);
+        }
+    }
 }

@@ -104,7 +104,6 @@ public class ClientForgeEvent {
 
         if (ModifierHelper.hasModifier(itemStack) || EquipmentSetHelper.hasSet(itemStack)) {
             tooltipElements.add(Either.left(Component.translatable(shiftKey).withStyle(style -> style.withColor(0xb1b1b1))));
-
         }
     }
 }

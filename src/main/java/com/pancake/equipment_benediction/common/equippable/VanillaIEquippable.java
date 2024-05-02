@@ -15,10 +15,25 @@ public class VanillaIEquippable extends Equippable<EquipmentSlot> {
         return ingredient.test(livingEntity.getItemBySlot(slotType));
     }
 
-    public static VanillaIEquippable of(String slotType) {
-        return new VanillaIEquippable(EquipmentSlot.byName(slotType));
-    }
+//    public static VanillaIEquippable of(String slotType) {
+//        return new VanillaIEquippable(EquipmentSlot.byName(slotType));
+//    }
     public static VanillaIEquippable of(EquipmentSlot slotType) {
         return new VanillaIEquippable(slotType);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof VanillaIEquippable vanillaIEquippable) {
+            return this.slotType == vanillaIEquippable.slotType;
+        }
+        return false;
+    }
+    @Override
+    public int hashCode() {
+        return slotType.hashCode();
     }
 }

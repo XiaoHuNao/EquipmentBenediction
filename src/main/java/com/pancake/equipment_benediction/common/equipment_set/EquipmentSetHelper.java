@@ -3,12 +3,8 @@ package com.pancake.equipment_benediction.common.equipment_set;
 import com.google.common.collect.ImmutableList;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
-import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.equippable.Equippable;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
-import com.pancake.equipment_benediction.common.init.ModModifiers;
-import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
-import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.common.network.message.PlayerEquipmentSetSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -23,20 +19,20 @@ import java.util.*;
 
 public class EquipmentSetHelper {
     public static ListTag getListTag(CompoundTag tag) {
-        return tag != null ? tag.getList("EquipmentSet", 8) : new ListTag();
+        return tag != null ? tag.getList("EquipmentSet", Tag.TAG_STRING) : new ListTag();
     }
     public static ListTag getPlayerListTag(Player player) {
         return getListTag(player.getPersistentData());
     }
     public static Optional<Tag> encodeStart(IEquipmentSet set) {
-        return ModEquipmentSet.EQUIPMENT_SET_REGISTRY
+        return ModEquipmentSet.REGISTRY
                 .get()
                 .getCodec()
                 .encodeStart(NbtOps.INSTANCE, set)
                 .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
     public static Optional<IEquipmentSet> parse(Tag tag) {
-        return ModEquipmentSet.EQUIPMENT_SET_REGISTRY
+        return ModEquipmentSet.REGISTRY
                 .get()
                 .getCodec()
                 .parse(NbtOps.INSTANCE, tag)
@@ -47,7 +43,7 @@ public class EquipmentSetHelper {
     }
 
     public static void updateSet(ItemStack from, ItemStack to, Equippable<?> equippable, Player player) {
-        ModEquipmentSet.EQUIPMENT_SET_MAP.entries().forEach((entry) -> {
+        ModEquipmentSet.SET_MAP.entries().forEach((entry) -> {
             IEquipmentSet set = entry.getValue();
             if (set.getGroup().checkBlacklist(equippable) && hasSet(player,set)) {
                 removePlayerSetWithUpdate(set, player);
@@ -73,11 +69,11 @@ public class EquipmentSetHelper {
     }
 
     public static boolean hasSet(ItemStack stack) {
-        return ModEquipmentSet.EQUIPMENT_SET_MAP.entries().stream().map(Map.Entry::getKey).anyMatch((ingredient) -> ingredient.test(stack));
+        return ModEquipmentSet.SET_MAP.entries().stream().map(Map.Entry::getKey).anyMatch((ingredient) -> ingredient.test(stack));
     }
 
     public static Collection<IEquipmentSet> getSet(ItemStack stack) {
-        return ModEquipmentSet.EQUIPMENT_SET_MAP.entries().stream()
+        return ModEquipmentSet.SET_MAP.entries().stream()
                 .filter((entry) -> entry.getKey().test(stack))
                 .map(Map.Entry::getValue)
                 .collect(ImmutableList.toImmutableList());
@@ -85,7 +81,8 @@ public class EquipmentSetHelper {
 
     private static void addPlayerSetWithUpdate(IEquipmentSet set, Player player) {
         addPlayerSet(set, player);
-        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, true), (ServerPlayer) player);
+        //TODO
+//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, true), (ServerPlayer) player);
     }
 
     public static void addPlayerSet(IEquipmentSet set, Player player) {
@@ -99,7 +96,8 @@ public class EquipmentSetHelper {
 
     private static void removePlayerSetWithUpdate(IEquipmentSet set, Player player) {
         removePlayerSet(set, player);
-        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
+        ////TODO
+//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
     }
 
     public static void removePlayerSet(IEquipmentSet set, Player player) {
@@ -107,6 +105,7 @@ public class EquipmentSetHelper {
         listTag.removeIf((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
         player.getPersistentData().put("EquipmentSet", listTag);
         set.clear(player);
-        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
+        //TODO
+//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
     }
 }

@@ -7,6 +7,7 @@ import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,10 +18,10 @@ public abstract class EquipmentSet implements IEquipmentSet {
     public EquippableGroup group = EquippableGroup.create();
     public BonusHandler<IEquipmentSet> handler = new BonusHandler<>();
 
-    protected int textColor = 0xe74c3c;
+    protected int textColor = 0x7a7b78;
     private String translationKey;
-    private Component description;
-    private Component displayName;
+    private MutableComponent description;
+    private MutableComponent displayName;
 
 
     public EquipmentSet() {
@@ -54,16 +55,16 @@ public abstract class EquipmentSet implements IEquipmentSet {
     }
     @Override
     public ResourceLocation getRegistryName() {
-        return ModEquipmentSet.EQUIPMENT_SET_REGISTRY.get().getKey(this);
+        return ModEquipmentSet.REGISTRY.get().getKey(this);
     }
     @Override
     public Codec<IEquipmentSet> codec() {
-        return ResourceLocation.CODEC.xmap(ModEquipmentSet.EQUIPMENT_SET_REGISTRY.get()::getValue, IEquipmentSet::getRegistryName);
+        return ResourceLocation.CODEC.xmap(ModEquipmentSet.REGISTRY.get()::getValue, IEquipmentSet::getRegistryName);
     }
 
     @Override
     public IEquipmentSet type() {
-        return ModEquipmentSet.EQUIPMENT_SET_REGISTRY.get().getValue(getRegistryName());
+        return ModEquipmentSet.REGISTRY.get().getValue(getRegistryName());
     }
 
     @Override
