@@ -1,7 +1,6 @@
 package com.pancake.equipment_benediction.compat.kubejs;
 
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
-import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;

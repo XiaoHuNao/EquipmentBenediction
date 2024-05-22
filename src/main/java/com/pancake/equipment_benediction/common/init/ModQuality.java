@@ -1,26 +1,25 @@
 package com.pancake.equipment_benediction.common.init;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.pancake.equipment_benediction.EquipmentBenediction;
-import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.api.IQuality;
-import com.pancake.equipment_benediction.common.quality.CommonQuality;
-import com.pancake.equipment_benediction.compat.kubejs.KubeJSQuality;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.random.SimpleWeightedRandomList;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class ModQuality {
-    public static SimpleWeightedRandomList<IQuality> WEIGHTED_QUALITY;
+    public static Multimap<Item,IQuality> ITEM_QUALITY = ArrayListMultimap.create();
+    public static Map<Item, SimpleWeightedRandomList<IQuality>> ITEM_WEIGHTED_QUALITY = Maps.newHashMap();
     public static final ResourceKey<Registry<IQuality>> KEY = EquipmentBenediction.asResourceKey("quality");
     public static final DeferredRegister<IQuality> QUALITY = DeferredRegister.create(KEY, EquipmentBenediction.MOD_ID);
     public static final Supplier<IForgeRegistry<IQuality>> REGISTRY = QUALITY.makeRegistry(RegistryBuilder::new);
@@ -35,13 +34,21 @@ public class ModQuality {
 //    );
 
     public static void setup() {
-        SimpleWeightedRandomList.Builder<IQuality> builder = SimpleWeightedRandomList.builder();
-        REGISTRY.get().getEntries().stream()
-                .map(Map.Entry::getValue)
-                .forEach((quality) -> {
-                    builder.add(quality, quality.getRarity());
-                });
-        WEIGHTED_QUALITY = builder.build();
+        ForgeRegistries.ITEMS.getEntries().forEach((entry) -> {
+            Item item = entry.getValue();
+            ITEM_QUALITY.putAll(item, REGISTRY.get().getEntries().stream()
+                    .map(Map.Entry::getValue)
+                    .filter((quality) -> quality.isViable().test(item.getDefaultInstance()))
+                    ::iterator);
+        });
+
+        ITEM_QUALITY.asMap().forEach((item, qualities) -> {
+            SimpleWeightedRandomList.Builder<IQuality> builder = SimpleWeightedRandomList.builder();
+            qualities.forEach((quality) -> {
+                builder.add(quality, quality.getRarity());
+            });
+            ITEM_WEIGHTED_QUALITY.put(item, builder.build());
+        });
     }
 
 

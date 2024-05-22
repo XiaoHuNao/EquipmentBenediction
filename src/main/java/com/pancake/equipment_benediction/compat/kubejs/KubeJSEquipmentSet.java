@@ -7,8 +7,6 @@ import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class KubeJSEquipmentSet extends EquipmentSet {
@@ -16,7 +14,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         super();
         this.handler = builder.handler;
         this.group = builder.group;
-        this.textColor = builder.textColor;
+        this.color = builder.color;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
 
     public static class Builder  extends BonusHandlerBuilder<IEquipmentSet,IEquipmentSet> {
         public EquippableGroup group = EquippableGroup.create();
-        private int textColor;
+        private int color;
 
         public Builder(ResourceLocation location) {
             super(location);
@@ -51,8 +49,8 @@ public class KubeJSEquipmentSet extends EquipmentSet {
             this.group.addBlacklist(equippable);
             return this;
         }
-        public Builder textColor(int textColor) {
-            this.textColor = textColor;
+        public Builder color(int color) {
+            this.color = color;
             return this;
         }
     }

@@ -3,13 +3,18 @@ package com.pancake.equipment_benediction.compat.kubejs;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.api.IQuality;
+import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
+import com.pancake.equipment_benediction.common.equippable.Equippable;
+import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.equippable.VanillaIEquippable;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
 import com.pancake.equipment_benediction.common.init.ModModifier;
 import com.pancake.equipment_benediction.common.init.ModQuality;
+import com.pancake.equipment_benediction.common.modifier.Modifier;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
+import com.pancake.equipment_benediction.common.quality.Quality;
 import com.pancake.equipment_benediction.common.quality.QualityHelper;
 import com.pancake.equipment_benediction.compat.curios.equippable.CurioEquippable;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
@@ -24,19 +29,25 @@ public class ModKubeJSPlugin extends KubeJSPlugin {
 
     @Override
     public void registerBindings(BindingsEvent event) {
+        event.add("Modifier", Modifier.class);
         event.add("ModModifiers", ModModifier.class);
         event.add("ModifierHelper", ModifierHelper.class);
         event.add("ModifierInstance", ModifierInstance.class);
 
+        event.add("EquipmentSet", EquipmentSet.class);
         event.add("ModEquipmentSet",ModEquipmentSet.class);
         event.add("EquipmentSetHelper", EquipmentSetHelper.class);
         event.add("VanillaIEquippable", VanillaIEquippable.class);
+        event.add("Equippable", Equippable.class);
+        event.add("EquippableGroup", EquippableGroup.class);
+
+        event.add("Quality", Quality.class);
+        event.add("ModQuality", ModQuality.class);
+        event.add("QualityHelper", QualityHelper.class);
+
         if (ModList.get().isLoaded("curios")){
             event.add("CurioEquippable", CurioEquippable.class);
         }
-
-        event.add("ModQuality", ModQuality.class);
-        event.add("QualityHelper", QualityHelper.class);
     }
 
     @Override

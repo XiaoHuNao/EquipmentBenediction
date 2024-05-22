@@ -3,19 +3,17 @@ package com.pancake.equipment_benediction.common.equipment_set;
 import com.google.common.collect.ImmutableList;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
-import com.pancake.equipment_benediction.common.equippable.Equippable;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
-import com.pancake.equipment_benediction.common.network.ModMessages;
-import com.pancake.equipment_benediction.common.network.message.PlayerEquipmentSetSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 public class EquipmentSetHelper {
     public static ListTag getListTag(CompoundTag tag) {
@@ -42,10 +40,10 @@ public class EquipmentSetHelper {
         return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
     }
 
-    public static void updateSet(ItemStack from, ItemStack to, Equippable<?> equippable, Player player) {
+    public static void updateSet(ItemStack from, ItemStack to, Player player) {
         ModEquipmentSet.SET_MAP.entries().forEach((entry) -> {
             IEquipmentSet set = entry.getValue();
-            if (set.getGroup().checkBlacklist(equippable) && hasSet(player,set)) {
+            if (set.getGroup().checkEquippable(player) && hasSet(player,set)) {
                 removePlayerSetWithUpdate(set, player);
             }
         });

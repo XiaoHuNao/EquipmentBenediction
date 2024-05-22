@@ -3,14 +3,15 @@ package com.pancake.equipment_benediction.common.event;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerEquipmentChangeEvent extends net.minecraftforge.event.entity.player.PlayerEvent {
+public class PlayerContainerChangeEvent extends PlayerEvent {
     private final EquipmentSlot slot;
     private final ItemStack from;
     private final ItemStack to;
 
-    public PlayerEquipmentChangeEvent(Player player, EquipmentSlot slot, @NotNull ItemStack from, @NotNull ItemStack to) {
+    public PlayerContainerChangeEvent(Player player, EquipmentSlot slot, @NotNull ItemStack from, @NotNull ItemStack to) {
         super(player);
         this.slot = slot;
         this.from = from;

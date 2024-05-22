@@ -18,7 +18,7 @@ public abstract class EquipmentSet implements IEquipmentSet {
     public EquippableGroup group = EquippableGroup.create();
     public BonusHandler<IEquipmentSet> handler = new BonusHandler<>();
 
-    protected int textColor = 0x7a7b78;
+    protected int color = 0x7a7b78;
     private String translationKey;
     private MutableComponent description;
     private MutableComponent displayName;
@@ -79,18 +79,18 @@ public abstract class EquipmentSet implements IEquipmentSet {
     @Override
     public Component getDisplayName() {
         if (displayName == null) {
-            displayName = Component.translatable(titleKey).withStyle(style -> style.withColor(0xb1b1b1)).append(" ").append(Component.translatable(getTranslationKey()).withStyle(style -> style.withColor(getTextColor())));
+            displayName = Component.translatable(titleKey).withStyle(style -> style.withColor(0xb1b1b1)).append(" ").append(Component.translatable(getTranslationKey()).withStyle(style -> style.withColor(getColor())));
         }
         return displayName;
     }
 
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
+    public void setColor(int color) {
+        this.color = color;
     }
 
     @Override
-    public final TextColor getTextColor() {
-        return TextColor.fromRgb(textColor);
+    public final TextColor getColor() {
+        return TextColor.fromRgb(color);
     }
 
     @Override

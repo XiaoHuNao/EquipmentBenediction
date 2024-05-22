@@ -3,7 +3,6 @@ package com.pancake.equipment_benediction.compat.curios.equippable;
 
 import com.pancake.equipment_benediction.common.equippable.Equippable;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.util.LazyOptional;

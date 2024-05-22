@@ -5,7 +5,7 @@ import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.capability.LastInventoryCap;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.pancake.equipment_benediction.common.equippable.VanillaIEquippable;
-import com.pancake.equipment_benediction.common.event.PlayerEquipmentChangeEvent;
+import com.pancake.equipment_benediction.common.event.PlayerContainerChangeEvent;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.world.InteractionHand;
@@ -19,11 +19,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-
 @Mod.EventBusSubscriber(modid = EquipmentBenediction.MOD_ID)
 public class PlayerEventSubscriber {
     @SubscribeEvent
-    public static void onLivingEquipmentChange(PlayerEquipmentChangeEvent event) {
+    public static void onLivingEquipmentChange(PlayerContainerChangeEvent event) {
         LivingEntity entity = event.getEntity();
         EquipmentSlot slot = event.getSlot();
         ItemStack from = event.getFrom();
@@ -34,8 +33,8 @@ public class PlayerEventSubscriber {
 
 
         QualityHelper.updateQuality(to);
-        ModifierHelper.updateModifier(from, to,VanillaIEquippable.of(slot),player);
-        EquipmentSetHelper.updateSet(from, to,VanillaIEquippable.of(slot),player);
+        ModifierHelper.updateModifier(from, to,player);
+        EquipmentSetHelper.updateSet(from, to,player);
     }
 
     @SubscribeEvent
@@ -45,6 +44,7 @@ public class PlayerEventSubscriber {
             if (player.level().isClientSide()) return;
 
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::update);
+            LastInventoryCap.get(player).ifPresent(LastInventoryCap::updateInventory);
             ModifierHelper.getPlayerListTag(player).forEach((tag) -> {
                 ModifierHelper.parse(tag).ifPresent((instance) -> {
                     IModifier modifier = instance.getModifier();

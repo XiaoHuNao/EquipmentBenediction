@@ -2,7 +2,6 @@ package com.pancake.equipment_benediction.api;
 
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +20,7 @@ public interface IQuality extends ICodec<IQuality>{
 
     ResourceLocation getRegistryName();
 
-    TextColor getTextColor();
+    TextColor getColor();
 
     List<ModifierInstance> getModifiers();
 

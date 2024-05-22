@@ -16,15 +16,15 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Quality implements IQuality {
+public abstract class Quality implements IQuality {
     protected final List<ModifierInstance> modifiers = Lists.newArrayList();
     private final Ingredient recastingStack;
     private final int rarity;
     private final int level;
     private final int maxModifierCount;
-    protected Predicate<ItemStack> isViable = ItemStack::isDamageableItem;
+    protected Predicate<ItemStack> isViable = stack -> true;
 
-    protected int textColor = 0x7a7b78;
+    protected int color = 0x7a7b78;
     private MutableComponent displayName;
     private String translationKey;
 
@@ -52,7 +52,7 @@ public class Quality implements IQuality {
     @Override
     public Component getDisplayName() {
         if (displayName == null) {
-            displayName = Component.translatable(getTranslationKey()).withStyle(style -> style.withColor(getTextColor()));
+            displayName = Component.translatable(getTranslationKey()).withStyle(style -> style.withColor(getColor()));
         }
         return displayName;
     }
@@ -73,8 +73,8 @@ public class Quality implements IQuality {
     }
 
     @Override
-    public final TextColor getTextColor() {
-        return TextColor.fromRgb(textColor);
+    public final TextColor getColor() {
+        return TextColor.fromRgb(color);
     }
 
     @Override

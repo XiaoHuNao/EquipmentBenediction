@@ -2,8 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.pancake.equipment_benediction.common.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "refmap": "EquipmentBenediction.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "equipment_benediction.refmap.json",
   "mixins": [
     "MixinItem"
   ],

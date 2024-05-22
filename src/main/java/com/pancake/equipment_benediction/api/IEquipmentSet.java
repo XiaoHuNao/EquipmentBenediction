@@ -22,7 +22,7 @@ public interface IEquipmentSet extends ICodec<IEquipmentSet> {
     String getTranslationKey();
 
     Component getDisplayName();
-    TextColor getTextColor();
+    TextColor getColor();
 
     Component getDescription();
 

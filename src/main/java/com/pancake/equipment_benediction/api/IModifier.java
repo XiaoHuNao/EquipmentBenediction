@@ -8,6 +8,9 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Predicate;
 
 public interface IModifier extends ICodec<IModifier> {
     EquippableGroup getGroup();
@@ -18,10 +21,12 @@ public interface IModifier extends ICodec<IModifier> {
 
     int getLevel();
 
+    Predicate<ItemStack> isViable();
+
     Component getDisplayName();
     Component getDescription();
 
-    TextColor getTextColor();
+    TextColor getColor();
 
     String getTranslationKey();
 

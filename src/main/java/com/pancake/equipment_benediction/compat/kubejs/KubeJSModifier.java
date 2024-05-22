@@ -6,26 +6,20 @@ import com.pancake.equipment_benediction.common.bonus.BonusHandler;
 import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.modifier.Modifier;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
-import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class KubeJSModifier extends Modifier {
     public KubeJSModifier(Builder builder) {
         super(builder.rarity, builder.level);
         this.handler = builder.handler;
-        this.textColor = builder.textColor;
+        this.color = builder.color;
         this.group = builder.group;
+        this.isViable = builder.isViable;
     }
 
 
@@ -35,8 +29,9 @@ public class KubeJSModifier extends Modifier {
     }
 
     public static class Builder extends BonusHandlerBuilder<IModifier,ModifierInstance>{
-        private EquippableGroup group = EquippableGroup.create();
-        private int textColor;
+        private final EquippableGroup group = EquippableGroup.create();
+        private Predicate<ItemStack> isViable;
+        private int color;
         private int rarity;
         private int level;
 
@@ -56,6 +51,10 @@ public class KubeJSModifier extends Modifier {
             this.group.addBlacklist(equippable);
             return this;
         }
+        public Builder isViable(Predicate<ItemStack> isViable) {
+            this.isViable = isViable;
+            return this;
+        }
 
         @Override
         public RegistryInfo<IModifier> getRegistryType() {
@@ -66,8 +65,8 @@ public class KubeJSModifier extends Modifier {
         public IModifier createObject() {
             return new KubeJSModifier(this);
         }
-        public Builder textColor(int textColor) {
-            this.textColor = textColor;
+        public Builder color(int color) {
+            this.color = color;
             return this;
         }
     }

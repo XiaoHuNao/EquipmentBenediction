@@ -10,5 +10,5 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModBlock {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, EquipmentBenediction.MOD_ID);
 
-    public static final RegistryObject<Block> REFORGED_BLOCK = BLOCKS.register("reforged_block", ReforgedBlock::new);
+    public static final RegistryObject<Block> REFORGED_BLOCK = BLOCKS.register("reforged_table", ReforgedBlock::new);
 }

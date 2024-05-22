@@ -5,15 +5,15 @@ import com.pancake.equipment_benediction.client.gui.hud.ModifierDeBugHudRenderer
 import com.pancake.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
 import com.pancake.equipment_benediction.common.config.ModConfig;
 import com.pancake.equipment_benediction.common.init.*;
-import com.pancake.equipment_benediction.common.network.ModMessages;
 import com.pancake.equipment_benediction.compat.curios.event.subscriber.CurioPlayerEventSubscriber;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -22,12 +22,20 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
 @Mod(EquipmentBenediction.MOD_ID)
 public class EquipmentBenediction {
     public static final String MOD_ID = "equipment_benediction";
     public static final Logger LOGGER = LogUtils.getLogger();
+
+
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+
+
+
     public EquipmentBenediction() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::onFMLCommonSetup);
@@ -38,8 +46,8 @@ public class EquipmentBenediction {
         ModBlock.BLOCKS.register(modEventBus);
         ModBlockEntity.BLOCK_ENTITY.register(modEventBus);
         ModQuality.QUALITY.register(modEventBus);
+        CREATIVE_TABS.register(modEventBus);
 
-        modEventBus.addListener(this::onCreativeModeTabContents);
         MinecraftForge.EVENT_BUS.register(this);
 
 
@@ -57,7 +65,6 @@ public class EquipmentBenediction {
 
     @SubscribeEvent
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
-        ModMessages.register();
         ModEquipmentSet.setup();
         ModModifier.setup();
         ModQuality.setup();
@@ -76,10 +83,19 @@ public class EquipmentBenediction {
         event.register(EquipmentSetTooltipComponent.class, equipmentSetTooltipComponent -> equipmentSetTooltipComponent);
     }
 
-    @SubscribeEvent
-    public void onCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.accept(ModBlock.REFORGED_BLOCK);
-        }
-    }
+//    @SubscribeEvent
+//    public void onCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
+//        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+//            event.accept(ModBlock.REFORGED_BLOCK);
+//        }
+//    }
+
+    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register("equipment_benediction", () -> CreativeModeTab.builder()
+            .icon(() -> ModItem.REFORGED_HAMMER.get().getDefaultInstance())
+            .title(Component.translatable("itemGroup.equipment_benediction"))
+            .displayItems((parameters, output) -> {
+                output.accept(ModItem.REFORGED_ITEM.get());
+                output.accept(ModItem.REFORGED_HAMMER.get());
+            })
+            .build());
 }

@@ -1,10 +1,7 @@
 package com.pancake.equipment_benediction.compat.curios.event.subscriber;
 
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
-import com.pancake.equipment_benediction.common.equippable.VanillaIEquippable;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
-import com.pancake.equipment_benediction.compat.curios.equippable.CurioEquippable;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,8 +21,8 @@ public class CurioPlayerEventSubscriber {
         if (entity instanceof Player player){
             CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
                 inventory.getCurios().forEach((identifier, stackHandler) -> {
-                    ModifierHelper.updateModifier(from, to,CurioEquippable.of(stackHandler.getIdentifier()),player);
-                    EquipmentSetHelper.updateSet(from, to, CurioEquippable.of(stackHandler.getIdentifier()),player);
+                    ModifierHelper.updateModifier(from, to,player);
+                    EquipmentSetHelper.updateSet(from, to,player);
                 });
             });
 

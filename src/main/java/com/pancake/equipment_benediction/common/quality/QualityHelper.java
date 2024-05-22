@@ -1,26 +1,17 @@
 package com.pancake.equipment_benediction.common.quality;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
-import com.pancake.equipment_benediction.api.IEquipmentSet;
-import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.api.IQuality;
-import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
 import com.pancake.equipment_benediction.common.init.ModModifier;
 import com.pancake.equipment_benediction.common.init.ModQuality;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -54,7 +45,10 @@ public class QualityHelper {
         return !getItemStackListTag(stack).isEmpty();
     }
     public static IQuality getQuality(ItemStack stack) {
-        return parse(getItemStackListTag(stack).get(0)).orElse(null);
+        if (hasQuality(stack)) {
+            return parse(getItemStackListTag(stack).get(0)).orElse(null);
+        }
+        return null;
     }
 
 
@@ -68,7 +62,7 @@ public class QualityHelper {
     public static IQuality generateRandomQuality(ItemStack stack) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null) {
-            ModQuality.WEIGHTED_QUALITY.getRandomValue(level.random).ifPresent((quality) -> {
+            ModQuality.ITEM_WEIGHTED_QUALITY.get(stack.getItem()).getRandomValue(level.random).ifPresent((quality) -> {
                 ListTag listTag = getItemStackListTag(stack);
                 if(!listTag.isEmpty()) {
                     listTag.clear();

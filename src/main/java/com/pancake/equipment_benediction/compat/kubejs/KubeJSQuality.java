@@ -18,7 +18,7 @@ public class KubeJSQuality extends Quality {
         super(builder.recastingStack, builder.rarity, builder.level, builder.maxModifierCount);
         this.isViable = builder.isViable;
         this.modifiers.addAll(builder.modifiers);
-        this.textColor = builder.textColor;
+        this.color = builder.color;
     }
 
     public static class Builder extends BuilderBase<IQuality> {
@@ -28,7 +28,7 @@ public class KubeJSQuality extends Quality {
         private int rarity;
         private int level;
         private int maxModifierCount;
-        private int textColor = 0x7a7b78;
+        private int color = 0x7a7b78;
 
         public Builder(ResourceLocation location) {
             super(location);
@@ -57,8 +57,8 @@ public class KubeJSQuality extends Quality {
             return this;
         }
 
-        public Builder textColor(int textColor) {
-            this.textColor = textColor;
+        public Builder color(int color) {
+            this.color = color;
             return this;
         }
 

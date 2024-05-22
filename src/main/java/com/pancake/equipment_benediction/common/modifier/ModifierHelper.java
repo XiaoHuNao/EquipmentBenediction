@@ -1,18 +1,16 @@
 package com.pancake.equipment_benediction.common.modifier;
 
 import com.pancake.equipment_benediction.EquipmentBenediction;
-import com.pancake.equipment_benediction.api.IEquippable;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.init.ModModifier;
-import com.pancake.equipment_benediction.common.network.ModMessages;
-import com.pancake.equipment_benediction.common.network.message.PlayerModifierSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 import java.util.Optional;
 
 public class ModifierHelper {
@@ -41,17 +39,19 @@ public class ModifierHelper {
     public static boolean hasModifier(Player player, IModifier modifier) {
         return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
     }
+    public static boolean hasModifier(ItemStack itemStack) {
+        return !getItemStackListTag(itemStack).isEmpty();
+    }
+    public static List<IModifier> getModifiers(ItemStack stack) {
+        ListTag listTag = getItemStackListTag(stack);
+        return listTag.stream().map((tag) -> parse(tag).map(ModifierInstance::getModifier).orElse(null)).toList();
+    }
+
 
     public static boolean addItemStackModifier(ModifierInstance instance, ItemStack stack) {
-        if (addModifier(instance, getItemStackListTag(stack))) {
-            stack.getOrCreateTag().put("Modifiers", getItemStackListTag(stack));
-            return true;
-        }
-        return false;
-    }
-    public static boolean removeItemStackModifier(ModifierInstance instance,ItemStack stack) {
-        if (removeModifier(instance, getItemStackListTag(stack))) {
-            stack.getOrCreateTag().put("Modifiers", getItemStackListTag(stack));
+        ListTag listTag = getItemStackListTag(stack);
+        if (addModifier(instance, listTag) && instance.getModifier().isViable().test(stack)) {
+            stack.getOrCreateTag().put("Modifiers", listTag);
             return true;
         }
         return false;
@@ -59,22 +59,38 @@ public class ModifierHelper {
     public static boolean addPlayerModifier(ModifierInstance instance,Player player) {
         IModifier modifier = instance.getModifier();
         ListTag listTag = getPlayerListTag(player);
-        boolean added = addModifier(instance, listTag);
-        if (added) {
+        if (addModifier(instance, listTag)) {
             player.getPersistentData().put("Modifiers", listTag);
             modifier.apply(player);
+            return true;
         }
-        return added;
+        return false;
     }
+
+    public static boolean removeItemStackModifier(ModifierInstance instance,ItemStack stack) {
+        if (removeModifier(instance, getItemStackListTag(stack))) {
+            stack.getOrCreateTag().put("Modifiers", getItemStackListTag(stack));
+            return true;
+        }
+        return false;
+    }
+
     public static boolean removePlayerModifier(ModifierInstance instance,Player player) {
         IModifier modifier = instance.getModifier();
-        boolean removed = removeModifier(instance, getPlayerListTag(player));
-        if(removed) {
+        if(removeModifier(instance, getPlayerListTag(player))) {
             player.getPersistentData().put("Modifiers", getPlayerListTag(player));
             modifier.clear(player);
+            return true;
         }
-        return removed;
+        return false;
     }
+
+    public static void removeModifier(IModifier modifier, ItemStack itemStack) {
+        ListTag listTag = getItemStackListTag(itemStack);
+        listTag.removeIf((tag) -> parse(tag).filter((instance) -> instance.getModifier().equals(modifier)).isPresent());
+        itemStack.getOrCreateTag().put("Modifiers", listTag);
+    }
+
     public static boolean removeModifier(ModifierInstance instance, ListTag tags) {
         for (Tag tag : tags) {
             Optional<ModifierInstance> optional = parse(tag);
@@ -91,11 +107,22 @@ public class ModifierHelper {
         }
         return false;
     }
+
+    public static void removeNonViableModifiers(ItemStack itemStack) {
+        ModifierHelper.getModifiers(itemStack).forEach(modifier -> {
+            if (!modifier.isViable().test(itemStack)) {
+                ModifierHelper.removeModifier(modifier, itemStack);
+            }
+        });
+    }
     public static boolean addModifier(ModifierInstance instance, ListTag tags) {
         for (Tag tag : tags) {
             Optional<ModifierInstance> parse = parse(tag);
             if (parse.isPresent()) {
                 ModifierInstance modifierInstance = parse.get();
+                if (modifierInstance.getModifier() == null || instance.getModifier() == null){
+                    return false;
+                }
                 if (modifierInstance.getModifier().equals(instance.getModifier())) {
                     updateModifierInstance(modifierInstance, instance);
                     return true;
@@ -118,7 +145,7 @@ public class ModifierHelper {
         }
     }
 
-    public static void updateModifier(ItemStack from, ItemStack to, IEquippable<?> equippable, Player player) {
+    public static void updateModifier(ItemStack from, ItemStack to, Player player) {
         ListTag fromTag = ModifierHelper.getItemStackListTag(from);
         ListTag toTag = ModifierHelper.getItemStackListTag(to);
 
@@ -130,35 +157,18 @@ public class ModifierHelper {
         });
 
         fromTag.forEach((tag) -> {
-            removePlayerModifierWithUpdate(player, tag);
+            parse(tag).ifPresent((instance) -> {
+                removePlayerModifier(instance, player);
+            });
         });
 
-        addPlayerModifierWithUpdate(player, toTag);
-    }
-
-    public static void removePlayerModifierWithUpdate(Player player, Tag tag) {
-        parse(tag).ifPresent((instance) -> {
-            if (removePlayerModifier(instance, player)) {
-                //TODO
-//                ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, false), (ServerPlayer) player);
-            }
-        });
-    }
-
-    public static void addPlayerModifierWithUpdate(Player player, ListTag toTag) {
         toTag.forEach((tag) -> {
-
             parse(tag).ifPresent((instance) -> {
                 IModifier modifier = instance.getModifier();
-                if (modifier != null && modifier.checkEquippable(player) && addPlayerModifier(instance, player)) {
-                    //TODO
-//                    ModMessages.sendToClient(new PlayerModifierSyncS2CPacket(instance, true), (ServerPlayer) player);
+                if (modifier != null && modifier.checkEquippable(player)) {
+                    addPlayerModifier(instance, player);
                 }
             });
         });
-    }
-
-    public static boolean hasModifier(ItemStack itemStack) {
-        return !getItemStackListTag(itemStack).isEmpty();
     }
 }

@@ -1,45 +1,31 @@
 package com.pancake.equipment_benediction.common.event.subscriber;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.api.IModifier;
+import com.pancake.equipment_benediction.client.renderer.ReforgedRenderer;
 import com.pancake.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
 import com.pancake.equipment_benediction.common.config.ModConfig;
-import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
-import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
+import com.pancake.equipment_benediction.common.init.ModBlockEntity;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = EquipmentBenediction.MOD_ID, value = Dist.CLIENT)
@@ -80,7 +66,6 @@ public class ClientForgeEvent {
             return;
         }
 
-        LocalPlayer player = Minecraft.getInstance().player;
         List<Either<FormattedText, TooltipComponent>> tooltipElements = event.getTooltipElements();
         ItemStack itemStack = event.getItemStack();
         if (EquipmentSetHelper.hasSet(itemStack)) {
@@ -104,6 +89,15 @@ public class ClientForgeEvent {
 
         if (ModifierHelper.hasModifier(itemStack) || EquipmentSetHelper.hasSet(itemStack)) {
             tooltipElements.add(Either.left(Component.translatable(shiftKey).withStyle(style -> style.withColor(0xb1b1b1))));
+        }
+    }
+
+
+    @Mod.EventBusSubscriber(modid = EquipmentBenediction.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ForgeEvent {
+        @SubscribeEvent
+        public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerBlockEntityRenderer(ModBlockEntity.REFORGED_BLOCK_ENTITY.get(), ReforgedRenderer::new);
         }
     }
 }

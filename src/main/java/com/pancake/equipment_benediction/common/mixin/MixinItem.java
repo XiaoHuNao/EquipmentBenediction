@@ -1,12 +1,10 @@
 package com.pancake.equipment_benediction.common.mixin;
 
-import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.quality.QualityHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -21,6 +19,4 @@ public abstract class MixinItem {
 			cir.setReturnValue(component);
 		}
 	}
-
-	@Shadow public abstract String getDescriptionId(ItemStack stack);
 }

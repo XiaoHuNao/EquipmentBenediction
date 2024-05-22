@@ -1,10 +1,18 @@
 package com.pancake.equipment_benediction.common.block.entity;
 
+import com.pancake.equipment_benediction.api.IQuality;
 import com.pancake.equipment_benediction.common.init.ModBlockEntity;
+import com.pancake.equipment_benediction.common.init.ModQuality;
+import com.pancake.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -13,8 +21,13 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public class ReforgedBlockEntity extends BlockEntity {
+    private float renderOffset = 0.0F;
+    private boolean isRenderQualityTip = false;
+
+
     private final ItemStackHandler inventory = new ItemStackHandler(2){
         @Override
         protected void onContentsChanged(int slot) {
@@ -45,6 +58,14 @@ public class ReforgedBlockEntity extends BlockEntity {
         return inventory;
     }
 
+    public float getRenderOffset() {
+        return renderOffset;
+    }
+
+    public void setRenderOffset(float renderOffset) {
+        this.renderOffset = renderOffset;
+    }
+
     @Override
     @Nullable
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
@@ -65,5 +86,58 @@ public class ReforgedBlockEntity extends BlockEntity {
         super.setChanged();
         if (level != null)
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+    }
+
+    public ItemStack removeItem(int index) {
+        return inventory.extractItem(index, getReforgedItem().getMaxStackSize(), false);
+    }
+
+    public ItemStack addEquippedItem(ItemStack addedStack, @Nullable Player player) {
+        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
+            IQuality quality = entry.getValue();
+            if (quality.isViable().test(addedStack)) {
+                return inventory.insertItem(0, addedStack.copy(), false);
+            }
+        }
+        return addedStack;
+    }
+    public ItemStack addReforgedItem(ItemStack addedStack, @Nullable Player player) {
+        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
+            IQuality quality = entry.getValue();
+            if(!getEquippedItem().isEmpty()){
+                Ingredient recastingStack = quality.getRecastingStack();
+                if(recastingStack.test(addedStack)){
+                    return inventory.insertItem(1, addedStack.copy(), false);
+                }
+            }
+        }
+        return addedStack;
+    }
+
+    public boolean isRenderQualityTip() {
+        return isRenderQualityTip;
+    }
+
+    public void setRenderQualityTip(boolean renderQualityTip) {
+        isRenderQualityTip = renderQualityTip;
+    }
+
+    public ItemStack getEquippedItem() {
+        return inventory.getStackInSlot(0);
+    }
+    public ItemStack getReforgedItem() {
+        return inventory.getStackInSlot(1);
+    }
+
+    public void recastingQuality() {
+        if (level != null) {
+            ItemStack itemStack = this.inventory.getStackInSlot(0);
+            QualityHelper.generateRandomQuality(itemStack);
+            this.renderOffset = 0.0F;
+            this.isRenderQualityTip = true;
+        }
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState blockState, ReforgedBlockEntity reforgedBlockEntity) {
     }
 }
