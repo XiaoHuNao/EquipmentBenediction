@@ -1,7 +1,7 @@
 package com.pancake.equipment_benediction.api;
 
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
-import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -22,6 +22,8 @@ public interface IModifier extends ICodec<IModifier> {
     int getLevel();
 
     Predicate<ItemStack> isViable();
+
+    void setViable(Predicate<ItemStack> isViable);
 
     Component getDisplayName();
     Component getDescription();

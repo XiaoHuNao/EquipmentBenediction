@@ -4,10 +4,13 @@ import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.api.IEquippable;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.EquippableGroup;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.function.Predicate;
 
 public class KubeJSEquipmentSet extends EquipmentSet {
     public KubeJSEquipmentSet(Builder builder) {
@@ -15,6 +18,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         this.handler = builder.handler;
         this.group = builder.group;
         this.color = builder.color;
+        this.isViable = builder.isViable;
     }
 
     @Override
@@ -25,6 +29,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
 
     public static class Builder  extends BonusHandlerBuilder<IEquipmentSet,IEquipmentSet> {
         public EquippableGroup group = EquippableGroup.create();
+        private Predicate<ItemStack> isViable;
         private int color;
 
         public Builder(ResourceLocation location) {
@@ -47,6 +52,10 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         }
         public Builder addBlacklist(IEquippable<?> equippable) {
             this.group.addBlacklist(equippable);
+            return this;
+        }
+        public Builder isViable(Predicate<ItemStack> isViable) {
+            this.isViable = isViable;
             return this;
         }
         public Builder color(int color) {

@@ -3,7 +3,7 @@ package com.pancake.equipment_benediction.common.equipment_set;
 import com.mojang.serialization.Codec;
 import com.pancake.equipment_benediction.api.IEquipmentSet;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
-import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.init.ModEquipmentSet;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -12,11 +12,15 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Predicate;
 
 public abstract class EquipmentSet implements IEquipmentSet {
     public static final String titleKey = "equipment_set.equipment_benediction.title";
     public EquippableGroup group = EquippableGroup.create();
     public BonusHandler<IEquipmentSet> handler = new BonusHandler<>();
+    protected Predicate<ItemStack> isViable = stack -> true;
 
     protected int color = 0x7a7b78;
     private String translationKey;
@@ -91,6 +95,16 @@ public abstract class EquipmentSet implements IEquipmentSet {
     @Override
     public final TextColor getColor() {
         return TextColor.fromRgb(color);
+    }
+
+    @Override
+    public Predicate<ItemStack> isViable() {
+        return isViable;
+    }
+
+    @Override
+    public void setViable(Predicate<ItemStack> isViable) {
+        this.isViable = isViable;
     }
 
     @Override

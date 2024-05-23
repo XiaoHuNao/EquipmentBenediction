@@ -1,4 +1,4 @@
-package com.pancake.equipment_benediction.common.equippable;
+package com.pancake.equipment_benediction.common.equipment_set.equippable;
 
 import com.pancake.equipment_benediction.api.IEquippable;
 

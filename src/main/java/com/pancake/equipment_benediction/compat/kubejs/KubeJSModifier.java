@@ -3,7 +3,7 @@ package com.pancake.equipment_benediction.compat.kubejs;
 import com.pancake.equipment_benediction.api.IEquippable;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
-import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.modifier.Modifier;
 import com.pancake.equipment_benediction.common.modifier.ModifierInstance;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -56,6 +56,11 @@ public class KubeJSModifier extends Modifier {
             return this;
         }
 
+        public Builder color(int color) {
+            this.color = color;
+            return this;
+        }
+
         @Override
         public RegistryInfo<IModifier> getRegistryType() {
             return ModKubeJSPlugin.MODIFIER;
@@ -64,10 +69,6 @@ public class KubeJSModifier extends Modifier {
         @Override
         public IModifier createObject() {
             return new KubeJSModifier(this);
-        }
-        public Builder color(int color) {
-            this.color = color;
-            return this;
         }
     }
 }

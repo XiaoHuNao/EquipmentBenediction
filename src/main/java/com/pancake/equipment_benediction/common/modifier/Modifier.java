@@ -3,7 +3,7 @@ package com.pancake.equipment_benediction.common.modifier;
 import com.mojang.serialization.Codec;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.bonus.BonusHandler;
-import com.pancake.equipment_benediction.common.equippable.EquippableGroup;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.EquippableGroup;
 import com.pancake.equipment_benediction.common.init.ModModifier;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -63,6 +63,7 @@ public abstract class Modifier implements IModifier {
         return isViable;
     }
 
+    @Override
     public void setViable(Predicate<ItemStack> isViable) {
         this.isViable = isViable;
     }

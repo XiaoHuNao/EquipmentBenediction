@@ -1,4 +1,4 @@
-package com.pancake.equipment_benediction.common.equippable;
+package com.pancake.equipment_benediction.common.equipment_set.equippable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

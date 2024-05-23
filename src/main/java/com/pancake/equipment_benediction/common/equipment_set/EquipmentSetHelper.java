@@ -44,16 +44,14 @@ public class EquipmentSetHelper {
         ModEquipmentSet.SET_MAP.entries().forEach((entry) -> {
             IEquipmentSet set = entry.getValue();
             if (set.getGroup().checkEquippable(player) && hasSet(player,set)) {
-                removePlayerSetWithUpdate(set, player);
+                removePlayerSet(set, player);
             }
         });
-
-
 
         if (hasSet(from)) {
             getSet(from).forEach((set) -> {
                 if (!set.getGroup().checkEquippable(player)) {
-                    removePlayerSetWithUpdate(set, player);
+                    removePlayerSet(set, player);
                 }
             });
         }
@@ -77,25 +75,14 @@ public class EquipmentSetHelper {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    private static void addPlayerSetWithUpdate(IEquipmentSet set, Player player) {
-        addPlayerSet(set, player);
-        //TODO
-//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, true), (ServerPlayer) player);
-    }
-
     public static void addPlayerSet(IEquipmentSet set, Player player) {
         encodeStart(set).ifPresent((nbt) -> {
             ListTag listTag = getPlayerListTag(player);
-            listTag.add(nbt);
-            set.apply(player);
-            player.getPersistentData().put("EquipmentSet", listTag);
+            if (listTag.add(nbt)) {
+                set.apply(player);
+                player.getPersistentData().put("EquipmentSet", listTag);
+            }
         });
-    }
-
-    private static void removePlayerSetWithUpdate(IEquipmentSet set, Player player) {
-        removePlayerSet(set, player);
-        ////TODO
-//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
     }
 
     public static void removePlayerSet(IEquipmentSet set, Player player) {
@@ -103,7 +90,5 @@ public class EquipmentSetHelper {
         listTag.removeIf((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
         player.getPersistentData().put("EquipmentSet", listTag);
         set.clear(player);
-        //TODO
-//        ModMessages.sendToClient(new PlayerEquipmentSetSyncS2CPacket(set, false), (ServerPlayer) player);
     }
 }

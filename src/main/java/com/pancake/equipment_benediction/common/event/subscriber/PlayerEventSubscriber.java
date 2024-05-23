@@ -4,7 +4,7 @@ import com.pancake.equipment_benediction.EquipmentBenediction;
 import com.pancake.equipment_benediction.api.IModifier;
 import com.pancake.equipment_benediction.common.capability.LastInventoryCap;
 import com.pancake.equipment_benediction.common.equipment_set.EquipmentSetHelper;
-import com.pancake.equipment_benediction.common.equippable.VanillaIEquippable;
+import com.pancake.equipment_benediction.common.equipment_set.equippable.VanillaIEquippable;
 import com.pancake.equipment_benediction.common.event.PlayerContainerChangeEvent;
 import com.pancake.equipment_benediction.common.modifier.ModifierHelper;
 import com.pancake.equipment_benediction.common.quality.QualityHelper;
