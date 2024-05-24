@@ -1,4 +1,4 @@
-# EquipmentSet
+## example
 
 ~~~js
 StartupEvents.registry("equipment_benediction:equipment_set",event =>{

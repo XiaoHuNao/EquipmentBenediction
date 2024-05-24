@@ -12,7 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +63,8 @@ public class QualityHelper {
 
     public static IQuality generateRandomQuality(ItemStack stack) {
         ClientLevel level = Minecraft.getInstance().level;
+        long seed = stack.getCount() + Item.getId(stack.getItem()) + ForgeRegistries.ITEMS.getKey(stack.getItem()).hashCode( )+ level.getDayTime();
+        level.random.setSeed(seed);
         if (level != null) {
             ModQuality.ITEM_WEIGHTED_QUALITY.get(stack.getItem()).getRandomValue(level.random).ifPresent((quality) -> {
                 ListTag listTag = getItemStackListTag(stack);

@@ -78,7 +78,7 @@ public class ReforgedBlock extends BaseEntityBlock {
                 } else {
                     ItemStack remainderStack;
                     if (!equippedItem.isEmpty()) {
-                        remainderStack = reforgedBlockEntity.addReforgedItem(itemInHand, player);
+                        remainderStack = reforgedBlockEntity.addReforgedItem(equippedItem,itemInHand, player);
                     } else {
                         remainderStack = reforgedBlockEntity.addEquippedItem(itemInHand, player);
                     }

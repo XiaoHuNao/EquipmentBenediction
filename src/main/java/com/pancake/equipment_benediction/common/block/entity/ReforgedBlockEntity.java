@@ -3,6 +3,7 @@ package com.pancake.equipment_benediction.common.block.entity;
 import com.pancake.equipment_benediction.api.IQuality;
 import com.pancake.equipment_benediction.common.init.ModBlockEntity;
 import com.pancake.equipment_benediction.common.init.ModQuality;
+import com.pancake.equipment_benediction.common.quality.Quality;
 import com.pancake.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class ReforgedBlockEntity extends BlockEntity {
     private float renderOffset = 0.0F;
     private boolean isRenderQualityTip = false;
+    private IQuality renderQuality = null;
 
 
     private final ItemStackHandler inventory = new ItemStackHandler(2){
@@ -101,14 +103,12 @@ public class ReforgedBlockEntity extends BlockEntity {
         }
         return addedStack;
     }
-    public ItemStack addReforgedItem(ItemStack addedStack, @Nullable Player player) {
-        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
-            IQuality quality = entry.getValue();
-            if(!getEquippedItem().isEmpty()){
-                Ingredient recastingStack = quality.getRecastingStack();
-                if(recastingStack.test(addedStack)){
-                    return inventory.insertItem(1, addedStack.copy(), false);
-                }
+    public ItemStack addReforgedItem(ItemStack equippedItem,ItemStack addedStack, @Nullable Player player) {
+        IQuality quality = QualityHelper.getQuality(equippedItem);
+        if (quality != null) {
+            Ingredient recastingStack = quality.getRecastingStack();
+            if (recastingStack.test(addedStack)) {
+                return inventory.insertItem(1, addedStack.copy(), false);
             }
         }
         return addedStack;
@@ -122,6 +122,14 @@ public class ReforgedBlockEntity extends BlockEntity {
         isRenderQualityTip = renderQualityTip;
     }
 
+    public IQuality getRenderQuality() {
+        return renderQuality;
+    }
+
+    public void setRenderQuality(IQuality renderQuality) {
+        this.renderQuality = renderQuality;
+    }
+
     public ItemStack getEquippedItem() {
         return inventory.getStackInSlot(0);
     }
@@ -132,9 +140,9 @@ public class ReforgedBlockEntity extends BlockEntity {
     public void recastingQuality() {
         if (level != null) {
             ItemStack itemStack = this.inventory.getStackInSlot(0);
-            QualityHelper.generateRandomQuality(itemStack);
             this.renderOffset = 0.0F;
             this.isRenderQualityTip = true;
+            this.renderQuality = QualityHelper.generateRandomQuality(itemStack);
         }
     }
 
