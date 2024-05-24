@@ -1,1 +1,1 @@
-com.pancake.equipment_benediction.compat.kubejs.ModKubeJSPlugin
+com.xiaohunao.equipment_benediction.compat.kubejs.ModKubeJSPlugin

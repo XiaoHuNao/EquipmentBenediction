@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.pancake.equipment_benediction.common.mixin",
+  "package": "com.xiaohunao.equipment_benediction.common.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "equipment_benediction.refmap.json",
   "mixins": [
