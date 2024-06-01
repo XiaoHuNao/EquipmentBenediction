@@ -23,7 +23,7 @@ public class KubeJSQuality extends Quality {
 
     public static class Builder extends BuilderBase<IQuality> {
         private final List<ModifierInstance> modifiers = Lists.newArrayList();
-        private Predicate<ItemStack> isViable;
+        private Predicate<ItemStack> isViable = stack -> true;
         private Ingredient recastingStack;
         private int rarity;
         private int level;

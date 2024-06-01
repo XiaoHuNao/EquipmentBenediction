@@ -29,7 +29,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
 
     public static class Builder  extends BonusHandlerBuilder<IEquipmentSet,IEquipmentSet> {
         public EquippableGroup group = EquippableGroup.create();
-        private Predicate<ItemStack> isViable;
+        private Predicate<ItemStack> isViable = stack -> true;
         private int color;
 
         public Builder(ResourceLocation location) {
