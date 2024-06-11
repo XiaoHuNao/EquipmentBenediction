@@ -24,7 +24,7 @@ public class QualityHelper {
         return tag != null ? tag.getList("Quality", Tag.TAG_STRING) : new ListTag();
     }
     public static ListTag getItemStackListTag(ItemStack stack) {
-        return getListTag(stack.getOrCreateTag());
+        return getListTag(stack.getTag());
     }
     public static Optional<Tag> encodeStart(IQuality set) {
         return ModQuality.REGISTRY
