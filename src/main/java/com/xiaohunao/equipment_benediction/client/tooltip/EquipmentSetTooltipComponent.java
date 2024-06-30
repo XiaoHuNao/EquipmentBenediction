@@ -1,6 +1,5 @@
 package com.xiaohunao.equipment_benediction.client.tooltip;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.xiaohunao.equipment_benediction.api.IEquipmentSet;
@@ -46,10 +45,8 @@ public record EquipmentSetTooltipComponent(int width, int height, IEquipmentSet 
             if (items.length > 1) {
                 int itemIndexToShow = (int) ((dayTime / 20) % items.length);
                 ItemStack itemToShow = items[itemIndexToShow];
-//                poseStack.renderItem(itemToShow, i * 18, 0);
                 itemRenderer.renderGuiItem(itemToShow, i * 18, 0);
             } else if (items.length == 1) {
-//                guiGraphics.renderItem(items[0], i * 18, 0);
                 itemRenderer.renderGuiItem(items[0], i * 18, 0);
             }
         }

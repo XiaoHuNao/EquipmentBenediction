@@ -21,8 +21,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
 @Mod(EquipmentBenediction.MOD_ID)
@@ -86,19 +84,4 @@ public class EquipmentBenediction {
         event.register(EquipmentSetTooltipComponent.class, equipmentSetTooltipComponent -> equipmentSetTooltipComponent);
     }
 
-//    @SubscribeEvent
-//    public void onCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
-//        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-//            event.accept(ModBlock.REFORGED_BLOCK);
-//        }
-//    }
-
-//    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register("equipment_benediction", () -> CreativeModeTab.builder()
-//            .icon(() -> ModItem.REFORGED_HAMMER.get().getDefaultInstance())
-//            .title(Component.translatable("itemGroup.equipment_benediction"))
-//            .displayItems((parameters, output) -> {
-//                output.accept(ModItem.REFORGED_ITEM.get());
-//                output.accept(ModItem.REFORGED_HAMMER.get());
-//            })
-//            .build());
 }

@@ -46,7 +46,6 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
             poseStack.scale(0.5F, 0.5F, 0.5F);
 
             if (!equippedItem.isEmpty()) {
-//                itemRenderer.renderStatic(equippedItem, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, reforgedBlockEntity.getLevel(), (int) posLong);
                 itemRenderer.renderStatic(equippedItem, ItemTransforms.TransformType.FIXED,combinedLight, combinedOverlay,poseStack, bufferSource,(int) posLong);
             }
 
@@ -94,7 +93,6 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
                 poseStack.scale(-0.05F, -0.05F, 0.05F);
 
                 float textWidth = font.width(renderQuality.getDisplayName());
-//                Minecraft.getInstance().font.drawInBatch(renderQuality.getDisplayName(), -textWidth / 2.0F, 0.0F, renderQuality.getColor().getValue(), false, poseStack.last().pose(), bufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, combinedLight);
                 Minecraft.getInstance().font.drawInBatch(renderQuality.getDisplayName(), -textWidth / 2.0F, 0.0F, renderQuality.getColor().getValue(), false, poseStack.last().pose(), bufferSource, false, 0, combinedLight);
                 reforgedBlockEntity.setRenderOffset(renderOffset + 0.01F);
             }else {

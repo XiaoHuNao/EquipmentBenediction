@@ -1,8 +1,5 @@
 package com.xiaohunao.equipment_benediction.compat.kubejs;
 
-import com.xiaohunao.equipment_benediction.api.IEquipmentSet;
-import com.xiaohunao.equipment_benediction.api.IModifier;
-import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.xiaohunao.equipment_benediction.common.equipment_set.equippable.Equippable;
