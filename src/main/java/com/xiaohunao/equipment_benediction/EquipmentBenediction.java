@@ -31,10 +31,7 @@ public class EquipmentBenediction {
     public static final String MOD_ID = "equipment_benediction";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
-
-
 
     public EquipmentBenediction() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -82,13 +79,6 @@ public class EquipmentBenediction {
     public void onRegisterClientTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(EquipmentSetTooltipComponent.class, equipmentSetTooltipComponent -> equipmentSetTooltipComponent);
     }
-
-//    @SubscribeEvent
-//    public void onCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
-//        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-//            event.accept(ModBlock.REFORGED_BLOCK);
-//        }
-//    }
 
     public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register("equipment_benediction", () -> CreativeModeTab.builder()
             .icon(() -> ModItem.REFORGED_HAMMER.get().getDefaultInstance())

@@ -14,7 +14,6 @@ public interface IQuality extends ICodec<IQuality>{
     void addFixedModifier(ModifierInstance modifier);
 
     Component getDisplayName();
-//    Component getDisplayItemStackName(ItemStack stack);
 
     String getTranslationKey();
 

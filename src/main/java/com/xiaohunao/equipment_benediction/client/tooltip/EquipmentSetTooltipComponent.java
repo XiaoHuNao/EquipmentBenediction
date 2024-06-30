@@ -56,9 +56,4 @@ public record EquipmentSetTooltipComponent(int width, int height, IEquipmentSet 
         pose.popPose();
         RenderSystem.applyModelViewMatrix();
     }
-
-//    @Override
-//    public void renderText(Font font, int tooltipX, int tooltipY_, @NotNull Matrix4f matrix4f, MultiBufferSource.@NotNull BufferSource bufferSource) {
-//
-//    }
 }

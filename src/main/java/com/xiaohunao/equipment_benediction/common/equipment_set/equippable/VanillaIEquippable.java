@@ -14,9 +14,6 @@ public class VanillaIEquippable extends Equippable<EquipmentSlot> {
         return ingredient.test(livingEntity.getItemBySlot(slotType));
     }
 
-//    public static VanillaIEquippable of(String slotType) {
-//        return new VanillaIEquippable(EquipmentSlot.byName(slotType));
-//    }
     public static VanillaIEquippable of(EquipmentSlot slotType) {
         return new VanillaIEquippable(slotType);
     }
