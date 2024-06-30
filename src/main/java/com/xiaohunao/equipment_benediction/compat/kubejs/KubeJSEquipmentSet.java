@@ -37,7 +37,7 @@ public class KubeJSEquipmentSet extends EquipmentSet {
         }
 
         @Override
-        public RegistryInfo<IEquipmentSet> getRegistryType() {
+        public RegistryInfo getRegistryType() {
             return ModKubeJSPlugin.EQUIPMENT_SET;
         }
 

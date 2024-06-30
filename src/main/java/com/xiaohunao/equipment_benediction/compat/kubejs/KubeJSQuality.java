@@ -63,7 +63,7 @@ public class KubeJSQuality extends Quality {
         }
 
         @Override
-        public RegistryInfo<IQuality> getRegistryType() {
+        public RegistryInfo getRegistryType() {
             return ModKubeJSPlugin.QUALITY;
         }
 

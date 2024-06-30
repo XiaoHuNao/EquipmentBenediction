@@ -23,9 +23,9 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import net.minecraftforge.fml.ModList;
 
 public class ModKubeJSPlugin extends KubeJSPlugin {
-    public static final RegistryInfo<IModifier> MODIFIER = RegistryInfo.of(ModModifier.KEY, IModifier.class);
-    public static final RegistryInfo<IEquipmentSet> EQUIPMENT_SET = RegistryInfo.of(ModEquipmentSet.KEY, IEquipmentSet.class);
-    public static final RegistryInfo<IQuality> QUALITY = RegistryInfo.of(ModQuality.KEY, IQuality.class);
+    public static final RegistryInfo MODIFIER = RegistryInfo.of(ModModifier.KEY);
+    public static final RegistryInfo EQUIPMENT_SET = RegistryInfo.of(ModEquipmentSet.KEY);
+    public static final RegistryInfo QUALITY = RegistryInfo.of(ModQuality.KEY);
 
     @Override
     public void registerBindings(BindingsEvent event) {

@@ -63,9 +63,9 @@ public class QualityHelper {
 
     public static IQuality generateRandomQuality(ItemStack stack) {
         ClientLevel level = Minecraft.getInstance().level;
-        long seed = stack.getCount() + Item.getId(stack.getItem()) + ForgeRegistries.ITEMS.getKey(stack.getItem()).hashCode( )+ level.getDayTime();
-        level.random.setSeed(seed);
         if (level != null) {
+            long seed = stack.getCount() + Item.getId(stack.getItem()) + ForgeRegistries.ITEMS.getKey(stack.getItem()).hashCode( )+ level.getDayTime();
+            level.random.setSeed(seed);
             ModQuality.ITEM_WEIGHTED_QUALITY.get(stack.getItem()).getRandomValue(level.random).ifPresent((quality) -> {
                 ListTag listTag = getItemStackListTag(stack);
                 if(!listTag.isEmpty()) {
@@ -86,7 +86,9 @@ public class QualityHelper {
             ModQuality.REGISTRY.get().getEntries().forEach((entry) -> {
                 if (entry.getValue().isViable().test(stack)) {
                     IQuality iQuality = generateRandomQuality(stack);
-                    initModifier(stack,iQuality);
+                    if (iQuality != null) {
+                        initModifier(stack, iQuality);
+                    }
                 }
             });
         }

@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModItem {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EquipmentBenediction.MOD_ID);
 
-     public static final RegistryObject<Item> REFORGED_ITEM = ITEMS.register("reforged_table", () ->new BlockItem(ModBlock.REFORGED_BLOCK.get(), new Item.Properties()));
+     public static final RegistryObject<Item> REFORGED_ITEM = ITEMS.register("reforged_table", () ->new BlockItem(ModBlock.REFORGED_BLOCK.get(), new Item.Properties().tab(EquipmentBenediction.CREATIVE_TABS)));
 
      public static final RegistryObject<Item> REFORGED_HAMMER = ITEMS.register("reforged_hammer", ReforgedHammerItem::new);
 

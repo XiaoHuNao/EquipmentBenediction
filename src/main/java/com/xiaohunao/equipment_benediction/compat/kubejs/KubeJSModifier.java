@@ -62,7 +62,7 @@ public class KubeJSModifier extends Modifier {
         }
 
         @Override
-        public RegistryInfo<IModifier> getRegistryType() {
+        public RegistryInfo getRegistryType() {
             return ModKubeJSPlugin.MODIFIER;
         }
 

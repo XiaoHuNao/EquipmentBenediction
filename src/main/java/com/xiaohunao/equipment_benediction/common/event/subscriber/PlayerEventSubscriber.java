@@ -41,7 +41,7 @@ public class PlayerEventSubscriber {
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Player player = event.player;
-            if (player.level().isClientSide()) return;
+            if (player.level.isClientSide()) return;
 
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::update);
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::updateInventory);

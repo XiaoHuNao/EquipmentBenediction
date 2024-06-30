@@ -16,10 +16,10 @@ public class CurioPlayerEventSubscriber {
         ItemStack to = event.getTo();
         LivingEntity entity = event.getEntity();
         int slotIndex = event.getSlotIndex();
-        if (entity.level().isClientSide) return;
+        if (entity.level.isClientSide) return;
 
         if (entity instanceof Player player){
-            CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+            CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(inventory -> {
                 inventory.getCurios().forEach((identifier, stackHandler) -> {
                     ModifierHelper.updateModifier(from, to,player);
                     EquipmentSetHelper.updateSet(from, to,player);

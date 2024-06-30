@@ -10,6 +10,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.ISlotType;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
+import top.theillusivec4.curios.api.type.util.ISlotHelper;
 
 public class CurioEquippable extends Equippable<ISlotType> {
     public CurioEquippable(ISlotType iSlotType) {
@@ -18,7 +19,7 @@ public class CurioEquippable extends Equippable<ISlotType> {
 
     @Override
     public boolean checkEquippable(LivingEntity livingEntity, Ingredient ingredient) {
-        LazyOptional<ICuriosItemHandler> curiosInventory = CuriosApi.getCuriosInventory(livingEntity);
+        LazyOptional<ICuriosItemHandler> curiosInventory = CuriosApi.getCuriosHelper().getCuriosHandler(livingEntity);
         if (curiosInventory.isPresent()){
             return curiosInventory.orElseGet(() -> null).getCurios()
                     .entrySet()
@@ -39,11 +40,14 @@ public class CurioEquippable extends Equippable<ISlotType> {
     }
 
     public static CurioEquippable of(String slotType) {
-        if (CuriosApi.getSlot(slotType).isPresent()) {
-            return new CurioEquippable(CuriosApi.getSlot(slotType).get());
-        } else {
-            throw new IllegalArgumentException("Invalid slot '" + slotType);
-        }
+        ISlotHelper slotHelper = CuriosApi.getSlotHelper();
+        slotHelper.getSlotType(slotType).ifPresentOrElse(
+                CurioEquippable::new,
+                () -> {
+                    throw new IllegalArgumentException("Invalid slot '" + slotType);
+                }
+        );
+        return null;
     }
 
     @Override

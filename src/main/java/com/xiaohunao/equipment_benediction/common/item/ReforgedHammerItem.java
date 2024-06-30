@@ -1,6 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.item;
 
 
+import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
 import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
@@ -19,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class ReforgedHammerItem extends TieredItem {
     public ReforgedHammerItem() {
-        super(Tiers.DIAMOND, new Properties().durability(150));
+        super(Tiers.DIAMOND, new Properties().durability(150).tab(EquipmentBenediction.CREATIVE_TABS));
     }
 
     @Override

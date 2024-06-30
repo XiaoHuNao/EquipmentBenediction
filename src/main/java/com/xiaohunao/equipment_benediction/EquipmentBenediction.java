@@ -7,11 +7,10 @@ import com.xiaohunao.equipment_benediction.common.config.ModConfig;
 import com.xiaohunao.equipment_benediction.common.init.*;
 import com.xiaohunao.equipment_benediction.compat.curios.event.subscriber.CurioPlayerEventSubscriber;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,7 +31,12 @@ public class EquipmentBenediction {
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+    public static final CreativeModeTab CREATIVE_TABS = new CreativeModeTab(MOD_ID) {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(ModItem.REFORGED_HAMMER.get());
+        }
+    };
 
 
 
@@ -46,7 +50,6 @@ public class EquipmentBenediction {
         ModBlock.BLOCKS.register(modEventBus);
         ModBlockEntity.BLOCK_ENTITY.register(modEventBus);
         ModQuality.QUALITY.register(modEventBus);
-        CREATIVE_TABS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -90,12 +93,12 @@ public class EquipmentBenediction {
 //        }
 //    }
 
-    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register("equipment_benediction", () -> CreativeModeTab.builder()
-            .icon(() -> ModItem.REFORGED_HAMMER.get().getDefaultInstance())
-            .title(Component.translatable("itemGroup.equipment_benediction"))
-            .displayItems((parameters, output) -> {
-                output.accept(ModItem.REFORGED_ITEM.get());
-                output.accept(ModItem.REFORGED_HAMMER.get());
-            })
-            .build());
+//    public static final RegistryObject<CreativeModeTab> TAB = CREATIVE_TABS.register("equipment_benediction", () -> CreativeModeTab.builder()
+//            .icon(() -> ModItem.REFORGED_HAMMER.get().getDefaultInstance())
+//            .title(Component.translatable("itemGroup.equipment_benediction"))
+//            .displayItems((parameters, output) -> {
+//                output.accept(ModItem.REFORGED_ITEM.get());
+//                output.accept(ModItem.REFORGED_HAMMER.get());
+//            })
+//            .build());
 }

@@ -2,20 +2,21 @@ package com.xiaohunao.equipment_benediction.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
@@ -40,12 +41,13 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
             RenderSystem.enableDepthTest();
             minecraft.getBlockRenderer().renderSingleBlock(reforgedBlockEntity.getBlockState(), poseStack, bufferSource, combinedLight, combinedOverlay, reforgedBlockEntity.getModelData(), RenderType.cutout());
             poseStack.translate(0.5D, 1, 0.5D);
-            poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(30.0F));
+            poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(30.0F));
             poseStack.scale(0.5F, 0.5F, 0.5F);
 
             if (!equippedItem.isEmpty()) {
-                itemRenderer.renderStatic(equippedItem, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, reforgedBlockEntity.getLevel(), (int) posLong);
+//                itemRenderer.renderStatic(equippedItem, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, reforgedBlockEntity.getLevel(), (int) posLong);
+                itemRenderer.renderStatic(equippedItem, ItemTransforms.TransformType.FIXED,combinedLight, combinedOverlay,poseStack, bufferSource,(int) posLong);
             }
 
             poseStack.pushPose();
@@ -63,7 +65,7 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
                         zOffset = -zOffset;
                     }
                     poseStack.translate(xOffset, 0.01 * (i + 1), zOffset);
-                    itemRenderer.renderStatic(reforgedItem, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, reforgedBlockEntity.getLevel(), (int) posLong);
+                    itemRenderer.renderStatic(reforgedItem, ItemTransforms.TransformType.FIXED, combinedLight, combinedOverlay, poseStack, bufferSource, (int) posLong);
                 }
             }
             float renderOffset = reforgedBlockEntity.getRenderOffset();
@@ -82,17 +84,18 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
 
         Font font = minecraft.font;
         if (reforgedBlockEntity.isRenderQualityTip()){
-            double distanceToSqr = blockEntityRenderDispatcher.camera.getPosition().distanceToSqr(reforgedBlockEntity.getBlockPos().getCenter());
+            double distanceToSqr = blockEntityRenderDispatcher.camera.getPosition().distanceToSqr(Vec3.atCenterOf(reforgedBlockEntity.getBlockPos().offset(0.5, 0.5, 0.5)));
             if (distanceToSqr < 16 && renderOffset <= 2.0F){
                 IQuality renderQuality = reforgedBlockEntity.getRenderQuality();
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-                poseStack.mulPose(Axis.YP.rotationDegrees(30));
+                poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
+                poseStack.mulPose(Vector3f.YP.rotationDegrees(30));
                 poseStack.mulPose(blockEntityRenderDispatcher.camera.rotation());
                 poseStack.translate(0.0, Math.sin(renderOffset), 0.0);
                 poseStack.scale(-0.05F, -0.05F, 0.05F);
 
                 float textWidth = font.width(renderQuality.getDisplayName());
-                Minecraft.getInstance().font.drawInBatch(renderQuality.getDisplayName(), -textWidth / 2.0F, 0.0F, renderQuality.getColor().getValue(), false, poseStack.last().pose(), bufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, combinedLight);
+//                Minecraft.getInstance().font.drawInBatch(renderQuality.getDisplayName(), -textWidth / 2.0F, 0.0F, renderQuality.getColor().getValue(), false, poseStack.last().pose(), bufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, combinedLight);
+                Minecraft.getInstance().font.drawInBatch(renderQuality.getDisplayName(), -textWidth / 2.0F, 0.0F, renderQuality.getColor().getValue(), false, poseStack.last().pose(), bufferSource, false, 0, combinedLight);
                 reforgedBlockEntity.setRenderOffset(renderOffset + 0.01F);
             }else {
                 reforgedBlockEntity.setRenderOffset(0.0F);
