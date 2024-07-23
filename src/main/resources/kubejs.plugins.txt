@@ -1,1 +1,0 @@
-com.xiaohunao.equipment_benediction.compat.kubejs.ModKubeJSPlugin
