@@ -32,7 +32,7 @@ public abstract class Quality implements IQuality {
     protected int color = 0x7a7b78;
     private MutableComponent displayName;
     private String translationKey;
-    protected boolean autoAdd = true;
+    protected boolean autoAdd = false;
 
     public Quality(Ingredient recastingStack, int rarity, int level, int maxModifierCount) {
         this.recastingStack = recastingStack;

@@ -34,7 +34,7 @@ public class KubeJSQuality extends Quality {
         private int rarity;
         private int level;
         private int maxModifierCount;
-        private boolean autoAdd;
+        private boolean autoAdd = false;
         private int color = 0x7a7b78;
 
         public Builder(ResourceLocation location) {
