@@ -3,9 +3,11 @@ package com.xiaohunao.equipment_benediction.common.item;
 
 import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
+import com.xiaohunao.equipment_benediction.common.init.ModQuality;
 import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -16,6 +18,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
+import java.util.Map;
 
 public class ReforgedHammerItem extends TieredItem {
     public ReforgedHammerItem() {
@@ -32,29 +36,30 @@ public class ReforgedHammerItem extends TieredItem {
             ItemStack reforgedItem = reforgedBlockEntity.getReforgedItem();
             if (equippedItem.isEmpty() || reforgedItem.isEmpty()) return InteractionResult.FAIL;
 
-            IQuality currentQuality = QualityHelper.getQuality(equippedItem);
-            Ingredient recastingStack = currentQuality.getRecastingStack();
+            for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
+                IQuality quality = entry.getValue();
+                Ingredient recastingStack = quality.getRecastingStack();
+                if (recastingStack.test(reforgedItem)) {
+                    for (int i = 0; i < recastingStack.getItems().length; i++) {
+                        ItemStack item = recastingStack.getItems()[i];
+                        if (reforgedItem.getCount() >= item.getCount()) {
+                            reforgedBlockEntity.recastingQuality();
+                            level.playSound(null, context.getClickedPos(), SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.7F, 1.0F);
+                            stack.hurtAndBreak(1, context.getPlayer(), (player) -> player.broadcastBreakEvent(context.getHand()));
+                            reforgedItem.shrink(item.getCount());
 
-            if (recastingStack.test(reforgedItem)) {
-                for (int i = 0; i < recastingStack.getItems().length; i++) {
-                    ItemStack item = recastingStack.getItems()[i];
-                    if (reforgedItem.getCount() >= item.getCount()) {
-                        reforgedBlockEntity.recastingQuality();
-                        level.playSound(null, context.getClickedPos(), SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.7F, 1.0F);
-                        stack.hurtAndBreak(1, context.getPlayer(), (player) -> player.broadcastBreakEvent(context.getHand()));
-                        reforgedItem.shrink(item.getCount());
+                            for (int j = 0; j < 20; j++) {
+                                double x = clickedPos.getX() + level.random.nextDouble();
+                                double y = clickedPos.getY() + 1.0D;
+                                double z = clickedPos.getZ() + level.random.nextDouble();
+                                double velocityX = (level.random.nextDouble() - 0.5D) * 0.2D;
+                                double velocityY = level.random.nextDouble() * 0.2D;
+                                double velocityZ = (level.random.nextDouble() - 0.5D) * 0.2D;
+                                level.addParticle(ParticleTypes.FLAME, x, y, z, velocityX, velocityY, velocityZ);
+                            }
 
-                        for (int j = 0; j < 20; j++) {
-                            double x = clickedPos.getX() + level.random.nextDouble();
-                            double y = clickedPos.getY() + 1.0D;
-                            double z = clickedPos.getZ() + level.random.nextDouble();
-                            double velocityX = (level.random.nextDouble() - 0.5D) * 0.2D;
-                            double velocityY = level.random.nextDouble() * 0.2D;
-                            double velocityZ = (level.random.nextDouble() - 0.5D) * 0.2D;
-                            level.addParticle(ParticleTypes.FLAME, x, y, z, velocityX, velocityY, velocityZ);
+                            return InteractionResult.PASS;
                         }
-
-                        return InteractionResult.PASS;
                     }
                 }
             }

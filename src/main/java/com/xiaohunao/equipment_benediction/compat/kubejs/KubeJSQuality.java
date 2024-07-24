@@ -10,6 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -18,16 +20,21 @@ public class KubeJSQuality extends Quality {
         super(builder.recastingStack, builder.rarity, builder.level, builder.maxModifierCount);
         this.isViable = builder.isViable;
         this.modifiers.addAll(builder.modifiers);
+        this.randomModifiers.addAll(builder.randomModifiers);
+        this.autoAddProbability = builder.autoAddProbability;
         this.color = builder.color;
     }
 
     public static class Builder extends BuilderBase<IQuality> {
         private final List<ModifierInstance> modifiers = Lists.newArrayList();
+        private final List<ModifierInstance> randomModifiers = Lists.newArrayList();
+        private final List<ModifierInstance> fixedModifier = Lists.newArrayList();
         private Predicate<ItemStack> isViable = stack -> true;
         private Ingredient recastingStack;
         private int rarity;
         private int level;
         private int maxModifierCount;
+        private float autoAddProbability;
         private int color = 0x7a7b78;
 
         public Builder(ResourceLocation location) {
@@ -36,6 +43,11 @@ public class KubeJSQuality extends Quality {
 
         public Builder recastingStack(Ingredient recastingStack) {
             this.recastingStack = recastingStack;
+            return this;
+        }
+
+        public Builder autoAddProbability(float autoAddProbability) {
+            this.autoAddProbability = Math.min(Math.max(autoAddProbability, 0.0F), 1.0F);
             return this;
         }
 
@@ -50,10 +62,27 @@ public class KubeJSQuality extends Quality {
             this.isViable = isViable;
             return this;
         }
-        public Builder addFixedModifier(ModifierInstance modifier) {
-            if (this.modifiers.size() < maxModifierCount) {
-                this.modifiers.add(modifier);
-            }
+        public Builder addFixedModifier(ModifierInstance... modifier) {
+            int count = maxModifierCount - this.modifiers.size();
+            this.fixedModifier.addAll(Arrays.asList(modifier).subList(0, Math.min(count, modifier.length)));
+            return this;
+        }
+
+        public Builder addFixedModifier(String... modifier) {
+            final int count = maxModifierCount - this.modifiers.size();
+            List<ModifierInstance> list = Arrays.stream(modifier).map(ModifierInstance::new).toList();
+            this.fixedModifier.addAll(list.subList(0, Math.min(count, list.size())));
+            return this;
+        }
+
+        public Builder addRandomModifier(ModifierInstance... modifier) {
+            this.randomModifiers.addAll(Lists.newArrayList(modifier));
+            return this;
+        }
+
+        public Builder addRandomModifier(String... modifier) {
+            List<ModifierInstance> list = Arrays.stream(modifier).map(ModifierInstance::new).toList();
+            this.randomModifiers.addAll(list);
             return this;
         }
 

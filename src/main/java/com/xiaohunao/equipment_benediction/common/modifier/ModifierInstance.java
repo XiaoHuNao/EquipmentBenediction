@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.api.IModifier;
 import com.xiaohunao.equipment_benediction.common.init.ModModifier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModifierInstance {
     public static final Codec<ModifierInstance> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
@@ -12,7 +13,8 @@ public class ModifierInstance {
             Codec.INT.fieldOf("amplifier").forGetter(ModifierInstance::getAmplifier)
     ).apply(instance, ModifierInstance::new));
 
-    private final IModifier modifier;
+    private IModifier modifier;
+    private ResourceLocation modifierRegistryName;
     private int amplifier;
 
     public ModifierInstance(IModifier modifier) {
@@ -25,15 +27,20 @@ public class ModifierInstance {
     }
 
     public ModifierInstance(String modifier, int amplifier) {
-        this(ModModifier.REGISTRY.get().getValue(ResourceLocation.tryParse(modifier)), amplifier);
+        this.modifierRegistryName = ResourceLocation.tryParse(modifier);
+        this.amplifier = amplifier;
+    }
+
+    public ModifierInstance(String modifier) {
+        this(modifier, 0);
     }
 
     public IModifier getModifier() {
-        return modifier;
+        return modifier != null ? modifier : ModModifier.REGISTRY.get().getValue(modifierRegistryName);
     }
 
     public String getModifierRegistryName() {
-        return modifier.getRegistryName().toString();
+        return getModifier().getRegistryName().toString();
     }
 
     public int getAmplifier() {

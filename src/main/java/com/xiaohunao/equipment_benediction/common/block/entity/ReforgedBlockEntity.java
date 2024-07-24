@@ -103,10 +103,9 @@ public class ReforgedBlockEntity extends BlockEntity {
         return addedStack;
     }
     public ItemStack addReforgedItem(ItemStack equippedItem,ItemStack addedStack, @Nullable Player player) {
-        IQuality quality = QualityHelper.getQuality(equippedItem);
-        if (quality != null) {
-            Ingredient recastingStack = quality.getRecastingStack();
-            if (recastingStack.test(addedStack)) {
+        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
+            IQuality quality = entry.getValue();
+            if (quality.isViable().test(equippedItem) && quality.getRecastingStack().test(addedStack)) {
                 return inventory.insertItem(1, addedStack.copy(), false);
             }
         }
@@ -142,6 +141,7 @@ public class ReforgedBlockEntity extends BlockEntity {
             this.renderOffset = 0.0F;
             this.isRenderQualityTip = true;
             this.renderQuality = QualityHelper.generateRandomQuality(itemStack);
+            QualityHelper.initModifier(itemStack,renderQuality);
         }
     }
 

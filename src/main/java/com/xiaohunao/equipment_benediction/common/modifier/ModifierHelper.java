@@ -51,7 +51,9 @@ public class ModifierHelper {
     public static boolean addItemStackModifier(ModifierInstance instance, ItemStack stack) {
         ListTag listTag = getItemStackListTag(stack);
         if (addModifier(instance, listTag) && instance.getModifier().isViable().test(stack)) {
-            stack.getOrCreateTag().put("Modifiers", listTag);
+            if (stack.getTag() != null) {
+                stack.getTag().put("Modifiers", listTag);
+            }
             return true;
         }
         return false;
@@ -69,7 +71,9 @@ public class ModifierHelper {
 
     public static boolean removeItemStackModifier(ModifierInstance instance,ItemStack stack) {
         if (removeModifier(instance, getItemStackListTag(stack))) {
-            stack.getOrCreateTag().put("Modifiers", getItemStackListTag(stack));
+            if (stack.getTag() != null) {
+                stack.getTag().put("Modifiers", getItemStackListTag(stack));
+            }
             return true;
         }
         return false;
@@ -84,11 +88,16 @@ public class ModifierHelper {
         }
         return false;
     }
+    public static void removeAllModifier(ItemStack stack){
+        stack.removeTagKey("Modifiers");
+    }
 
     public static void removeModifier(IModifier modifier, ItemStack itemStack) {
         ListTag listTag = getItemStackListTag(itemStack);
         listTag.removeIf((tag) -> parse(tag).filter((instance) -> instance.getModifier().equals(modifier)).isPresent());
-        itemStack.getOrCreateTag().put("Modifiers", listTag);
+        if (itemStack.getTag() != null) {
+            itemStack.getTag().put("Modifiers", listTag);
+        }
     }
 
     public static boolean removeModifier(ModifierInstance instance, ListTag tags) {

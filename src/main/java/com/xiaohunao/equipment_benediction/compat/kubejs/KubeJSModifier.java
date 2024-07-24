@@ -31,7 +31,7 @@ public class KubeJSModifier extends Modifier {
     public static class Builder extends BonusHandlerBuilder<IModifier,ModifierInstance>{
         private final EquippableGroup group = EquippableGroup.create();
         private Predicate<ItemStack> isViable = stack -> true;
-        private int color;
+        private int color = 0x7a7b78;
         private int rarity;
         private int level;
 

@@ -6,6 +6,7 @@ import com.xiaohunao.equipment_benediction.common.capability.LastInventoryCap;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.xiaohunao.equipment_benediction.common.equipment_set.equippable.VanillaIEquippable;
 import com.xiaohunao.equipment_benediction.common.event.PlayerContainerChangeEvent;
+import com.xiaohunao.equipment_benediction.common.mixed.FirstEnterBagMixed;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.world.InteractionHand;
@@ -30,7 +31,6 @@ public class PlayerEventSubscriber {
 
 
         if (!(entity instanceof Player player)) return;
-
 
         QualityHelper.updateQuality(to);
         ModifierHelper.updateModifier(from, to,player);

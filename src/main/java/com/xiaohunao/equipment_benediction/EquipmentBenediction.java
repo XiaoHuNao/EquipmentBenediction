@@ -37,11 +37,11 @@ public class EquipmentBenediction {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::onFMLCommonSetup);
         modEventBus.addListener(this::onRegisterClientTooltipComponentFactories);
-        ModModifier.MODIFIER.register(modEventBus);
-        ModEquipmentSet.EQUIPMENT_SET.register(modEventBus);
         ModItem.ITEMS.register(modEventBus);
         ModBlock.BLOCKS.register(modEventBus);
         ModBlockEntity.BLOCK_ENTITY.register(modEventBus);
+        ModModifier.MODIFIER.register(modEventBus);
+        ModEquipmentSet.EQUIPMENT_SET.register(modEventBus);
         ModQuality.QUALITY.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 

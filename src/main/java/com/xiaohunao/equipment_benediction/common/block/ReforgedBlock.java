@@ -102,9 +102,7 @@ public class ReforgedBlock extends BaseEntityBlock {
 
     public static void removeItem(ReforgedBlockEntity reforgedBlockEntity, int index, Player player, EquipmentSlot slot, Level level, BlockPos pos) {
         ItemStack extractedStack = reforgedBlockEntity.removeItem(index);
-        if (!player.isCreative()) {
-            player.setItemSlot(slot, extractedStack);
-        }
+        player.setItemSlot(slot, extractedStack);
         level.playSound(null, pos, SoundEvents.LANTERN_PLACE, SoundSource.BLOCKS, 0.7F, 1.0F);
     }
 
