@@ -21,7 +21,7 @@ public class KubeJSQuality extends Quality {
         this.isViable = builder.isViable;
         this.modifiers.addAll(builder.modifiers);
         this.randomModifiers.addAll(builder.randomModifiers);
-        this.autoAddProbability = builder.autoAddProbability;
+        this.autoAdd = builder.autoAdd;
         this.color = builder.color;
     }
 
@@ -34,7 +34,7 @@ public class KubeJSQuality extends Quality {
         private int rarity;
         private int level;
         private int maxModifierCount;
-        private float autoAddProbability;
+        private boolean autoAdd;
         private int color = 0x7a7b78;
 
         public Builder(ResourceLocation location) {
@@ -46,8 +46,8 @@ public class KubeJSQuality extends Quality {
             return this;
         }
 
-        public Builder autoAddProbability(float autoAddProbability) {
-            this.autoAddProbability = Math.min(Math.max(autoAddProbability, 0.0F), 1.0F);
+        public Builder isAutoAdd(boolean autoAdd) {
+            this.autoAdd = autoAdd;
             return this;
         }
 

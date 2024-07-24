@@ -5,7 +5,6 @@ import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.init.ModModifier;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
-import com.xiaohunao.equipment_benediction.common.mixed.FirstEnterBagMixed;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.Minecraft;
@@ -84,7 +83,7 @@ public class QualityHelper {
         SimpleWeightedRandomList.Builder<IQuality> builder = SimpleWeightedRandomList.builder();
         ModQuality.REGISTRY.get().getEntries().forEach((entry) -> {
             IQuality quality = entry.getValue();
-            if (quality.isViable().test(stack)) {
+            if (quality != getQuality(stack) && quality.isViable().test(stack)) {
                 builder.add(quality, quality.getRarity());
             }
         });
