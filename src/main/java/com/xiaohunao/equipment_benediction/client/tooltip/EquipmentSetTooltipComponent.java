@@ -2,7 +2,7 @@ package com.xiaohunao.equipment_benediction.client.tooltip;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.xiaohunao.equipment_benediction.api.IEquipmentSet;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
 
-public record EquipmentSetTooltipComponent(int width, int height, IEquipmentSet set) implements ClientTooltipComponent, TooltipComponent {
+public record EquipmentSetTooltipComponent(int width, int height, EquipmentSet set) implements ClientTooltipComponent, TooltipComponent {
     @Override
     public int getHeight() {
         return height;
@@ -38,7 +38,7 @@ public record EquipmentSetTooltipComponent(int width, int height, IEquipmentSet 
         pose.translate(tooltipX, tooltipY, 0);
         pose.scale(0.5f, 0.5f, 1.0f);
 
-        Object[] array = set.getGroup().getEquipages().values().toArray();
+        Object[] array = set.group.getEquipages().values().toArray();
 
         for (int i = 0; i < array.length; i++) {
             Ingredient ingredient = (Ingredient) array[i];

@@ -1,12 +1,15 @@
-package com.xiaohunao.equipment_benediction.common.equipment_set.equippable;
+package com.xiaohunao.equipment_benediction.common.equippable;
 
+import com.xiaohunao.equipment_benediction.api.IEquippable;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public class VanillaIEquippable extends Equippable<EquipmentSlot> {
-    public VanillaIEquippable(EquipmentSlot slotType) {
-        super(slotType);
+public class VanillaEquippable implements IEquippable {
+    private final EquipmentSlot slotType;
+
+    public VanillaEquippable(EquipmentSlot slotType) {
+        this.slotType = slotType;
     }
 
     @Override
@@ -14,8 +17,8 @@ public class VanillaIEquippable extends Equippable<EquipmentSlot> {
         return ingredient.test(livingEntity.getItemBySlot(slotType));
     }
 
-    public static VanillaIEquippable of(EquipmentSlot slotType) {
-        return new VanillaIEquippable(slotType);
+    public static VanillaEquippable of(String slotType) {
+        return new VanillaEquippable(EquipmentSlot.byName(slotType));
     }
 
     @Override
@@ -23,8 +26,8 @@ public class VanillaIEquippable extends Equippable<EquipmentSlot> {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof VanillaIEquippable vanillaIEquippable) {
-            return this.slotType == vanillaIEquippable.slotType;
+        if (obj instanceof VanillaEquippable vanillaEquippable) {
+            return this.slotType == vanillaEquippable.slotType;
         }
         return false;
     }

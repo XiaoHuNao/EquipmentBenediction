@@ -1,8 +1,8 @@
 package com.xiaohunao.equipment_benediction.common.block.entity;
 
-import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.init.ModBlockEntity;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
+import com.xiaohunao.equipment_benediction.common.quality.Quality;
 import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,7 +25,7 @@ import java.util.Map;
 public class ReforgedBlockEntity extends BlockEntity {
     private float renderOffset = 0.0F;
     private boolean isRenderQualityTip = false;
-    private IQuality renderQuality = null;
+    private Quality renderQuality = null;
 
 
     private final ItemStackHandler inventory = new ItemStackHandler(2){
@@ -94,17 +93,15 @@ public class ReforgedBlockEntity extends BlockEntity {
     }
 
     public ItemStack addEquippedItem(ItemStack addedStack, @Nullable Player player) {
-        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
-            IQuality quality = entry.getValue();
-            if (quality.isViable().test(addedStack)) {
+        for (Quality value : ModQuality.QUALITY_MAP.values()) {
+            if (value.isViable().test(addedStack)) {
                 return inventory.insertItem(0, addedStack.copy(), false);
             }
         }
         return addedStack;
     }
     public ItemStack addReforgedItem(ItemStack equippedItem,ItemStack addedStack, @Nullable Player player) {
-        for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
-            IQuality quality = entry.getValue();
+        for (Quality quality : ModQuality.QUALITY_MAP.values()) {
             if (quality.isViable().test(equippedItem) && quality.getRecastingStack().test(addedStack)) {
                 return inventory.insertItem(1, addedStack.copy(), false);
             }
@@ -120,11 +117,11 @@ public class ReforgedBlockEntity extends BlockEntity {
         isRenderQualityTip = renderQualityTip;
     }
 
-    public IQuality getRenderQuality() {
+    public Quality getRenderQuality() {
         return renderQuality;
     }
 
-    public void setRenderQuality(IQuality renderQuality) {
+    public void setRenderQuality(Quality renderQuality) {
         this.renderQuality = renderQuality;
     }
 

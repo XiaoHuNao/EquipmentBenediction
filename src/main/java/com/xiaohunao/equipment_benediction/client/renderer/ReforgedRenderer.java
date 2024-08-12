@@ -3,8 +3,8 @@ package com.xiaohunao.equipment_benediction.client.renderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
+import com.xiaohunao.equipment_benediction.common.quality.Quality;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -84,7 +84,7 @@ public class ReforgedRenderer implements BlockEntityRenderer<ReforgedBlockEntity
         if (reforgedBlockEntity.isRenderQualityTip()){
             double distanceToSqr = blockEntityRenderDispatcher.camera.getPosition().distanceToSqr(reforgedBlockEntity.getBlockPos().getCenter());
             if (distanceToSqr < 16 && renderOffset <= 2.0F){
-                IQuality renderQuality = reforgedBlockEntity.getRenderQuality();
+                Quality renderQuality = reforgedBlockEntity.getRenderQuality();
                 poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
                 poseStack.mulPose(Axis.YP.rotationDegrees(30));
                 poseStack.mulPose(blockEntityRenderDispatcher.camera.rotation());

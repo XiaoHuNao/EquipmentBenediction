@@ -4,12 +4,11 @@ import com.mojang.logging.LogUtils;
 import com.xiaohunao.equipment_benediction.client.gui.hud.ModifierDeBugHudRenderer;
 import com.xiaohunao.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
 import com.xiaohunao.equipment_benediction.common.config.ModConfig;
+import com.xiaohunao.equipment_benediction.common.event.BenedictionRegisterEvent;
 import com.xiaohunao.equipment_benediction.common.init.*;
 import com.xiaohunao.equipment_benediction.compat.curios.event.subscriber.CurioPlayerEventSubscriber;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
@@ -40,9 +39,6 @@ public class EquipmentBenediction {
         ModItem.ITEMS.register(modEventBus);
         ModBlock.BLOCKS.register(modEventBus);
         ModBlockEntity.BLOCK_ENTITY.register(modEventBus);
-        ModModifier.MODIFIER.register(modEventBus);
-        ModEquipmentSet.EQUIPMENT_SET.register(modEventBus);
-        ModQuality.QUALITY.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -62,17 +58,17 @@ public class EquipmentBenediction {
 
     @SubscribeEvent
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
-        ModEquipmentSet.setup();
-        ModModifier.setup();
-        ModQuality.setup();
+//        ModEquipmentSet.register(EquipmentBenediction.asResource("test"), new EquipmentSet() {
+//            @Override
+//            public void init(BonusHandler<EquipmentSet> handler, EquippableGroup group) {
+//                group.addGroup(VanillaIEquippable.of(EquipmentSlot.LEGS), Ingredient.of(Items.DIAMOND_BOOTS));
+//            }
+//        });
+        MinecraftForge.EVENT_BUS.post(new BenedictionRegisterEvent());
     }
 
     public static ResourceLocation asResource(String path) {
         return new ResourceLocation(MOD_ID, path);
-    }
-
-    public static <T> ResourceKey<Registry<T>> asResourceKey(String name) {
-        return ResourceKey.createRegistryKey(asResource(name));
     }
 
     @SubscribeEvent

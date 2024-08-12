@@ -1,30 +1,23 @@
 package com.xiaohunao.equipment_benediction.common.init;
 
+import com.google.common.collect.HashBiMap;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IModifier;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.random.SimpleWeightedRandomList;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class ModModifier {
-    public static SimpleWeightedRandomList<IModifier> WEIGHTED_MODIFIER;
-    public static final ResourceKey<Registry<IModifier>> KEY = EquipmentBenediction.asResourceKey("modifier");
-    public static final DeferredRegister<IModifier> MODIFIER = DeferredRegister.create(KEY, EquipmentBenediction.MOD_ID);
-    public static final Supplier<IForgeRegistry<IModifier>> REGISTRY = MODIFIER.makeRegistry(RegistryBuilder::new);
+    public static final HashBiMap<ResourceLocation, Modifier> MODIFIER_MAP = HashBiMap.create();
+    private static final SimpleWeightedRandomList.Builder<Modifier> builder = SimpleWeightedRandomList.builder();
 
-    public static void setup() {
-        SimpleWeightedRandomList.Builder<IModifier> builder = SimpleWeightedRandomList.builder();
-        REGISTRY.get().getEntries().stream()
-                .map(Map.Entry::getValue)
-                .forEach((modifier) -> {
-                    builder.add(modifier, modifier.getRarity());
-                });
-        WEIGHTED_MODIFIER = builder.build();
+    public static void register(ResourceLocation key, Modifier modifier) {
+        if (!MODIFIER_MAP.containsKey(key) && !MODIFIER_MAP.containsValue(modifier)) {
+            MODIFIER_MAP.put(key, modifier);
+            builder.add(modifier, modifier.getRarity());
+        }
+        EquipmentBenediction.LOGGER.error("Modifier with key {} already exists!", key);
+    }
+    public static SimpleWeightedRandomList<Modifier> getWeightedList() {
+        return builder.build();
     }
 }

@@ -1,11 +1,11 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IModifier;
 import com.xiaohunao.equipment_benediction.common.capability.LastInventoryCap;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetHelper;
-import com.xiaohunao.equipment_benediction.common.equipment_set.equippable.VanillaIEquippable;
+import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
 import com.xiaohunao.equipment_benediction.common.event.PlayerContainerChangeEvent;
+import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.world.InteractionHand;
@@ -46,9 +46,9 @@ public class PlayerEventSubscriber {
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::updateInventory);
             ModifierHelper.getPlayerListTag(player).forEach((tag) -> {
                 ModifierHelper.parse(tag).ifPresent((instance) -> {
-                    IModifier modifier = instance.getModifier();
+                    Modifier modifier = instance.getModifier();
                     if (modifier != null) {
-                        modifier.getHandler().getTickBonus().accept(player, instance);
+                        modifier.bonus.getTickBonus().accept(player, instance);
                     }
                 });
             });
@@ -56,7 +56,7 @@ public class PlayerEventSubscriber {
 
             EquipmentSetHelper.getPlayerListTag(player).forEach((tag) -> {
                 EquipmentSetHelper.parse(tag).ifPresent((set) -> {
-                    set.getHandler().getTickBonus().accept(player,set);
+                    set.bonus.getTickBonus().accept(player,set);
                 });
             });
         }
@@ -72,7 +72,7 @@ public class PlayerEventSubscriber {
         ModifierHelper.getPlayerListTag(player).forEach((nbt) -> {
             ModifierHelper.parse(nbt)
                     .ifPresent((instance) -> {
-                        if (instance.getModifier().getGroup().checkBlacklist(VanillaIEquippable.of(EquipmentSlot.OFFHAND))) {
+                        if (instance.getModifier().group.checkBlacklist(new VanillaEquippable(EquipmentSlot.OFFHAND))) {
                             event.setCanceled(true);
                         }
                     });

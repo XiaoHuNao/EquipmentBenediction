@@ -1,12 +1,12 @@
 package com.xiaohunao.equipment_benediction.common.modifier;
 
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IModifier;
 import com.xiaohunao.equipment_benediction.common.init.ModModifier;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,16 +33,16 @@ public class ModifierHelper {
                 .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
 
-    public static boolean hasModifier(ItemStack stack, IModifier modifier) {
+    public static boolean hasModifier(ItemStack stack, Modifier modifier) {
         return getItemStackListTag(stack).stream().anyMatch((nbt) -> parse(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
     }
-    public static boolean hasModifier(Player player, IModifier modifier) {
+    public static boolean hasModifier(Player player, Modifier modifier) {
         return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
     }
     public static boolean hasModifier(ItemStack itemStack) {
         return !getItemStackListTag(itemStack).isEmpty();
     }
-    public static List<IModifier> getModifiers(ItemStack stack) {
+    public static List<Modifier> getModifiers(ItemStack stack) {
         ListTag listTag = getItemStackListTag(stack);
         return listTag.stream().map((tag) -> parse(tag).map(ModifierInstance::getModifier).orElse(null)).toList();
     }
@@ -59,7 +59,7 @@ public class ModifierHelper {
         return false;
     }
     public static boolean addPlayerModifier(ModifierInstance instance,Player player) {
-        IModifier modifier = instance.getModifier();
+        Modifier modifier = instance.getModifier();
         ListTag listTag = getPlayerListTag(player);
         if (addModifier(instance, listTag)) {
             player.getPersistentData().put("Modifiers", listTag);
@@ -80,7 +80,7 @@ public class ModifierHelper {
     }
 
     public static boolean removePlayerModifier(ModifierInstance instance,Player player) {
-        IModifier modifier = instance.getModifier();
+        Modifier modifier = instance.getModifier();
         if(removeModifier(instance, getPlayerListTag(player))) {
             player.getPersistentData().put("Modifiers", getPlayerListTag(player));
             modifier.clear(player);
@@ -92,7 +92,7 @@ public class ModifierHelper {
         stack.removeTagKey("Modifiers");
     }
 
-    public static void removeModifier(IModifier modifier, ItemStack itemStack) {
+    public static void removeModifier(Modifier modifier, ItemStack itemStack) {
         ListTag listTag = getItemStackListTag(itemStack);
         listTag.removeIf((tag) -> parse(tag).filter((instance) -> instance.getModifier().equals(modifier)).isPresent());
         if (itemStack.getTag() != null) {
@@ -158,9 +158,8 @@ public class ModifierHelper {
         ListTag fromTag = ModifierHelper.getItemStackListTag(from);
         ListTag toTag = ModifierHelper.getItemStackListTag(to);
 
-        ModModifier.REGISTRY.get().getEntries().forEach((entry) -> {
-            IModifier modifier = entry.getValue();
-            if (! modifier.getGroup().checkEquippable(player) && ModifierHelper.hasModifier(player,modifier)) {
+        ModModifier.MODIFIER_MAP.values().forEach((modifier) -> {
+            if (! modifier.group.checkEquippable(player) && ModifierHelper.hasModifier(player,modifier)) {
                 ModifierHelper.removePlayerModifier(new ModifierInstance(modifier,0),player);
             }
         });
@@ -173,11 +172,15 @@ public class ModifierHelper {
 
         toTag.forEach((tag) -> {
             parse(tag).ifPresent((instance) -> {
-                IModifier modifier = instance.getModifier();
+                Modifier modifier = instance.getModifier();
                 if (modifier != null && modifier.checkEquippable(player)) {
                     addPlayerModifier(instance, player);
                 }
             });
         });
+    }
+
+    public static Modifier getModifier(ResourceLocation registryName) {
+        return ModModifier.MODIFIER_MAP.get(registryName);
     }
 }

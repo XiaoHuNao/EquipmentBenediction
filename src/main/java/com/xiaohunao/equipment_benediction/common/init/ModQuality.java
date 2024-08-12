@@ -1,42 +1,28 @@
 package com.xiaohunao.equipment_benediction.common.init;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.HashBiMap;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IModifier;
-import com.xiaohunao.equipment_benediction.api.IQuality;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import com.xiaohunao.equipment_benediction.common.quality.Quality;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.random.SimpleWeightedRandomList;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class ModQuality {
-    public static SimpleWeightedRandomList<IQuality> WEIGHTED_QUALITY;
-    public static final ResourceKey<Registry<IQuality>> KEY = EquipmentBenediction.asResourceKey("quality");
-    public static final DeferredRegister<IQuality> QUALITY = DeferredRegister.create(KEY, EquipmentBenediction.MOD_ID);
-    public static final Supplier<IForgeRegistry<IQuality>> REGISTRY = QUALITY.makeRegistry(RegistryBuilder::new);
+    public static final HashBiMap<ResourceLocation, Quality> QUALITY_MAP = HashBiMap.create();
+    private static final SimpleWeightedRandomList.Builder<Quality> builder = SimpleWeightedRandomList.builder();
 
-
-
-    public static void setup() {
-        SimpleWeightedRandomList.Builder<IQuality> builder = SimpleWeightedRandomList.builder();
-        REGISTRY.get().getEntries().stream()
-                .map(Map.Entry::getValue)
-                .forEach((quality) -> {
-                    builder.add(quality, quality.getRarity());
-                });
-        WEIGHTED_QUALITY = builder.build();
+    public static void register(ResourceLocation key, Quality quality) {
+        if (!QUALITY_MAP.containsKey(key) && !QUALITY_MAP.containsValue(quality)) {
+            QUALITY_MAP.put(key, quality);
+            builder.add(quality, quality.getRarity());
+        }
+        EquipmentBenediction.LOGGER.error("Quality with key {} already exists!", key);
     }
 
+    public static Quality getQuality(ResourceLocation registryName) {
+        return QUALITY_MAP.get(registryName);
+    }
 
-
-
+    public SimpleWeightedRandomList<Quality> getQualityWeightedList() {
+        return builder.build();
+    }
 }

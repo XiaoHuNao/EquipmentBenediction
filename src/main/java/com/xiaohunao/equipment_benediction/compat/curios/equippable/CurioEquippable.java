@@ -1,7 +1,7 @@
 package com.xiaohunao.equipment_benediction.compat.curios.equippable;
 
 
-import com.xiaohunao.equipment_benediction.common.equipment_set.equippable.Equippable;
+import com.xiaohunao.equipment_benediction.api.IEquippable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -11,9 +11,11 @@ import top.theillusivec4.curios.api.type.ISlotType;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
-public class CurioEquippable extends Equippable<ISlotType> {
-    public CurioEquippable(ISlotType iSlotType) {
-        super(iSlotType);
+public class CurioEquippable implements IEquippable {
+    private final ISlotType slotType;
+
+    public CurioEquippable(ISlotType slotType) {
+        this.slotType = slotType;
     }
 
     @Override

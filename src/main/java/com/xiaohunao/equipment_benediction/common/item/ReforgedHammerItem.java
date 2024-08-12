@@ -1,10 +1,9 @@
 package com.xiaohunao.equipment_benediction.common.item;
 
 
-import com.xiaohunao.equipment_benediction.api.IQuality;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
-import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
+import com.xiaohunao.equipment_benediction.common.quality.Quality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -36,9 +35,8 @@ public class ReforgedHammerItem extends TieredItem {
             ItemStack reforgedItem = reforgedBlockEntity.getReforgedItem();
             if (equippedItem.isEmpty() || reforgedItem.isEmpty()) return InteractionResult.FAIL;
 
-            for (Map.Entry<ResourceKey<IQuality>, IQuality> entry : ModQuality.REGISTRY.get().getEntries()) {
-                IQuality quality = entry.getValue();
-                Ingredient recastingStack = quality.getRecastingStack();
+            for (Quality value : ModQuality.QUALITY_MAP.values()) {
+                Ingredient recastingStack = value.getRecastingStack();
                 if (recastingStack.test(reforgedItem)) {
                     for (int i = 0; i < recastingStack.getItems().length; i++) {
                         ItemStack item = recastingStack.getItems()[i];

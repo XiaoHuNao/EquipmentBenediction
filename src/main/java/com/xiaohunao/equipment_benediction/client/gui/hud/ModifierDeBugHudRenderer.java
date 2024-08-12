@@ -1,8 +1,8 @@
 package com.xiaohunao.equipment_benediction.client.gui.hud;
 
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IModifier;
 import com.xiaohunao.equipment_benediction.common.config.ModConfig;
+import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.Minecraft;
@@ -33,7 +33,7 @@ public class ModifierDeBugHudRenderer {
             ModifierInstance.CODEC.parse(NbtOps.INSTANCE, tag)
                     .resultOrPartial(EquipmentBenediction.LOGGER::error)
                     .ifPresent((instance) -> {
-                        IModifier modifier = instance.getModifier();
+                        Modifier modifier = instance.getModifier();
                         int amplifier = instance.getAmplifier();
                         guiGraphics.drawString(minecraft.font, modifier.getDisplayName(), 0, 0, 0xFFFFFF);
                         guiGraphics.drawString(minecraft.font, "Amplifier: " + amplifier, 200, 0, 0xFFFFFF);

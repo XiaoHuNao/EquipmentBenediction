@@ -2,13 +2,13 @@ package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.mojang.datafixers.util.Either;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.api.IEquipmentSet;
-import com.xiaohunao.equipment_benediction.api.IModifier;
 import com.xiaohunao.equipment_benediction.client.renderer.ReforgedRenderer;
 import com.xiaohunao.equipment_benediction.client.tooltip.EquipmentSetTooltipComponent;
 import com.xiaohunao.equipment_benediction.common.config.ModConfig;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.xiaohunao.equipment_benediction.common.init.ModBlockEntity;
+import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,7 +45,7 @@ public class ClientForgeEvent {
             ModifierInstance.CODEC.parse(NbtOps.INSTANCE,nbt)
                     .resultOrPartial(EquipmentBenediction.LOGGER::error)
                     .ifPresent((instance) -> {
-                        IModifier modifier = instance.getModifier();
+                        Modifier modifier = instance.getModifier();
                         if (modifier == null || modifier.getDescription() == null || modifier.getDisplayName() == null) return;
                         if (Screen.hasShiftDown()) {
                             toolTip.add(modifier.getDisplayName());
@@ -72,7 +72,7 @@ public class ClientForgeEvent {
             Object[] array = EquipmentSetHelper.getSet(itemStack).toArray();
             for (int i = 0; i < array.length; i++) {
                 int size = tooltipElements.size();
-                IEquipmentSet set = (IEquipmentSet) array[i];
+                EquipmentSet set = (EquipmentSet) array[i];
 
                 if (set.getDescription() == null || set.getDisplayName() == null) return;
 
