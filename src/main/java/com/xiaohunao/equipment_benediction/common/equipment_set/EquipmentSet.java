@@ -1,8 +1,11 @@
 package com.xiaohunao.equipment_benediction.common.equipment_set;
 
+import com.mojang.serialization.Codec;
 import com.xiaohunao.equipment_benediction.common.bonus.BonusHandler;
 import com.xiaohunao.equipment_benediction.common.equippable.EquippableGroup;
 import com.xiaohunao.equipment_benediction.common.init.ModEquipmentSet;
+import com.xiaohunao.equipment_benediction.common.quality.Quality;
+import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -16,6 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.function.Predicate;
 
 public class EquipmentSet{
+    public static final Codec<EquipmentSet> CODEC = Codec.STRING.xmap(ResourceLocation::tryParse, ResourceLocation::toString)
+            .xmap(EquipmentSetHelper::getEquipmentSet, EquipmentSet::getRegistryName);
+
     public static final String titleKey = "equipment_set.equipment_benediction.title";
     private final ResourceLocation registryName;
     public EquippableGroup group = EquippableGroup.create();
@@ -35,6 +41,16 @@ public class EquipmentSet{
     public static EquipmentSet create(ResourceLocation registryName) {
         return new EquipmentSet(registryName);
     }
+
+    public EquipmentSet setColor(int color) {
+        this.color = color;
+        return this;
+    }
+    public EquipmentSet setViable(Predicate<ItemStack> isViable) {
+        this.isViable = isViable;
+        return this;
+    }
+
 
     public void apply(Player player){
         bonus.getBonuses().forEach((type, bonus) -> {
@@ -59,10 +75,6 @@ public class EquipmentSet{
         return ModEquipmentSet.SET_MAP.inverse().get(this);
     }
 
-    public void setColor(int color) {
-        this.color = color;
-    }
-
     public final TextColor getColor() {
         return TextColor.fromRgb(color);
     }
@@ -71,9 +83,7 @@ public class EquipmentSet{
         return isViable;
     }
 
-    public void setViable(Predicate<ItemStack> isViable) {
-        this.isViable = isViable;
-    }
+
 
     public boolean checkEquippable(LivingEntity livingEntity) {
         return group.checkEquippable(livingEntity);

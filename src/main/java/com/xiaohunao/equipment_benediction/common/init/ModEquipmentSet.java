@@ -14,13 +14,10 @@ public class ModEquipmentSet {
 
 
     public static void register(ResourceLocation key, EquipmentSet set) {
-        if (!SET_MAP.containsKey(key) && !SET_MAP.containsValue(set)) {
-            SET_MAP.put(key, set);
-            set.group.getEquipages().forEach((equippable,ingredient) -> {
-                INGREDIENT_MAP.put(ingredient, set);
-            });
-        }
-        EquipmentBenediction.LOGGER.error("EquipmentSet with key {} already exists!", key);
+        SET_MAP.put(key, set);
+        set.group.getEquipages().forEach((equippable,ingredient) -> {
+            INGREDIENT_MAP.put(ingredient, set);
+        });
     }
 
 

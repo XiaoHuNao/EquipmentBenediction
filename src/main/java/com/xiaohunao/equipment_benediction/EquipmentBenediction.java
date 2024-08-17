@@ -58,12 +58,6 @@ public class EquipmentBenediction {
 
     @SubscribeEvent
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
-//        ModEquipmentSet.register(EquipmentBenediction.asResource("test"), new EquipmentSet() {
-//            @Override
-//            public void init(BonusHandler<EquipmentSet> handler, EquippableGroup group) {
-//                group.addGroup(VanillaIEquippable.of(EquipmentSlot.LEGS), Ingredient.of(Items.DIAMOND_BOOTS));
-//            }
-//        });
         MinecraftForge.EVENT_BUS.post(new BenedictionRegisterEvent());
     }
 

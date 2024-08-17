@@ -4,6 +4,7 @@ package com.xiaohunao.equipment_benediction.common.item;
 import com.xiaohunao.equipment_benediction.common.block.entity.ReforgedBlockEntity;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
 import com.xiaohunao.equipment_benediction.common.quality.Quality;
+import com.xiaohunao.equipment_benediction.common.quality.QualityHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -33,35 +34,48 @@ public class ReforgedHammerItem extends TieredItem {
         if (blockEntity instanceof ReforgedBlockEntity reforgedBlockEntity){
             ItemStack equippedItem = reforgedBlockEntity.getEquippedItem();
             ItemStack reforgedItem = reforgedBlockEntity.getReforgedItem();
-            if (equippedItem.isEmpty() || reforgedItem.isEmpty()) return InteractionResult.FAIL;
+            if (equippedItem.isEmpty()) return InteractionResult.FAIL;
 
-            for (Quality value : ModQuality.QUALITY_MAP.values()) {
-                Ingredient recastingStack = value.getRecastingStack();
-                if (recastingStack.test(reforgedItem)) {
-                    for (int i = 0; i < recastingStack.getItems().length; i++) {
-                        ItemStack item = recastingStack.getItems()[i];
-                        if (reforgedItem.getCount() >= item.getCount()) {
-                            reforgedBlockEntity.recastingQuality();
-                            level.playSound(null, context.getClickedPos(), SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.7F, 1.0F);
-                            stack.hurtAndBreak(1, context.getPlayer(), (player) -> player.broadcastBreakEvent(context.getHand()));
-                            reforgedItem.shrink(item.getCount());
-
-                            for (int j = 0; j < 20; j++) {
-                                double x = clickedPos.getX() + level.random.nextDouble();
-                                double y = clickedPos.getY() + 1.0D;
-                                double z = clickedPos.getZ() + level.random.nextDouble();
-                                double velocityX = (level.random.nextDouble() - 0.5D) * 0.2D;
-                                double velocityY = level.random.nextDouble() * 0.2D;
-                                double velocityZ = (level.random.nextDouble() - 0.5D) * 0.2D;
-                                level.addParticle(ParticleTypes.FLAME, x, y, z, velocityX, velocityY, velocityZ);
-                            }
-
-                            return InteractionResult.PASS;
-                        }
+            Quality quality = QualityHelper.getQuality(equippedItem);
+            if (quality == null) return InteractionResult.FAIL;
+            Ingredient recastingStack = quality.getRecastingStack();
+            if (recastingStack.test(reforgedItem)) {
+                for (int i = 0; i < recastingStack.getItems().length; i++) {
+                    ItemStack item = recastingStack.getItems()[i];
+                    if (reforgedItem.getCount() >= item.getCount()) {
+                        processEmptyRecastingStack(reforgedBlockEntity, stack, context);
+                        reforgedItem.shrink(item.getCount());
+                        return InteractionResult.PASS;
                     }
                 }
             }
+            if (recastingStack.isEmpty()){
+                processEmptyRecastingStack(reforgedBlockEntity, stack, context);
+                return InteractionResult.PASS;
+            }
         }
         return super.onItemUseFirst(stack, context);
+    }
+    private void processEmptyRecastingStack(ReforgedBlockEntity reforgedBlockEntity, ItemStack stack, UseOnContext context) {
+        reforgedBlockEntity.recastingQuality();
+        playSoundAndBreakItem(stack, context);
+        spawnParticles(context.getClickedPos(), context.getLevel());
+    }
+
+    private void playSoundAndBreakItem(ItemStack stack, UseOnContext context) {
+        context.getLevel().playSound(null, context.getClickedPos(), SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.7F, 1.0F);
+        stack.hurtAndBreak(1, context.getPlayer(), (player) -> player.broadcastBreakEvent(context.getHand()));
+    }
+
+    private void spawnParticles(BlockPos clickedPos, Level level) {
+        for (int j = 0; j < 20; j++) {
+            double x = clickedPos.getX() + level.random.nextDouble();
+            double y = clickedPos.getY() + 1.0D;
+            double z = clickedPos.getZ() + level.random.nextDouble();
+            double velocityX = (level.random.nextDouble() - 0.5D) * 0.2D;
+            double velocityY = level.random.nextDouble() * 0.2D;
+            double velocityZ = (level.random.nextDouble() - 0.5D) * 0.2D;
+            level.addParticle(ParticleTypes.FLAME, x, y, z, velocityX, velocityY, velocityZ);
+        }
     }
 }

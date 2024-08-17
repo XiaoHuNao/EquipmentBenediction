@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetHelper;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
+import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
@@ -21,13 +23,17 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class Quality{
+    public static final Codec<Quality> CODEC = Codec.STRING.xmap(ResourceLocation::tryParse, ResourceLocation::toString)
+            .xmap(QualityHelper::getQuality, Quality::getRegistryName);
+
+
     protected final List<ModifierInstance> modifiers = Lists.newArrayList();
     protected final List<ModifierInstance> randomModifiers = Lists.newArrayList();
     protected final List<ModifierInstance> fixedModifier = Lists.newArrayList();
-    private Ingredient recastingStack;
-    private int rarity;
-    private int level;
-    private int maxModifierCount;
+    private Ingredient recastingStack = Ingredient.EMPTY;
+    private int rarity = 1;
+    private int level = 1;
+    private int maxModifierCount = 1;
     private final ResourceLocation registryName;
     protected Predicate<ItemStack> isViable = stack -> true;
 
@@ -43,53 +49,61 @@ public class Quality{
     public static Quality create(ResourceLocation registryName) {
         return new Quality(registryName);
     }
-    public void properties(Ingredient recastingStack, int rarity, int level, int maxModifierCount) {
+    public Quality properties(Ingredient recastingStack, int rarity, int level, int maxModifierCount) {
         this.recastingStack = recastingStack;
         this.rarity = rarity;
         this.level = level;
         this.maxModifierCount = maxModifierCount;
+        return this;
     }
 
-    public boolean isAutoAdd() {
-        return autoAdd;
+    public Quality setRecastingStack(Ingredient recastingStack) {
+        this.recastingStack = recastingStack;
+        return this;
     }
 
-    public void setAutoAdd(boolean autoAdd) {
+    public Quality setAutoAdd(boolean autoAdd) {
         this.autoAdd = autoAdd;
+        return this;
     }
 
-    public void setViable(Predicate<ItemStack> isViable) {
+    public Quality setViable(Predicate<ItemStack> isViable) {
         this.isViable = isViable;
+        return this;
     }
-
-    public void addFixedModifier(ModifierInstance... modifier) {
+    public Quality addFixedModifier(ModifierInstance... modifier) {
         int count = maxModifierCount - this.modifiers.size();
         this.fixedModifier.addAll(Arrays.asList(modifier).subList(0, Math.min(count, modifier.length)));
+        return this;
     }
 
-    public void addFixedModifier(String... modifier) {
+    public Quality addFixedModifier(Modifier... modifier) {
         final int count = maxModifierCount - this.modifiers.size();
         List<ModifierInstance> list = Arrays.stream(modifier).map(ModifierInstance::new).toList();
         this.fixedModifier.addAll(list.subList(0, Math.min(count, list.size())));
+        return this;
     }
 
-    public void addRandomModifier(ModifierInstance... modifier) {
+    public Quality addRandomModifier(ModifierInstance... modifier) {
         this.randomModifiers.addAll(Lists.newArrayList(modifier));
+        return this;
     }
 
-    public void addRandomModifier(String... modifier) {
+    public Quality addRandomModifier(Modifier... modifier) {
         List<ModifierInstance> list = Arrays.stream(modifier).map(ModifierInstance::new).toList();
         this.randomModifiers.addAll(list);
+        return this;
     }
 
     public List<ModifierInstance> getRandomModifiers() {
         return randomModifiers;
     }
-
+    public boolean isAutoAdd() {
+        return autoAdd;
+    }
     public List<ModifierInstance> getFixedModifiers() {
         return fixedModifier;
     }
-
     public SimpleWeightedRandomList<Modifier> getWeightedModifiers() {
         SimpleWeightedRandomList.Builder<Modifier> builder = SimpleWeightedRandomList.builder();
         randomModifiers.forEach((modifierInstance) -> {

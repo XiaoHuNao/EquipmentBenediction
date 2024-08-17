@@ -15,18 +15,64 @@ import java.util.function.Supplier;
 
 
 public class BenedictionRegisterEventJS extends EventJS {
-    public void registerEquipmentSet(ResourceLocation key, Consumer<EquipmentSet> consumer){
-        EquipmentSet equipmentSet = EquipmentSet.create(key);
-        consumer.accept(equipmentSet);
-        ModEquipmentSet.register(key,equipmentSet);
+    public void registerEquipmentSet(ResourceLocation... key) {
+        this.registerEquipmentSet(equipmentSet -> {
+        }, key);
     }
-    public void registerModifier(ResourceLocation key, Consumer<Modifier> consumer) {
-        Modifier modifier = Modifier.create(key);
-        consumer.accept(modifier);
-        ModModifier.register(key,modifier);
+
+    public void registerEquipmentSet(Consumer<EquipmentSet> consumer, ResourceLocation... key) {
+        for (ResourceLocation location : key) {
+            EquipmentSet equipmentSet = EquipmentSet.create(location);
+            consumer.accept(equipmentSet);
+            ModEquipmentSet.register(location, equipmentSet);
+        }
     }
-    public void registerQuality(ResourceLocation key, Consumer<Quality> consumer) {
-        Quality quality = Quality.create(key);
-        ModQuality.register(key,quality);
+
+    public void registerModifier(ResourceLocation... key) {
+        this.registerModifier(modifier -> {
+        }, key);
+    }
+
+    public void registerModifier(Consumer<Modifier> consumer, ResourceLocation... key) {
+        for (ResourceLocation location : key) {
+            Modifier modifier = Modifier.create(location);
+            consumer.accept(modifier);
+            ModModifier.register(location, modifier);
+        }
+    }
+
+    public void registerQuality(ResourceLocation[] key) {
+        this.registerQuality(key, quality -> {
+        });
+    }
+
+    public void registerQuality(ResourceLocation[] key, Consumer<Quality> consumer) {
+        for (ResourceLocation location : key) {
+            Quality quality = Quality.create(location);
+            consumer.accept(quality);
+            ModQuality.register(location, quality);
+        }
+    }
+
+    public void modifyEquipmentSet(ResourceLocation[] key, Consumer<EquipmentSet> consumer) {
+        for (ResourceLocation location : key) {
+            EquipmentSet equipmentSet = ModEquipmentSet.SET_MAP.get(location);
+            consumer.accept(equipmentSet);
+            ModEquipmentSet.register(location, equipmentSet);
+        }
+    }
+    public void modifyModifier(ResourceLocation[] key, Consumer<Modifier> consumer) {
+        for (ResourceLocation location : key) {
+            Modifier modifier = ModModifier.MODIFIER_MAP.get(location);
+            consumer.accept(modifier);
+            ModModifier.register(location, modifier);
+        }
+    }
+    public void modifyQuality(ResourceLocation[] key, Consumer<Quality> consumer) {
+        for (ResourceLocation location : key) {
+            Quality quality = ModQuality.QUALITY_MAP.get(location);
+            consumer.accept(quality);
+            ModQuality.register(location, quality);
+        }
     }
 }

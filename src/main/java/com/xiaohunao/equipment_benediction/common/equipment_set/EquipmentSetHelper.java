@@ -20,15 +20,14 @@ public class EquipmentSetHelper {
         return getListTag(player.getPersistentData());
     }
     public static Optional<Tag> encodeStart(EquipmentSet set) {
-        ResourceLocation location = ModEquipmentSet.SET_MAP.inverse().get(set);
-        return location != null ? Optional.of(StringTag.valueOf(location.toString())) : Optional.empty();
-
+        return EquipmentSet.CODEC.encodeStart(NbtOps.INSTANCE, set)
+                .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
     public static Optional<EquipmentSet> parse(Tag tag) {
-        StringTag stringTag = (StringTag) tag;
-        EquipmentSet equipmentSet = ModEquipmentSet.SET_MAP.get(ResourceLocation.tryParse(stringTag.getAsString()));
-        return equipmentSet != null ? Optional.of(equipmentSet) : Optional.empty();
+        return EquipmentSet.CODEC.parse(NbtOps.INSTANCE,tag)
+                .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
+
     public static boolean hasSet(Player player, EquipmentSet set) {
         return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
     }

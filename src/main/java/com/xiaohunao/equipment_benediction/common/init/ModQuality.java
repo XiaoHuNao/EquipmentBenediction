@@ -11,11 +11,8 @@ public class ModQuality {
     private static final SimpleWeightedRandomList.Builder<Quality> builder = SimpleWeightedRandomList.builder();
 
     public static void register(ResourceLocation key, Quality quality) {
-        if (!QUALITY_MAP.containsKey(key) && !QUALITY_MAP.containsValue(quality)) {
-            QUALITY_MAP.put(key, quality);
-            builder.add(quality, quality.getRarity());
-        }
-        EquipmentBenediction.LOGGER.error("Quality with key {} already exists!", key);
+        QUALITY_MAP.put(key, quality);
+        builder.add(quality, quality.getRarity());
     }
 
     public static Quality getQuality(ResourceLocation registryName) {

@@ -24,27 +24,36 @@ public class ModifierHelper {
     public static ListTag getPlayerListTag(Player player) {
         return getListTag(player.getPersistentData());
     }
+    public static Optional<Tag> encodeStart(Modifier modifier) {
+        return Modifier.CODEC.encodeStart(NbtOps.INSTANCE, modifier)
+                .resultOrPartial(EquipmentBenediction.LOGGER::error);
+    }
+    public static Optional<Modifier> parseModifier(Tag tag) {
+        return Modifier.CODEC.parse(NbtOps.INSTANCE,tag)
+                .resultOrPartial(EquipmentBenediction.LOGGER::error);
+    }
+
     public static Optional<Tag> encodeStart(ModifierInstance instance) {
         return ModifierInstance.CODEC.encodeStart(NbtOps.INSTANCE, instance)
                 .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
-    public static Optional<ModifierInstance> parse(Tag tag) {
+    public static Optional<ModifierInstance> parseModifierInstance(Tag tag) {
         return ModifierInstance.CODEC.parse(NbtOps.INSTANCE,tag)
                 .resultOrPartial(EquipmentBenediction.LOGGER::error);
     }
 
     public static boolean hasModifier(ItemStack stack, Modifier modifier) {
-        return getItemStackListTag(stack).stream().anyMatch((nbt) -> parse(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
+        return getItemStackListTag(stack).stream().anyMatch((nbt) -> parseModifierInstance(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
     }
     public static boolean hasModifier(Player player, Modifier modifier) {
-        return getPlayerListTag(player).stream().anyMatch((nbt) -> parse(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
+        return getPlayerListTag(player).stream().anyMatch((nbt) -> parseModifierInstance(nbt).filter(instance1 -> instance1.getModifier().equals(modifier)).isPresent());
     }
     public static boolean hasModifier(ItemStack itemStack) {
         return !getItemStackListTag(itemStack).isEmpty();
     }
     public static List<Modifier> getModifiers(ItemStack stack) {
         ListTag listTag = getItemStackListTag(stack);
-        return listTag.stream().map((tag) -> parse(tag).map(ModifierInstance::getModifier).orElse(null)).toList();
+        return listTag.stream().map((tag) -> parseModifierInstance(tag).map(ModifierInstance::getModifier).orElse(null)).toList();
     }
 
 
@@ -94,7 +103,7 @@ public class ModifierHelper {
 
     public static void removeModifier(Modifier modifier, ItemStack itemStack) {
         ListTag listTag = getItemStackListTag(itemStack);
-        listTag.removeIf((tag) -> parse(tag).filter((instance) -> instance.getModifier().equals(modifier)).isPresent());
+        listTag.removeIf((tag) -> parseModifierInstance(tag).filter((instance) -> instance.getModifier().equals(modifier)).isPresent());
         if (itemStack.getTag() != null) {
             itemStack.getTag().put("Modifiers", listTag);
         }
@@ -102,7 +111,7 @@ public class ModifierHelper {
 
     public static boolean removeModifier(ModifierInstance instance, ListTag tags) {
         for (Tag tag : tags) {
-            Optional<ModifierInstance> optional = parse(tag);
+            Optional<ModifierInstance> optional = parseModifierInstance(tag);
             if (optional.isPresent()) {
                 ModifierInstance modifierInstance = optional.get();
                 if (modifierInstance.getModifier() == null || instance.getModifier() == null){
@@ -126,7 +135,7 @@ public class ModifierHelper {
     }
     public static boolean addModifier(ModifierInstance instance, ListTag tags) {
         for (Tag tag : tags) {
-            Optional<ModifierInstance> parse = parse(tag);
+            Optional<ModifierInstance> parse = parseModifierInstance(tag);
             if (parse.isPresent()) {
                 ModifierInstance modifierInstance = parse.get();
                 if (modifierInstance.getModifier() == null || instance.getModifier() == null){
@@ -165,13 +174,13 @@ public class ModifierHelper {
         });
 
         fromTag.forEach((tag) -> {
-            parse(tag).ifPresent((instance) -> {
+            parseModifierInstance(tag).ifPresent((instance) -> {
                 removePlayerModifier(instance, player);
             });
         });
 
         toTag.forEach((tag) -> {
-            parse(tag).ifPresent((instance) -> {
+            parseModifierInstance(tag).ifPresent((instance) -> {
                 Modifier modifier = instance.getModifier();
                 if (modifier != null && modifier.checkEquippable(player)) {
                     addPlayerModifier(instance, player);

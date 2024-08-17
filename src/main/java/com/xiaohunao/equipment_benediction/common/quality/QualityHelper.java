@@ -6,6 +6,7 @@ import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.init.ModEquipmentSet;
 import com.xiaohunao.equipment_benediction.common.init.ModModifier;
 import com.xiaohunao.equipment_benediction.common.init.ModQuality;
+import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierHelper;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,10 @@ public class QualityHelper {
     public static boolean hasQuality(ItemStack stack, Quality set) {
         return getItemStackListTag(stack).stream().anyMatch((nbt) -> parse(nbt).filter((equipmentSet) -> equipmentSet.equals(set)).isPresent());
     }
+    public static Quality getQuality(ResourceLocation registryName) {
+        return ModQuality.QUALITY_MAP.get(registryName);
+    }
+
     public static boolean hasQuality(ItemStack stack){
         return !getItemStackListTag(stack).isEmpty();
     }

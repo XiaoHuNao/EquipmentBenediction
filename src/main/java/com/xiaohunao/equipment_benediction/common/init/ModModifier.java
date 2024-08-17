@@ -11,11 +11,8 @@ public class ModModifier {
     private static final SimpleWeightedRandomList.Builder<Modifier> builder = SimpleWeightedRandomList.builder();
 
     public static void register(ResourceLocation key, Modifier modifier) {
-        if (!MODIFIER_MAP.containsKey(key) && !MODIFIER_MAP.containsValue(modifier)) {
-            MODIFIER_MAP.put(key, modifier);
-            builder.add(modifier, modifier.getRarity());
-        }
-        EquipmentBenediction.LOGGER.error("Modifier with key {} already exists!", key);
+        MODIFIER_MAP.put(key, modifier);
+        builder.add(modifier, modifier.getRarity());
     }
     public static SimpleWeightedRandomList<Modifier> getWeightedList() {
         return builder.build();

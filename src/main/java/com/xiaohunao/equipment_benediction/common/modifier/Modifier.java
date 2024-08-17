@@ -1,5 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.modifier;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.bonus.BonusHandler;
 import com.xiaohunao.equipment_benediction.common.equippable.EquippableGroup;
 import dev.latvian.mods.rhino.Context;
@@ -11,10 +13,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Predicate;
 
 public class Modifier{
+    public static final Codec<Modifier> CODEC = Codec.STRING.xmap(ResourceLocation::tryParse, ResourceLocation::toString)
+            .xmap(ModifierHelper::getModifier, Modifier::getRegistryName);
+
+
     private final ResourceLocation registryName;
 
 
@@ -22,8 +29,8 @@ public class Modifier{
     public EquippableGroup group = EquippableGroup.create();
     protected Predicate<ItemStack> isViable = stack -> true;
 
-    private int rarity;
-    private int level;
+    private int rarity = 1;
+    private int level = 1;
 
 
     protected int color = 0x7a7b78;
@@ -40,6 +47,20 @@ public class Modifier{
         return new Modifier(registryName);
     }
 
+    public Modifier properties(int rarity, int level) {
+        this.rarity = rarity;
+        this.level = level;
+        return this;
+    }
+    public Modifier setViable(Predicate<ItemStack> isViable) {
+        this.isViable = isViable;
+        return this;
+    }
+    public Modifier setColor(int color) {
+        this.color = color;
+        return this;
+    }
+
 
     public ResourceLocation getRegistryName() {
         return registryName;
@@ -52,12 +73,6 @@ public class Modifier{
     }
     public Predicate<ItemStack> isViable() {
         return isViable;
-    }
-    public void setViable(Predicate<ItemStack> isViable) {
-        this.isViable = isViable;
-    }
-    public void setColor(int color) {
-        this.color = color;
     }
     public final TextColor getColor() {
         return TextColor.fromRgb(color);

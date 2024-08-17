@@ -8,12 +8,12 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ModifierInstance {
     public static final Codec<ModifierInstance> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-            Codec.STRING.fieldOf("modifier").forGetter(ModifierInstance::getModifierRegistryName),
+            Modifier.CODEC.fieldOf("modifier").forGetter(ModifierInstance::getModifier),
             Codec.INT.fieldOf("amplifier").forGetter(ModifierInstance::getAmplifier)
     ).apply(instance, ModifierInstance::new));
 
-    private Modifier modifier;
-    private ResourceLocation modifierRegistryName;
+    private final Modifier modifier;
+    private final ResourceLocation modifierRegistryName;
     private int amplifier;
 
     public ModifierInstance(Modifier modifier) {
@@ -23,23 +23,11 @@ public class ModifierInstance {
     public ModifierInstance(Modifier modifier, int amplifier) {
         this.modifier = modifier;
         this.amplifier = amplifier;
-    }
-
-    public ModifierInstance(String modifier, int amplifier) {
-        this.modifierRegistryName = ResourceLocation.tryParse(modifier);
-        this.amplifier = amplifier;
-    }
-
-    public ModifierInstance(String modifier) {
-        this(modifier, 0);
+        this.modifierRegistryName = modifier.getRegistryName();
     }
 
     public Modifier getModifier() {
         return modifier != null ? modifier : ModModifier.MODIFIER_MAP.get(modifierRegistryName);
-    }
-
-    public String getModifierRegistryName() {
-        return getModifier().getRegistryName().toString();
     }
 
     public int getAmplifier() {

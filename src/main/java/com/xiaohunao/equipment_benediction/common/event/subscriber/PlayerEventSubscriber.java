@@ -45,7 +45,7 @@ public class PlayerEventSubscriber {
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::update);
             LastInventoryCap.get(player).ifPresent(LastInventoryCap::updateInventory);
             ModifierHelper.getPlayerListTag(player).forEach((tag) -> {
-                ModifierHelper.parse(tag).ifPresent((instance) -> {
+                ModifierHelper.parseModifierInstance(tag).ifPresent((instance) -> {
                     Modifier modifier = instance.getModifier();
                     if (modifier != null) {
                         modifier.bonus.getTickBonus().accept(player, instance);
@@ -70,7 +70,7 @@ public class PlayerEventSubscriber {
             return;
         }
         ModifierHelper.getPlayerListTag(player).forEach((nbt) -> {
-            ModifierHelper.parse(nbt)
+            ModifierHelper.parseModifierInstance(nbt)
                     .ifPresent((instance) -> {
                         if (instance.getModifier().group.checkBlacklist(new VanillaEquippable(EquipmentSlot.OFFHAND))) {
                             event.setCanceled(true);

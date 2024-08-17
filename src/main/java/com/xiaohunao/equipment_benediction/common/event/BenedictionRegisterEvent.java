@@ -25,6 +25,7 @@ public class BenedictionRegisterEvent extends Event {
     }
     public void registerQuality(ResourceLocation key, Consumer<Quality> consumer) {
         Quality quality = Quality.create(key);
+        consumer.accept(quality);
         ModQuality.register(key,quality);
     }
 }
