@@ -15,12 +15,11 @@ import java.util.function.Supplier;
 
 
 public class BenedictionRegisterEventJS extends EventJS {
-    public void registerEquipmentSet(ResourceLocation... key) {
-        this.registerEquipmentSet(equipmentSet -> {
-        }, key);
+    public void registerEquipmentSet(ResourceLocation[] key) {
+        this.registerEquipmentSet(key,equipmentSet -> {});
     }
 
-    public void registerEquipmentSet(Consumer<EquipmentSet> consumer, ResourceLocation... key) {
+    public void registerEquipmentSet(ResourceLocation[] key,Consumer<EquipmentSet> consumer) {
         for (ResourceLocation location : key) {
             EquipmentSet equipmentSet = EquipmentSet.create(location);
             consumer.accept(equipmentSet);
@@ -28,12 +27,11 @@ public class BenedictionRegisterEventJS extends EventJS {
         }
     }
 
-    public void registerModifier(ResourceLocation... key) {
-        this.registerModifier(modifier -> {
-        }, key);
+    public void registerModifier(ResourceLocation[] key) {
+        this.registerModifier(key,modifier -> {});
     }
 
-    public void registerModifier(Consumer<Modifier> consumer, ResourceLocation... key) {
+    public void registerModifier(ResourceLocation[] key,Consumer<Modifier> consumer) {
         for (ResourceLocation location : key) {
             Modifier modifier = Modifier.create(location);
             consumer.accept(modifier);
