@@ -37,22 +37,27 @@ public class ReforgedHammerItem extends TieredItem {
             if (equippedItem.isEmpty()) return InteractionResult.FAIL;
 
             Quality quality = QualityHelper.getQuality(equippedItem);
-            if (quality == null) return InteractionResult.FAIL;
-            Ingredient recastingStack = quality.getRecastingStack();
-            if (recastingStack.test(reforgedItem)) {
-                for (int i = 0; i < recastingStack.getItems().length; i++) {
-                    ItemStack item = recastingStack.getItems()[i];
-                    if (reforgedItem.getCount() >= item.getCount()) {
-                        processEmptyRecastingStack(reforgedBlockEntity, stack, context);
-                        reforgedItem.shrink(item.getCount());
-                        return InteractionResult.PASS;
-                    }
-                }
-            }
-            if (recastingStack.isEmpty()){
+            if (quality == null){
                 processEmptyRecastingStack(reforgedBlockEntity, stack, context);
                 return InteractionResult.PASS;
+            }else {
+                Ingredient recastingStack = quality.getRecastingStack();
+                if (recastingStack.test(reforgedItem)) {
+                    for (int i = 0; i < recastingStack.getItems().length; i++) {
+                        ItemStack item = recastingStack.getItems()[i];
+                        if (reforgedItem.getCount() >= item.getCount()) {
+                            processEmptyRecastingStack(reforgedBlockEntity, stack, context);
+                            reforgedItem.shrink(item.getCount());
+                            return InteractionResult.PASS;
+                        }
+                    }
+                }
+                if (recastingStack.isEmpty()){
+                    processEmptyRecastingStack(reforgedBlockEntity, stack, context);
+                    return InteractionResult.PASS;
+                }
             }
+
         }
         return super.onItemUseFirst(stack, context);
     }

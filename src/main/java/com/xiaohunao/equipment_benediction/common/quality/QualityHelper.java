@@ -104,6 +104,7 @@ public class QualityHelper {
                         }
                         encodeStart(quality).ifPresent(listTag::add);
                         stack.getOrCreateTag().put("Quality", listTag);
+                        QualityHelper.initModifier(stack,quality);
                     });
         }
     }

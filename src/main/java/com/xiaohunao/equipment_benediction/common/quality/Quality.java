@@ -62,6 +62,11 @@ public class Quality{
         return this;
     }
 
+    public Quality setColor(int color) {
+        this.color = color;
+        return this;
+    }
+
     public Quality setAutoAdd(boolean autoAdd) {
         this.autoAdd = autoAdd;
         return this;
