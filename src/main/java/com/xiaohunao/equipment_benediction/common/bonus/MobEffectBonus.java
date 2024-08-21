@@ -8,15 +8,17 @@ import net.minecraft.world.entity.player.Player;
 public class MobEffectBonus implements IBonus {
     private MobEffect mobEffect;
     private MobEffectInstance mobEffectInstance;
+    private int duration;
 
     public MobEffectBonus(MobEffect effect, MobEffectInstance mobEffectInstance) {
         this.mobEffect = effect;
         this.mobEffectInstance = mobEffectInstance;
+        this.duration = mobEffectInstance.getDuration();
     }
 
     @Override
     public void apply(Player player) {
-        player.addEffect(mobEffectInstance);
+        player.addEffect(new MobEffectInstance(mobEffectInstance),player);
     }
 
     @Override

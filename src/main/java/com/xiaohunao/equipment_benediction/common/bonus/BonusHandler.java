@@ -18,6 +18,11 @@ public class BonusHandler<T> {
     private Multimap<String, IBonus> bonuses = ArrayListMultimap.create();
     private BiConsumer<Player, T> tickBonus = (player, t) -> {};
 
+    public BonusHandler<T> addEffectModifier(MobEffect effect, int amplifier) {
+        this.bonuses.put("effect", new MobEffectBonus(effect,new MobEffectInstance(effect, -1, amplifier)));
+        return this;
+    }
+
     public BonusHandler<T> addEffectModifier(MobEffect effect, int duration, int amplifier) {
         this.bonuses.put("effect", new MobEffectBonus(effect,new MobEffectInstance(effect, duration, amplifier)));
         return this;
