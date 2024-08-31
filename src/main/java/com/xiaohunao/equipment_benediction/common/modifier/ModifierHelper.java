@@ -168,7 +168,7 @@ public class ModifierHelper {
         ListTag toTag = ModifierHelper.getItemStackListTag(to);
 
         ModModifier.MODIFIER_MAP.values().forEach((modifier) -> {
-            if (! modifier.group.checkEquippable(player) && ModifierHelper.hasModifier(player,modifier)) {
+            if (! modifier.checkEquippable(player) && ModifierHelper.hasModifier(player,modifier)) {
                 ModifierHelper.removePlayerModifier(new ModifierInstance(modifier,0),player);
             }
         });

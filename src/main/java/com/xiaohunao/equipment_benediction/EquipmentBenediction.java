@@ -58,6 +58,7 @@ public class EquipmentBenediction {
 
     @SubscribeEvent
     public void onFMLCommonSetup(FMLCommonSetupEvent event) {
+        MinecraftForge.EVENT_BUS.start();
         MinecraftForge.EVENT_BUS.post(new BenedictionRegisterEvent());
     }
 

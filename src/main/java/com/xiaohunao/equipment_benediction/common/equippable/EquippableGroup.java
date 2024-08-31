@@ -1,37 +1,44 @@
 package com.xiaohunao.equipment_benediction.common.equippable;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.xiaohunao.equipment_benediction.api.IEquippable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class EquippableGroup {
     private EquippableGroup() {}
 
-    private final LinkedHashMap<IEquippable, Ingredient> EQUIPAGES = Maps.newLinkedHashMap();
-    //黑名单
-    private final LinkedList<IEquippable> BLACKLIST = Lists.newLinkedList();
+    public BiMap<IEquippable, Ingredient> equippables = HashBiMap.create();
+    public Set<IEquippable> matchEquippable = Sets.newHashSet();
+    public LinkedList<IEquippable> blacklist = Lists.newLinkedList();
 
     public EquippableGroup addGroup(IEquippable equippable, Ingredient ingredient) {
-        this.EQUIPAGES.put(equippable, ingredient);
+        this.equippables.put(equippable, ingredient);
         return this;
     }
     public EquippableGroup addBlacklist(IEquippable equippable) {
-        this.BLACKLIST.add(equippable);
+        this.blacklist.add(equippable);
         return this;
     }
+
     public boolean checkEquippable(LivingEntity livingEntity) {
-        boolean match = EQUIPAGES
+        boolean match = equippables
                 .entrySet()
                 .stream()
-                .allMatch(entry -> entry.getKey().checkEquippable(livingEntity, entry.getValue()));
+                .allMatch(entry -> {
+                    boolean checked = entry.getKey().checkEquippable(livingEntity, entry.getValue());
+                    if (checked) {
+                        matchEquippable.add(entry.getKey());
+                    }
+                    return checked;
+                });
 
-        boolean black = BLACKLIST
+        boolean black = blacklist
                 .stream()
                 .allMatch(equippable -> equippable.checkEquippable(livingEntity, Ingredient.EMPTY));
 
@@ -42,12 +49,8 @@ public class EquippableGroup {
         return new EquippableGroup();
     }
 
-    public Map<IEquippable, Ingredient> getEquipages() {
-        return EQUIPAGES;
-    }
-
     public boolean checkBlacklist(IEquippable equippable) {
-        return BLACKLIST.stream().anyMatch(equippable1 -> equippable1.equals(equippable));
+        return blacklist.stream().anyMatch(equippable1 -> equippable1.equals(equippable));
     }
 
 

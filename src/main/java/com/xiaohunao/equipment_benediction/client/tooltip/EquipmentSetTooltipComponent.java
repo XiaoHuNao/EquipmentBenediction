@@ -38,7 +38,7 @@ public record EquipmentSetTooltipComponent(int width, int height, EquipmentSet s
         pose.translate(tooltipX, tooltipY, 0);
         pose.scale(0.5f, 0.5f, 1.0f);
 
-        Object[] array = set.group.getEquipages().values().toArray();
+        Object[] array = set.group.equippables.values().toArray();
 
         for (int i = 0; i < array.length; i++) {
             Ingredient ingredient = (Ingredient) array[i];

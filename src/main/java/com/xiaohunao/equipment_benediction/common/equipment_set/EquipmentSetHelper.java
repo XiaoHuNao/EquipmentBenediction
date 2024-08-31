@@ -35,21 +35,21 @@ public class EquipmentSetHelper {
     public static void updateSet(ItemStack from, ItemStack to, Player player) {
         ModEquipmentSet.INGREDIENT_MAP.entries().forEach((entry) -> {
             EquipmentSet set = entry.getValue();
-            if (set.group.checkEquippable(player) && hasSet(player,set)) {
+            if (set.checkEquippable(player) && hasSet(player,set)) {
                 removePlayerSet(set, player);
             }
         });
 
         if (hasSet(from)) {
             getSet(from).forEach((set) -> {
-                if (!set.group.checkEquippable(player)) {
+                if (!set.checkEquippable(player)) {
                     removePlayerSet(set, player);
                 }
             });
         }
         if (hasSet(to)) {
             getSet(to).forEach((set) -> {
-                if (set.group.checkEquippable(player) && !hasSet(player, set)) {
+                if (set.checkEquippable(player) && !hasSet(player, set)) {
                     addPlayerSet(set, player);
                 }
             });
