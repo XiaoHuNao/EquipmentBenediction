@@ -34,5 +34,6 @@ public class EQRegistries {
 
     public static void registerRegistries(NewRegistryEvent event) {
         event.register(VERIFIER_CODEC);
+        event.register(BONUS_CODEC);
     }
 }

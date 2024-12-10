@@ -2,9 +2,7 @@ package com.xiaohunao.equipment_benediction.common.init;
 
 import com.mojang.serialization.MapCodec;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.common.bonus.AttributeBonus;
-import com.xiaohunao.equipment_benediction.common.bonus.IBonus;
-import com.xiaohunao.equipment_benediction.common.bonus.MobEffectBonus;
+import com.xiaohunao.equipment_benediction.common.bonus.*;
 import com.xiaohunao.equipment_benediction.common.verifier.ClassVerifier;
 import com.xiaohunao.equipment_benediction.common.verifier.IDVerifier;
 import com.xiaohunao.equipment_benediction.common.verifier.IVerifier;
@@ -24,4 +22,9 @@ public class EQMapCodecs {
 
     public static final DeferredHolder<MapCodec<? extends IBonus>, MapCodec<? extends IBonus>> MOB_EFFECT_BONUS_CODEC = BONUS_CODEC.register("mob_effect", () -> MobEffectBonus.CODEC);
     public static final DeferredHolder<MapCodec<? extends IBonus>, MapCodec<? extends IBonus>> ATTRIBUTE_BONUS_CODEC = BONUS_CODEC.register("attribute", () -> AttributeBonus.CODEC);
+    public static final DeferredHolder<MapCodec<? extends IBonus>, MapCodec<? extends IBonus>> MOB_EFFECT_IMMUNITIES_BONUS_CODEC = BONUS_CODEC.register("mob_effect_immunities", () -> MobEffectImmunitiesBonus.CODEC);
+    public static final DeferredHolder<MapCodec<? extends IBonus>, MapCodec<? extends IBonus>> DAMAGE_IMMUNITIES_BONUS_CODEC = BONUS_CODEC.register("damage_immunities", () -> DamageTypesImmunitiesBonus.CODEC);
+
+
+
 }
