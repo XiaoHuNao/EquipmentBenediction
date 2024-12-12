@@ -1,14 +1,20 @@
 package com.xiaohunao.equipment_benediction.common.mixin;
 
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.critereon.EnterBlockTrigger;
+import net.minecraft.advancements.critereon.PlayerHurtEntityTrigger;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,15 +37,6 @@ public abstract class SimpleCriterionTriggerMixin <T extends SimpleCriterionTrig
     @Inject(method = "trigger",at = @At(value = "HEAD"))
     public void trigger(ServerPlayer player, Predicate<T> testTrigger, CallbackInfo ci){
         SimpleCriterionTrigger<T> simpleCriterionTrigger = (SimpleCriterionTrigger<T>)(Object)(this);
-        if (simpleCriterionTrigger instanceof PlayerTrigger) return;
-        if (simpleCriterionTrigger instanceof EnterBlockTrigger) return;
-
-        System.out.println(simpleCriterionTrigger);
-
-        CriteriaTriggers.CODEC.encodeStart(NbtOps.INSTANCE,simpleCriterionTrigger).result().ifPresent(nbt ->{
-            System.out.println(nbt);
-        });
-
 
     }
 }
