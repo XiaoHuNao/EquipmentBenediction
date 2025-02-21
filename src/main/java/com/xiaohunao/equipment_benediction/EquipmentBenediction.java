@@ -1,25 +1,39 @@
 package com.xiaohunao.equipment_benediction;
 
 import com.mojang.logging.LogUtils;
-import com.xiaohunao.equipment_benediction.common.init.EQMapCodecs;
-import com.xiaohunao.equipment_benediction.common.init.EQRegistries;
+import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import com.xiaohunao.equipment_benediction.common.init.EBModifiers;
+import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
+import com.xiaohunao.equipment_benediction.common.manager.ModifierManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
 
 @Mod(EquipmentBenediction.MODID)
 public class EquipmentBenediction{
     public static final String MODID = "equipment_benediction";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public EquipmentBenediction(IEventBus modEventBus, ModContainer modContainer) {
-//        NeoForge.EVENT_BUS.register(this);
 
-        EQMapCodecs.VERIFIER_CODEC.register(modEventBus);
-        modEventBus.addListener(EQRegistries::registerRegistries);
+    public EquipmentBenediction(IEventBus modEventBus, ModContainer modContainer) {
+        // 初始化管理器
+        ModifierManager.getInstance().init(modEventBus);
+        
+        // 注册修饰器
+        EBModifiers.MODIFIERS.register(modEventBus);
+        
+        // 注册其他内容
+        EBHookTypes.HOOK_TYPES.register(modEventBus);
+        modEventBus.addListener(EBRegistries::registerRegistries);
+    }
+
+    private void addDataPackListeners(AddReloadListenerEvent event) {
+        event.addListener(ModifierManager.getInstance());
     }
 
 
@@ -34,8 +48,8 @@ public class EquipmentBenediction{
     public static <T> ResourceKey<Registry<T>> asResourceKey(String path) {
         return ResourceKey.createRegistryKey(asResource(path));
     }
+    public static <T> ResourceKey<T> asResourceKey(ResourceKey<? extends Registry<T>> registryKey, String path) {
+        return ResourceKey.create(registryKey, asResource(path));
+    }
 
-//    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-//    public static class ClientModEvents {
-//    }
 }

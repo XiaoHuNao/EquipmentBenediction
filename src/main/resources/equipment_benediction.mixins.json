@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "equipment_benediction.refmap.json",
   "mixins": [
-    "SimpleCriterionTriggerMixin"
   ],
   "client": [
   ],

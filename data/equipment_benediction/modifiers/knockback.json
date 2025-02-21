@@ -1,0 +1,10 @@
+[
+  {
+    "type": "equipment_benediction:knockback",
+    "knockback": 0.5,
+    "vertical_factor": 0.3,
+    "level_multiplier": 0.5,
+    "base_vertical": 0.4,
+    "max_vertical": 0.8
+  }
+] 
