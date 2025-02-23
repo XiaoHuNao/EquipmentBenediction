@@ -3,14 +3,12 @@ package com.xiaohunao.equipment_benediction.common.hook;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
-import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class HookMap {
     private final Multimap<HookType<?>, IHook> hooks;
@@ -28,6 +26,10 @@ public class HookMap {
             }
         });
         return result;
+    }
+
+    public <T extends IHook> Collection<T> get(Supplier<HookType<T>> type) {
+        return get(type.get());
     }
 
     public boolean isEmpty() {

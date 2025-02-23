@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,7 +15,7 @@ import java.util.List;
 public record ModifierComponent(List<ModifierInstance> modifierInstances) implements DataComponentType<ModifierComponent> {
     public static final Codec<ModifierComponent> CODEC = Codec.list(ModifierInstance.CODEC).xmap(ModifierComponent::new, ModifierComponent::modifierInstances);
     public static final StreamCodec<ByteBuf, ModifierComponent> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
-
+    public static final ModifierComponent EMPTY = new ModifierComponent(List.of());
 
 
 
