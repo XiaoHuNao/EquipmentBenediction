@@ -1,16 +1,24 @@
 package com.xiaohunao.equipment_benediction.common.equipment_set;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.List;
 
 public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EquipmentSetManager.class);
@@ -18,7 +26,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     public static final String FOLDER = "equipment_set";
     private static final EquipmentSetManager INSTANCE = new EquipmentSetManager();
 
-    private static final Multimap<Ingredient,EquipmentSet> equipmentSetMap = HashMultimap.create();
+    private static final Multimap<EquipmentSet, Ingredient> equipmentSetMap = HashMultimap.create();
 
     protected EquipmentSetManager() {
         super(GSON, FOLDER);
@@ -28,6 +36,25 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         return INSTANCE;
     }
 
+    public static void updateSet(LivingEquipmentChangeContext livingEquipmentChangeContext) {
+        ItemStack itemStack = livingEquipmentChangeContext.to();
+        LivingEntity livingEntity = livingEquipmentChangeContext.livingEntity();
+    }
+
+    public boolean hasSet(ItemStack stack) {
+        return !getSet(stack).isEmpty();
+    }
+
+    public Collection<EquipmentSet> getSet(ItemStack stack) {
+        List<EquipmentSet> sets = Lists.newArrayList();
+        equipmentSetMap.entries().forEach(entry -> {
+            if (entry.getValue().test(stack)) {
+                sets.add(entry.getKey());
+            }
+        });
+        return ImmutableList.copyOf(sets);
+    }
+
     @Override
     protected String getManagerName() {
         return "EquipmentSet";
@@ -35,14 +62,13 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
     @Override
     protected void loadDynamicResource(ResourceLocation id, JsonElement json, ResourceManager manager, ProfilerFiller profiler) {
-
     }
 
     @Override
     protected void registerDynamic(ResourceLocation id, EquipmentSet value) {
         super.registerDynamic(id, value);
         for (Ingredient ingredient : value.equippableGroup.equipages.values()) {
-            equipmentSetMap.put(ingredient, value);
+            equipmentSetMap.put(value, ingredient);
         }
     }
 
@@ -50,7 +76,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     public void registerStatic(ResourceLocation id, EquipmentSet value) {
         super.registerStatic(id, value);
         for (Ingredient ingredient : value.equippableGroup.equipages.values()) {
-            equipmentSetMap.put(ingredient, value);
+            equipmentSetMap.put(value, ingredient);
         }
     }
 }

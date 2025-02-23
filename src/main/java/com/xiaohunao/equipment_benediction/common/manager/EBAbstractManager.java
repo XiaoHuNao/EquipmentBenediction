@@ -1,5 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.manager;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
@@ -27,7 +29,7 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
     protected final Map<ResourceLocation, T> staticResources = new HashMap<>();
     protected final Map<ResourceLocation, T> dynamicResources = new HashMap<>();
     protected final Set<ResourceLocation> expectedDynamicResources = new HashSet<>();
-    protected final Map<ResourceLocation, T> allResources = new HashMap<>();
+    protected final BiMap<ResourceLocation, T> allResources = HashBiMap.create();
     protected boolean seenRegisterEvent = false;
 
     protected EBAbstractManager(Gson gson, String folder) {
@@ -110,6 +112,13 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         }
         return resource;
     }
+    public ResourceLocation getResource(T resource){
+        ResourceLocation location = allResources.inverse().get(resource);
+        if (location == null) {
+            throw new IllegalArgumentException("Resource not found: " + resource);
+        }
+        return location;
+    }
 
     public boolean hasResource(ResourceLocation id) {
         return allResources.containsKey(id);
@@ -127,14 +136,6 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
             throw new IllegalStateException("Dynamic resource not loaded: " + id);
         }
         return dynamicResources.get(id);
-    }
-
-    public T getStaticResource(ResourceLocation id) {
-        T resource = staticResources.get(id);
-        if (resource == null) {
-            throw new IllegalArgumentException("Static resource not found: " + id);
-        }
-        return resource;
     }
 
     @Override

@@ -45,10 +45,10 @@ public class PlayerEventSubscriber {
             return;
         }
 
-//        if (player.isShiftKeyDown()){
-//            ItemStack mainHandItem = player.getMainHandItem();
-//            mainHandItem.set(EBDataComponentTypes.MODIFIER.get(),new ModifierComponent(List.of(new ModifierInstance(EquipmentBenediction.asResource("knockback"),1))));
-//        }
+        if (player.isShiftKeyDown()){
+            ItemStack mainHandItem = player.getMainHandItem();
+            mainHandItem.set(EBDataComponentTypes.MODIFIER.get(),new ModifierComponent(List.of(new ModifierInstance(EquipmentBenediction.asResource("magnetic"),1))));
+        }
 
 //        EquipmentSetManager instance = EquipmentSetManager.getInstance();
 //        Map<ResourceLocation, EquipmentSet> allResources = instance.getAllResources();

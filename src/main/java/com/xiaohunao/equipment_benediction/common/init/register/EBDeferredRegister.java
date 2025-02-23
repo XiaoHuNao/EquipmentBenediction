@@ -1,5 +1,8 @@
 package com.xiaohunao.equipment_benediction.common.init.register;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
 import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
@@ -8,6 +11,7 @@ import net.neoforged.bus.api.IEventBus;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -80,8 +84,10 @@ public class EBDeferredRegister<T> {
     }
 
     public Map<ResourceLocation, Supplier<T>> getEntries() {
-        Map<ResourceLocation, Supplier<T>> result = new LinkedHashMap<>();
-        entries.forEach((id, holder) -> result.put(id, holder));
-        return result;
+        return ImmutableMap.copyOf(entries);
+    }
+
+    public Codec<T> byNameCodec() {
+        return ResourceLocation.CODEC.xmap(location -> getManager().getResource(location), t -> getManager().getResource(t));
     }
 }

@@ -88,18 +88,18 @@ public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
     }
 
     @Override
-    public void beforeMeleeHit(ModifierInstance modifierInstance, AttackEntityContext attackEntityContext) {
-        Entity hitEntity = attackEntityContext.hitEntity();
-        Entity attacker = attackEntityContext.damageContainer().getSource().getEntity();
-        
-        if (!(hitEntity instanceof LivingEntity livingEntity) || attacker == null) {
-            return;
-        }
-
-        // 计算等级加成和击退效果
-        float levelBonus = 1.0f + (modifierInstance.getLevel() - 1) * levelMultiplier;
-        applyNormalKnockback(livingEntity, attacker, knockback * levelBonus);
-        applyVerticalKnockback(livingEntity, modifierInstance.getLevel());
+    public void beforeMeleeHit(AttackEntityContext attackEntityContext) {
+//        Entity hitEntity = attackEntityContext.hitEntity();
+//        Entity attacker = attackEntityContext.damageContainer().getSource().getEntity();
+//
+//        if (!(hitEntity instanceof LivingEntity livingEntity) || attacker == null) {
+//            return;
+//        }
+//
+//        // 计算等级加成和击退效果
+//        float levelBonus = 1.0f + (modifierInstance.getLevel() - 1) * levelMultiplier;
+//        applyNormalKnockback(livingEntity, attacker, knockback * levelBonus);
+//        applyVerticalKnockback(livingEntity, modifierInstance.getLevel());
     }
 
     private void applyNormalKnockback(LivingEntity target, Entity attacker, float strength) {

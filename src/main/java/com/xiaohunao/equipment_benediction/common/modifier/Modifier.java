@@ -1,6 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.modifier;
 
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
+import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 
 public class Modifier {
     protected final HookMap hookMap;
@@ -12,6 +13,7 @@ public class Modifier {
     }
     protected Modifier(HookMap hooks) {
         this.hookMap = hooks;
+        HookMapManager.getInstance().register(this, hookMap);
     }
 
     protected void init(HookMap.Builder hookBuilder) {

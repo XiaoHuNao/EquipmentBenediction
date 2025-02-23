@@ -8,6 +8,7 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
+import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 
@@ -50,9 +51,5 @@ public class SerializableModifier extends Modifier {
         public SerializableModifier build() {
             return new SerializableModifier(hooks.build());
         }
-    }
-
-    public HookMap getHookMap() {
-        return hookMap;
     }
 }
