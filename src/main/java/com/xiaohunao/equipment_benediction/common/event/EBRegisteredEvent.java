@@ -1,5 +1,6 @@
 package com.xiaohunao.equipment_benediction.common.event;
 
+import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
@@ -15,13 +16,17 @@ public class EBRegisteredEvent<T> extends Event implements IModBusEvent {
         this.registry = registry;
     }
 
+    public boolean isValidManager(EBAbstractManager<T> manager) {
+        return registry.equals(manager);
+    }
+
     /**
      * 注册静态对象
      * @param id 对象ID
      * @param value 对象实例
      */
     public void registerStatic(ResourceLocation id, T value) {
-        registry.register(id, value);
+        registry.registerStatic(id, value);
     }
 
     /**
@@ -42,7 +47,7 @@ public class EBRegisteredEvent<T> extends Event implements IModBusEvent {
          * @param id 对象ID
          * @param value 对象实例
          */
-        void register(ResourceLocation id, T value);
+        void registerStatic(ResourceLocation id, T value);
 
         /**
          * 注册预期的动态对象

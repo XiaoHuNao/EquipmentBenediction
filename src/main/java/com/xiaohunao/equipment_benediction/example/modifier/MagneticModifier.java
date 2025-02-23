@@ -10,22 +10,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.List;
 
 public class MagneticModifier extends Modifier {
     @Override
-    protected void registerHooks(HookMap.Builder hookBuilder) {
+    protected void init(HookMap.Builder hookBuilder) {
         hookBuilder.addHook(EBHookTypes.BEFORE_MELEE_HIT.get(), new BeforeMeleeHitHook() {
             @Override
             public void beforeMeleeHit(ModifierInstance modifierInstance, AttackEntityContext attackEntityContext) {
-                applyVelocity(attackEntityContext.attackerEntity(), 1, ItemEntity.class, 3, 0.05f, 100);
+                applyVelocity(attackEntityContext.attackerEntity(), 1, ItemEntity.class, 3, 0.5f, 100);
             }
         });
     }
 
     public static <T extends Entity> void applyVelocity(Entity entity, int amplifier, Class<T> targetClass, int minRange, float speed, int maxPush) {
-        // super magnetic - inspired by botanias code
         double x = entity.getX();
         double y = entity.getY();
         double z = entity.getZ();

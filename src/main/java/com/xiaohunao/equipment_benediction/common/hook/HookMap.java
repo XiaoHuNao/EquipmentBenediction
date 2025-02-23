@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class HookMap {
     private final Multimap<HookType<?>, IHook> hooks;
@@ -19,8 +20,14 @@ public class HookMap {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IHook> Collection<T> getHooks(HookType<T> type) {
-        return (Collection<T>) hooks.get(type);
+    public <T extends IHook> Collection<T> get(HookType<T> type) {
+        List<T> result = new ArrayList<>();
+        hooks.forEach((hookType, hook) -> {
+            if (type.getHookClass().isAssignableFrom(hook.getClass())) {
+                result.add((T) hook);
+            }
+        });
+        return result;
     }
 
     public boolean isEmpty() {

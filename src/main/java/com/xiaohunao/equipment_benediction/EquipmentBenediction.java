@@ -1,9 +1,8 @@
 package com.xiaohunao.equipment_benediction;
 
 import com.mojang.logging.LogUtils;
-import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import com.xiaohunao.equipment_benediction.common.init.EBModifiers;
-import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetManager;
+import com.xiaohunao.equipment_benediction.common.init.*;
 import com.xiaohunao.equipment_benediction.common.manager.ModifierManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -23,12 +22,14 @@ public class EquipmentBenediction{
     public EquipmentBenediction(IEventBus modEventBus, ModContainer modContainer) {
         // 初始化管理器
         ModifierManager.getInstance().init(modEventBus);
-        
+        EquipmentSetManager.getInstance().init(modEventBus);
+
         // 注册修饰器
         EBModifiers.MODIFIERS.register(modEventBus);
-        
+        EBEquipmentSets.EQUIPMENT_SET.register(modEventBus);
         // 注册其他内容
         EBHookTypes.HOOK_TYPES.register(modEventBus);
+        EBDataComponentTypes.DATA_COMPONENT_TYPE.register(modEventBus);
         modEventBus.addListener(EBRegistries::registerRegistries);
     }
 

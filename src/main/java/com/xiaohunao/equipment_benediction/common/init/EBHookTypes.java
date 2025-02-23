@@ -2,27 +2,37 @@ package com.xiaohunao.equipment_benediction.common.init;
 
 import com.mojang.serialization.MapCodec;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
+import com.xiaohunao.equipment_benediction.common.equipment_set.WearBonus;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
-import com.xiaohunao.equipment_benediction.common.hook.dynamic.KnockbackHook;
-import com.xiaohunao.equipment_benediction.common.hook.hooks.BeforeMeleeHitHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.*;
+import com.xiaohunao.equipment_benediction.common.hook.hooks.*;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class EBHookTypes {
     public static final DeferredRegister<HookType<?>> HOOK_TYPES = DeferredRegister.create(EBRegistries.Keys.HOOK_TYPES, EquipmentBenediction.MODID);
 
-    public static final DeferredHolder<HookType<?>, HookType<?>> BEFORE_MELEE_HIT = register("before_melee_hit", BeforeMeleeHitHook.class);
-    public static final DeferredHolder<HookType<?>, HookType<?>> KNOCKBACK = register("knockback", KnockbackHook.class, KnockbackHook.CODEC);
+    public static final DeferredHolder<HookType<?>, HookType<BeforeMeleeHitHook>> BEFORE_MELEE_HIT = register("before_melee_hit", BeforeMeleeHitHook.class);
+
+    public static final DeferredHolder<HookType<?>, HookType<EquipEquipmentHook>> EQUIP_EQUIPMENT = register("equip_equipment", EquipEquipmentHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<UnequipEquipmentHook>> UNEQUIP_EQUIPMENT = register("unequip_equipment", UnequipEquipmentHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<LivingDamageHook>> LIVING_DAMAGE = register("living_damage", LivingDamageHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<LivingIncomingDamageHook>> LIVING_INCOMING_DAMAGE = register("living_incoming_damage", LivingIncomingDamageHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<MobEffectApplicableHook>> MOB_EFFECT_APPLICABLE = register("mob_effect_applicable", MobEffectApplicableHook.class);
 
 
-    public static <T extends IHook> DeferredHolder<HookType<?>, HookType<?>>  register(String id, Class<T> hookClass) {
-        return HOOK_TYPES.register(id,() -> HookType.createHook(EquipmentBenediction.asResource(id), hookClass));
+    public static final DeferredHolder<HookType<?>, HookType<KnockbackHook>> KNOCKBACK = registerSerializable("knockback", KnockbackHook.class, KnockbackHook.CODEC);
+    public static final DeferredHolder<HookType<?>, HookType<MobEffectImmunityHook>> MOB_EFFECT_IMMUNITY = registerSerializable("mob_effect_immunity", MobEffectImmunityHook.class, MobEffectImmunityHook.CODEC);
+    public static final DeferredHolder<HookType<?>, HookType<DamageTypeImmunityHook>> DAMAGE_TYPE_IMMUNITY = registerSerializable("damage_type_immunity", DamageTypeImmunityHook.class, DamageTypeImmunityHook.CODEC);
+
+    private static <T extends IHook> DeferredHolder<HookType<?>, HookType<T>> register(String id, Class<T> hookClass) {
+        return HOOK_TYPES.register(id, () -> HookType.createHook(EquipmentBenediction.asResource(id), hookClass));
     }
 
-    public static <T extends ISerializableHook> DeferredHolder<HookType<?>, HookType<?>>  register(String id, Class<T> hookClass, MapCodec<T> codec) {
+    private static <T extends ISerializableHook> DeferredHolder<HookType<?>, HookType<T>> registerSerializable(String id, Class<T> hookClass, MapCodec<T> codec) {
         return HOOK_TYPES.register(id, () -> HookType.createSerializableHook(EquipmentBenediction.asResource(id), hookClass, codec));
     }
+
 
 }

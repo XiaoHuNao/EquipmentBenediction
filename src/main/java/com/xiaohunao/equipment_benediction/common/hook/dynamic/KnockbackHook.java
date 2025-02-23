@@ -12,6 +12,7 @@ import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.phys.Vec3;
 
 public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
     public static final MapCodec<KnockbackHook> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -95,39 +96,48 @@ public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
             return;
         }
 
-        // 计算等级加成
+        // 计算等级加成和击退效果
         float levelBonus = 1.0f + (modifierInstance.getLevel() - 1) * levelMultiplier;
-        float totalKnockback = knockback * levelBonus;
+        applyNormalKnockback(livingEntity, attacker, knockback * levelBonus);
+        applyVerticalKnockback(livingEntity, modifierInstance.getLevel());
+    }
 
+    private void applyNormalKnockback(LivingEntity target, Entity attacker, float strength) {
         // 获取攻击者的击退属性
-        float attackerKnockback = 0.0f;
-        if (attacker instanceof LivingEntity livingAttacker) {
-            attackerKnockback = (float) livingAttacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-        }
+        float attackerKnockback = attacker instanceof LivingEntity livingAttacker 
+            ? (float) livingAttacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK) 
+            : 0.0f;
 
-        // 合并基础击退和攻击者击退属性
-        float combinedKnockback = totalKnockback + attackerKnockback;
-        
+        float combinedKnockback = strength + attackerKnockback;
         if (combinedKnockback <= 0) {
             return;
         }
 
-        // 计算击退方向
-        double xDiff = attacker.getX() - livingEntity.getX();
-        double zDiff = attacker.getZ() - livingEntity.getZ();
+        double xDiff = target.getX() - attacker.getX();
+        double zDiff = target.getZ() - attacker.getZ();
         
-        // 标准化方向向量
         double distance = Math.sqrt(xDiff * xDiff + zDiff * zDiff);
         if (distance > 0) {
-            xDiff = xDiff / distance;
-            zDiff = zDiff / distance;
-        }
+            xDiff /= distance;
+            zDiff /= distance;
 
-        // 使用原版knockback方法
-        livingEntity.knockback(
-            combinedKnockback * (1.0 + verticalFactor), // 总击退强度
-            -xDiff,  // X方向
-            -zDiff   // Z方向
-        );
+            double horizontalStrength = combinedKnockback * 0.5;
+            double verticalStrength = Math.min(maxVertical, baseVertical + (combinedKnockback * verticalFactor));
+
+            target.setDeltaMovement(
+                target.getDeltaMovement().add(
+                    xDiff * horizontalStrength,
+                    verticalStrength,
+                    zDiff * horizontalStrength
+                )
+            );
+            target.hasImpulse = true;
+        }
+    }
+
+    private void applyVerticalKnockback(LivingEntity target, int level) {
+        double upwardSpeed = baseVertical + (level - 1) * verticalFactor;
+        target.setDeltaMovement(target.getDeltaMovement().add(0, upwardSpeed, 0));
+        target.hasImpulse = true;
     }
 }

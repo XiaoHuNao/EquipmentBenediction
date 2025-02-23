@@ -63,6 +63,9 @@ public class EBDeferredRegister<T> {
     }
 
     private void onRegister(EBRegisteredEvent<T> event) {
+        if(!event.isValidManager(manager)){
+            return;
+        }
         entries.forEach((id, holder) -> {
             if (holder instanceof EBStaticHolder<T> staticHolder) {
                 event.registerStatic(id, staticHolder.get());
@@ -76,10 +79,6 @@ public class EBDeferredRegister<T> {
         return manager;
     }
 
-    /**
-     * 获取所有注册的条目
-     * @return 注册的条目映射
-     */
     public Map<ResourceLocation, Supplier<T>> getEntries() {
         Map<ResourceLocation, Supplier<T>> result = new LinkedHashMap<>();
         entries.forEach((id, holder) -> result.put(id, holder));

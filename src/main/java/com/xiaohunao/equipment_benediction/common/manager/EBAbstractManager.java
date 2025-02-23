@@ -2,10 +2,17 @@ package com.xiaohunao.equipment_benediction.common.manager;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +21,12 @@ import java.util.*;
 /**
  * 通用的资源管理器基类
  */
-public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListener {
+public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListener implements EBRegisteredEvent.EBRegistry<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EBAbstractManager.class);
     
     protected final Map<ResourceLocation, T> staticResources = new HashMap<>();
+    protected final Map<ResourceLocation, T> dynamicResources = new HashMap<>();
     protected final Set<ResourceLocation> expectedDynamicResources = new HashSet<>();
-    // 统一存储所有资源的映射
     protected final Map<ResourceLocation, T> allResources = new HashMap<>();
     protected boolean seenRegisterEvent = false;
 
@@ -27,7 +34,35 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         super(gson, folder);
     }
 
+    public void init(IEventBus modBus) {
+        if (!seenRegisterEvent) {
+            modBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class,
+                    e -> e.enqueueWork(() -> {
+                        ModLoader.postEvent(EBRegisteredEvent.create(this));
+                        seenRegisterEvent = true;
+                    }));
 
+            NeoForge.EVENT_BUS.addListener(EventPriority.NORMAL, false,
+                    AddReloadListenerEvent.class, event -> {
+                        event.addListener(this);
+                    });
+        }
+    }
+
+
+    @Override
+    public void registerExpected(ResourceLocation id) {
+        if (seenRegisterEvent) {
+            throw new IllegalStateException("Cannot register new entries after registration event has been fired.");
+        }
+        if (staticResources.containsKey(id)) {
+            throw new IllegalArgumentException("Already registered as a static resource " + id);
+        }
+        expectedDynamicResources.add(id);
+    }
+
+
+    @Override
     public void registerStatic(ResourceLocation id, T value) {
         if (seenRegisterEvent) {
             throw new IllegalStateException("Cannot register new entries after registration event has been fired.");
@@ -42,31 +77,32 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         allResources.put(id, value);
     }
 
-    protected void addDynamicResource(ResourceLocation id, T value) {
+    protected void registerDynamic(ResourceLocation id, T value) {
         if (!expectedDynamicResources.contains(id)) {
             LOGGER.warn("Unexpected dynamic resource: {}", id);
             return;
+        }
+        T original = dynamicResources.put(id, value);
+        if (original != null) {
+            throw new IllegalArgumentException("Duplicate dynamic registration " + id);
         }
         allResources.put(id, value);
     }
 
 
     protected void clearData() {
-        // 清除动态资源
         expectedDynamicResources.forEach(allResources::remove);
         clearDynamicData();
     }
 
-    /**
-     * 获取所有资源（包括静态和动态）
-     */
+    protected boolean isDynamicResourceLoaded(ResourceLocation id) {
+        return dynamicResources.containsKey(id);
+    }
+
     public Map<ResourceLocation, T> getAllResources() {
         return Collections.unmodifiableMap(allResources);
     }
 
-    /**
-     * 获取指定ID的资源（包括静态和动态）
-     */
     public T getResource(ResourceLocation id) {
         T resource = allResources.get(id);
         if (resource == null) {
@@ -75,34 +111,22 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         return resource;
     }
 
-    /**
-     * 检查是否存在指定ID的资源（包括静态和动态）
-     */
     public boolean hasResource(ResourceLocation id) {
         return allResources.containsKey(id);
     }
 
-    // 子类需要实现的方法，用于清除特定的动态数据
-    protected abstract void clearDynamicData();
-
-    public void registerExpected(ResourceLocation id) {
-        if (seenRegisterEvent) {
-            throw new IllegalStateException("Cannot register new entries after registration event has been fired.");
-        }
-        if (staticResources.containsKey(id)) {
-            throw new IllegalArgumentException("Already registered as a static resource " + id);
-        }
-        expectedDynamicResources.add(id);
+    protected void clearDynamicData() {
+        dynamicResources.clear();
     }
 
     public T getDynamicResource(ResourceLocation id) {
         if (!expectedDynamicResources.contains(id)) {
             throw new IllegalArgumentException("Resource not registered as dynamic: " + id);
         }
-        if (!isDynamicResourceLoaded(id)) {
+        if (isDynamicResourceLoaded(id)) {
             throw new IllegalStateException("Dynamic resource not loaded: " + id);
         }
-        return getDynamicResourceUnchecked(id);
+        return dynamicResources.get(id);
     }
 
     public T getStaticResource(ResourceLocation id) {
@@ -112,10 +136,6 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         }
         return resource;
     }
-
-    protected abstract boolean isDynamicResourceLoaded(ResourceLocation id);
-    protected abstract T getDynamicResourceUnchecked(ResourceLocation id);
-    protected abstract String getManagerName();
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
@@ -144,27 +164,16 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
         });
     }
 
-    protected abstract void loadDynamicResource(ResourceLocation id, JsonElement json, ResourceManager manager, ProfilerFiller profiler);
-
     protected void validateExpectedResources() {
         for (ResourceLocation id : expectedDynamicResources) {
-            if (!isDynamicResourceLoaded(id)) {
+            if (isDynamicResourceLoaded(id)) {
                 LOGGER.warn("Missing expected dynamic resource: {}", id);
             }
         }
     }
 
-    /**
-     * 获取静态资源
-     */
-    protected Map<ResourceLocation, T> getStaticResources() {
-        return staticResources;
-    }
+    protected abstract void loadDynamicResource(ResourceLocation id, JsonElement json, ResourceManager manager, ProfilerFiller profiler);
 
-    /**
-     * 获取预期的动态资源
-     */
-    protected Set<ResourceLocation> getExpectedDynamicResources() {
-        return expectedDynamicResources;
-    }
+    protected abstract String getManagerName();
+
 }
