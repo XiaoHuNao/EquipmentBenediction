@@ -10,7 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.slf4j.Logger;
@@ -28,18 +27,18 @@ public class LivingEntitySubscriber {
         Entity entity1 = source.getEntity();
         Entity directEntity = source.getDirectEntity();
         ItemStack weaponItem = source.getWeaponItem();
-        LOGGER.info("{} {} {} {}", entity1, directEntity, entity, source);
+//        LOGGER.info("{} {} {} {}", entity1, directEntity, entity, source);
 
         if (source.is(DamageTypeTags.IS_PLAYER_ATTACK) && weaponItem != null) {
             AttackEntityContext attackEntityContext = AttackEntityContext.of(source.getEntity(), entity, container, weaponItem);
             HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), hook -> hook.beforeMeleeHit(attackEntityContext));
         }
-        
-        if (source.is(DamageTypeTags.IS_PROJECTILE)) {
-            LOGGER.info("projectile attack");
-        }
-        if (source.is(Tags.DamageTypes.IS_MAGIC)) {
-            LOGGER.info("magic attack");
-        }
+
+//        if (source.is(DamageTypeTags.IS_PROJECTILE)) {
+//            LOGGER.info("projectile attack");
+//        }
+//        if (source.is(Tags.DamageTypes.IS_MAGIC)) {
+//            LOGGER.info("magic attack");
+//        }
     }
 }
