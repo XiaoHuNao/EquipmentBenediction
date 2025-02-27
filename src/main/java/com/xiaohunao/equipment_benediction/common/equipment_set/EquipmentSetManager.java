@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
+import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -36,9 +37,36 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         return INSTANCE;
     }
 
-    public static void updateSet(LivingEquipmentChangeContext livingEquipmentChangeContext) {
-        ItemStack itemStack = livingEquipmentChangeContext.to();
+    public void updateSet(LivingEquipmentChangeContext livingEquipmentChangeContext) {
+        ItemStack to = livingEquipmentChangeContext.to();
+        ItemStack from = livingEquipmentChangeContext.from();
         LivingEntity livingEntity = livingEquipmentChangeContext.livingEntity();
+        if (hasSet(from)) {
+            getSet(from).forEach((set) -> {
+                if (!set.isValid(livingEntity)) {
+                    removePlayerSet(set, livingEntity);
+                }
+            });
+        }
+        if (hasSet(to)) {
+            getSet(to).forEach((set) -> {
+                if (set.isValid(livingEntity) && !hasSet(livingEntity, set)) {
+                    addPlayerSet(set, livingEntity);
+                }
+            });
+        }
+    }
+
+    private void removePlayerSet(EquipmentSet set, LivingEntity livingEntity) {
+        livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).removeHookMap(set);
+    }
+
+    private void addPlayerSet(EquipmentSet equipmentSet, LivingEntity livingEntity) {
+        livingEntity.setData(EBAttachments.ENTITY_HOOK_MANAGER, livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).addHookMap(equipmentSet, equipmentSet.hookMap));
+    }
+
+    private boolean hasSet(LivingEntity livingEntity, EquipmentSet equipmentSet) {
+        return livingEntity.hasData(EBAttachments.ENTITY_HOOK_MANAGER) && livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).contains(equipmentSet);
     }
 
     public boolean hasSet(ItemStack stack) {

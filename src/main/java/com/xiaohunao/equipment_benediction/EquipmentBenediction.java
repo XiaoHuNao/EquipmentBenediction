@@ -20,16 +20,16 @@ public class EquipmentBenediction{
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public EquipmentBenediction(IEventBus modEventBus, ModContainer modContainer) {
-        // 初始化管理器
         ModifierManager.getInstance().init(modEventBus);
         EquipmentSetManager.getInstance().init(modEventBus);
 
-        // 注册修饰器
+
         EBModifiers.MODIFIERS.register(modEventBus);
         EBEquipmentSets.EQUIPMENT_SET.register(modEventBus);
-        // 注册其他内容
+
         EBHookTypes.HOOK_TYPES.register(modEventBus);
         EBDataComponentTypes.DATA_COMPONENT_TYPE.register(modEventBus);
+        EBAttachments.TYPES.register(modEventBus);
         modEventBus.addListener(EBRegistries::registerRegistries);
     }
 

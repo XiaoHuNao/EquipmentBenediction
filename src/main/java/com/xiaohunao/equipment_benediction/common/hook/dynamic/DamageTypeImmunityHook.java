@@ -16,7 +16,7 @@ public record DamageTypeImmunityHook(List<Holder<DamageType>> damageTypes) imple
     ).apply(instance, DamageTypeImmunityHook::new));
 
     @Override
-    public boolean onLivingIncomingDamage(AttackEntityContext attackEntityContext) {
+    public boolean onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
         DamageContainer damageContainer = attackEntityContext.damageContainer();
         for (Holder<DamageType> type : damageTypes) {
             if (damageContainer.getSource().typeHolder().is(type)) {

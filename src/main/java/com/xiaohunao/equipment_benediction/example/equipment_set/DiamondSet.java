@@ -20,6 +20,6 @@ public class DiamondSet extends EquipmentSet {
                 VanillaEquippable.FEET, Ingredient.of(Items.DIAMOND_BOOTS)
         );
 
-        wearBonus.addBonus(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN));
+        wearBonus.addBonus(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,-1,0));
     }
 }

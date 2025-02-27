@@ -17,7 +17,7 @@ public class MagneticModifier extends Modifier {
     protected void init(HookMap.Builder hookBuilder) {
         hookBuilder.addHook(EBHookTypes.BEFORE_MELEE_HIT.get(), new BeforeMeleeHitHook() {
             @Override
-            public void beforeMeleeHit(AttackEntityContext attackEntityContext) {
+            public void beforeMeleeHit(Object owner, AttackEntityContext attackEntityContext) {
                 applyVelocity(attackEntityContext.attackerEntity(), 1, ItemEntity.class, 3, 0.5f, 100);
             }
         });

@@ -50,25 +50,7 @@ public class PlayerEventSubscriber {
             mainHandItem.set(EBDataComponentTypes.MODIFIER.get(),new ModifierComponent(List.of(new ModifierInstance(EquipmentBenediction.asResource("magnetic"),1))));
         }
 
-//        EquipmentSetManager instance = EquipmentSetManager.getInstance();
-//        Map<ResourceLocation, EquipmentSet> allResources = instance.getAllResources();
-//        System.out.println(allResources);
     }
-
-//    @SubscribeEvent
-//    public void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-//    }
-//
-//    @SubscribeEvent
-//    public void onMobEffect(MobEffectEvent.Applicable event) {
-////        Entity effectSource = event.getEffectSource();
-////        event.setResult(MobEffectEvent.Applicable.Result.DEFAULT);
-//    }
-//
-//    @SubscribeEvent
-//    public void onLivingDamage(LivingDamageEvent.Pre event) {
-//
-//    }
 
 
 

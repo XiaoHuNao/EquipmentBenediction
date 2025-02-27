@@ -18,7 +18,7 @@ public record MobEffectImmunityHook(List<Holder<MobEffect>> effects) implements 
     ).apply(instance, MobEffectImmunityHook::new));
 
     @Override
-    public MobEffectEvent.Applicable.Result onMobEffectApplicable(Entity entity, MobEffectInstance effectInstance) {
+    public MobEffectEvent.Applicable.Result onMobEffectApplicable(Object owner, Entity entity, MobEffectInstance effectInstance) {
         for (Holder<MobEffect> effect : effects) {
             if (effect.is(effectInstance.getEffect())) {
                 return MobEffectEvent.Applicable.Result.DO_NOT_APPLY;

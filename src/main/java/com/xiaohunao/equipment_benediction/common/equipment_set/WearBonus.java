@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
+import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.EquipEquipmentHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.MobEffectApplicableHook;
@@ -12,10 +13,10 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
@@ -37,36 +38,36 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
     }
 
     @Override
-    public void onEquipEquipment(Player player) {
+    public void onEquipEquipment(Object owner, LivingEquipmentChangeContext changeContext) {
         attributes.forEach((attribute, attributeModifier) -> {
-            AttributeInstance attributeInstance = player.getAttribute(attribute);
+            AttributeInstance attributeInstance = changeContext.livingEntity().getAttribute(attribute);
             if (attributeInstance != null) {
                 attributeInstance.addTransientModifier(attributeModifier);
             }
         });
 
         mobEffectInstances.forEach(effectInstance -> {
-            player.addEffect(new MobEffectInstance(effectInstance));
+            changeContext.livingEntity().addEffect(new MobEffectInstance(effectInstance));
         });
 
     }
 
     @Override
-    public void onUnequipEquipment(Player player) {
+    public void onUnequipEquipment(Object owner, LivingEquipmentChangeContext changeContext) {
         attributes.forEach((attribute, attributeModifier) -> {
-            AttributeInstance attributeInstance = player.getAttribute(attribute);
+            AttributeInstance attributeInstance = changeContext.livingEntity().getAttribute(attribute);
             if (attributeInstance != null) {
                 attributeInstance.removeModifier(attributeModifier);
             }
         });
 
         mobEffectInstances.forEach(effectInstance -> {
-            player.removeEffect(effectInstance.getEffect());
+            changeContext.livingEntity().removeEffect(effectInstance.getEffect());
         });
     }
 
     @Override
-    public boolean onLivingIncomingDamage(AttackEntityContext attackEntityContext) {
+    public boolean onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
         DamageContainer damageContainer = attackEntityContext.damageContainer();
         for (Holder<DamageType> type : damageTypes) {
             if (damageContainer.getSource().typeHolder().is(type)) {
@@ -77,7 +78,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
     }
 
     @Override
-    public MobEffectEvent.Applicable.Result onMobEffectApplicable(Entity entity, MobEffectInstance effectInstance) {
+    public MobEffectEvent.Applicable.Result onMobEffectApplicable(Object owner, Entity entity, MobEffectInstance effectInstance) {
         for (Holder<MobEffect> effect : mobEffects) {
             if (effect.is(effectInstance.getEffect())) {
                 return MobEffectEvent.Applicable.Result.DO_NOT_APPLY;

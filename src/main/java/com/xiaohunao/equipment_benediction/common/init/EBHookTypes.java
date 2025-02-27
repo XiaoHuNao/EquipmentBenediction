@@ -14,7 +14,6 @@ public class EBHookTypes {
     public static final DeferredRegister<HookType<?>> HOOK_TYPES = DeferredRegister.create(EBRegistries.Keys.HOOK_TYPES, EquipmentBenediction.MODID);
 
     public static final DeferredHolder<HookType<?>, HookType<BeforeMeleeHitHook>> BEFORE_MELEE_HIT = register("before_melee_hit", BeforeMeleeHitHook.class);
-
     public static final DeferredHolder<HookType<?>, HookType<EquipEquipmentHook>> EQUIP_EQUIPMENT = register("equip_equipment", EquipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<UnequipEquipmentHook>> UNEQUIP_EQUIPMENT = register("unequip_equipment", UnequipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<LivingDamageHook>> LIVING_DAMAGE = register("living_damage", LivingDamageHook.class);

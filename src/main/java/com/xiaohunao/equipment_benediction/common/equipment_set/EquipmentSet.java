@@ -1,15 +1,11 @@
 package com.xiaohunao.equipment_benediction.common.equipment_set;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
+
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.function.Function;
 
 public class EquipmentSet  {
     protected final HookMap hookMap;
@@ -31,8 +27,7 @@ public class EquipmentSet  {
         this.hookMap = hookBuilder.build();
         this.equippableGroup = equippableGroupBuilder.build();
         this.wearBonus = wearBonus;
-
-        HookMapManager.getInstance().register(this, this.hookMap);
+        HookMapManager.getInstance().register(this,hookMap);
     }
     protected EquipmentSet(HookMap hooks, EquippableGroup equippableGroup, WearBonus wearBonus) {
         this.hookMap = hooks;

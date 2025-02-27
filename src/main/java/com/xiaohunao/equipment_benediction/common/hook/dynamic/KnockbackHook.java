@@ -88,7 +88,7 @@ public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
     }
 
     @Override
-    public void beforeMeleeHit(AttackEntityContext attackEntityContext) {
+    public void beforeMeleeHit(Object owner, AttackEntityContext attackEntityContext) {
 //        Entity hitEntity = attackEntityContext.hitEntity();
 //        Entity attacker = attackEntityContext.damageContainer().getSource().getEntity();
 //

@@ -4,5 +4,5 @@ import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
 
 public interface LivingDamageHook extends IHook {
-    float onLivingDamage(AttackEntityContext attackEntityContext);
+    float onLivingDamage(Object Owner, AttackEntityContext attackEntityContext);
 }

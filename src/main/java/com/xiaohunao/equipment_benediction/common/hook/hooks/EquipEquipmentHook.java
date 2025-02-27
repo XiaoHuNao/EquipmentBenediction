@@ -1,8 +1,9 @@
 package com.xiaohunao.equipment_benediction.common.hook.hooks;
 
+import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface EquipEquipmentHook extends IHook {
-    void onEquipEquipment(Player player);
+    void onEquipEquipment(Object Owner, LivingEquipmentChangeContext changeContext);
 }

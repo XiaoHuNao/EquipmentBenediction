@@ -10,10 +10,11 @@ public class Modifier {
         HookMap.Builder hookBuilder = HookMap.builder();
         init(hookBuilder);
         this.hookMap = hookBuilder.build();
+        HookMapManager.getInstance().register(this,hookMap);
     }
     protected Modifier(HookMap hooks) {
         this.hookMap = hooks;
-        HookMapManager.getInstance().register(this, hookMap);
+        HookMapManager.getInstance().register(this,hookMap);
     }
 
     protected void init(HookMap.Builder hookBuilder) {

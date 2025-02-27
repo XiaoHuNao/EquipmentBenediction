@@ -6,5 +6,5 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public interface MobEffectApplicableHook extends IHook {
-    MobEffectEvent.Applicable.Result onMobEffectApplicable(Entity entity, MobEffectInstance effectInstance);
+    MobEffectEvent.Applicable.Result onMobEffectApplicable(Object Owner, Entity entity, MobEffectInstance effectInstance);
 }

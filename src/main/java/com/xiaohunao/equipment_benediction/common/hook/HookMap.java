@@ -5,9 +5,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class HookMap {
@@ -19,7 +17,7 @@ public class HookMap {
 
     @SuppressWarnings("unchecked")
     public <T extends IHook> Collection<T> get(HookType<T> type) {
-        List<T> result = new ArrayList<>();
+        Set<T> result = new HashSet<>();
         hooks.forEach((hookType, hook) -> {
             if (type.getHookClass().isAssignableFrom(hook.getClass())) {
                 result.add((T) hook);
@@ -40,13 +38,13 @@ public class HookMap {
         return new Builder();
     }
 
-    public Collection<HookType<?>> getTypes() {
-        return hooks.keySet();
+    public Multimap<HookType<?>, IHook> hooks() {
+        return hooks;
     }
 
     public List<ISerializableHook> getSerializableHooks() {
         List<ISerializableHook> serializableHooks = new ArrayList<>();
-        for (HookType<?> type : getTypes()) {
+        for (HookType<?> type : hooks.keySet()) {
             if (type.isSerializable()) {
                 hooks.get(type).stream()
                     .filter(hook -> hook instanceof ISerializableHook)
