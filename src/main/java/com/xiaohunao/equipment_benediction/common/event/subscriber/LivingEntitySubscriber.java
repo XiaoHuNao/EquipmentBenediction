@@ -33,7 +33,10 @@ public class LivingEntitySubscriber {
 
         if (source.is(DamageTypeTags.IS_PLAYER_ATTACK) && weaponItem != null) {
             AttackEntityContext attackEntityContext = AttackEntityContext.of(source.getEntity(), entity, container, weaponItem);
-            HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook) -> hook.beforeMeleeHit(owner, attackEntityContext),directEntity);
+            HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook) -> {
+                hook.beforeMeleeHit(owner, attackEntityContext);
+                return null;
+            },directEntity);
         }
 //
 //        if (source.is(DamageTypeTags.IS_PROJECTILE)) {

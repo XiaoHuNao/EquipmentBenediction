@@ -13,7 +13,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -25,10 +24,10 @@ import java.util.Map;
 
 
 public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobEffectApplicableHook, LivingIncomingDamageHook {
-    private final Map<Holder<Attribute>,AttributeModifier> attributes;
-    private final List<MobEffectInstance> mobEffectInstances;
-    private final List<Holder<DamageType>> damageTypes;
-    private final List<Holder<MobEffect>> mobEffects;
+    protected final Map<Holder<Attribute>,AttributeModifier> attributes;
+    protected final List<MobEffectInstance> mobEffectInstances;
+    protected final List<Holder<DamageType>> damageTypes;
+    protected final List<Holder<MobEffect>> mobEffects;
 
     public WearBonus(Map<Holder<Attribute>, AttributeModifier> attributes, List<MobEffectInstance> mobEffectInstances, List<Holder<DamageType>> damageTypes, List<Holder<MobEffect>> mobEffects) {
         this.attributes = attributes;
@@ -87,6 +86,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
         return MobEffectEvent.Applicable.Result.DEFAULT;
     }
 
+
     public static class Builder {
         private final Map<Holder<Attribute>,AttributeModifier> attributes = Maps.newHashMap();
         private final List<MobEffectInstance> mobEffectInstances = Lists.newArrayList();
@@ -100,6 +100,11 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
 
         public Builder addBonus(MobEffectInstance mobEffectInstance) {
             mobEffectInstances.add(mobEffectInstance);
+            return this;
+        }
+
+        public Builder addBonus(MobEffectInstance... mobEffectInstance) {
+            mobEffectInstances.addAll(List.of(mobEffectInstance));
             return this;
         }
 

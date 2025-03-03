@@ -3,7 +3,7 @@ package com.xiaohunao.equipment_benediction.common.init;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.common.init.register.EBDeferredHolder;
 import com.xiaohunao.equipment_benediction.common.init.register.EBDeferredRegister;
-import com.xiaohunao.equipment_benediction.common.manager.ModifierManager;
+import com.xiaohunao.equipment_benediction.api.ModifierManager;
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.example.modifier.MagneticModifier;
 

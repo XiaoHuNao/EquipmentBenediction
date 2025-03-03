@@ -1,16 +1,16 @@
 package com.xiaohunao.equipment_benediction;
 
 import com.mojang.logging.LogUtils;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetManager;
+import com.xiaohunao.equipment_benediction.api.BenedictionManager;
+import com.xiaohunao.equipment_benediction.api.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.init.*;
-import com.xiaohunao.equipment_benediction.common.manager.ModifierManager;
+import com.xiaohunao.equipment_benediction.api.ModifierManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
 

@@ -1,10 +1,11 @@
 package com.xiaohunao.equipment_benediction.common.init.register;
 
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EBDynamicHolder<T> extends EBDeferredHolder<T> {
+public class EBDynamicHolder<T extends IBenediction<?>> extends EBDeferredHolder<T> {
     private static final AtomicInteger INVALIDATION_COUNTER = new AtomicInteger(0);
     private int invalidationCount = -1;
     private final EBAbstractManager<T> manager;

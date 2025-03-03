@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.EventPriority;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  * 通用的延迟注册器，类似于 DeferredRegister
  * @param <T> 要注册的对象类型
  */
-public class EBDeferredRegister<T> {
+public class EBDeferredRegister<T extends IBenediction<?>> {
     private final String modid;
     private final EBAbstractManager<T> manager;
     private final Map<ResourceLocation, EBDeferredHolder<T>> entries = new LinkedHashMap<>();
@@ -29,7 +30,7 @@ public class EBDeferredRegister<T> {
         this.manager = manager;
     }
 
-    public static <T> EBDeferredRegister<T> create(String modid, EBAbstractManager<T> manager) {
+    public static <T extends IBenediction<?>> EBDeferredRegister<T> create(String modid, EBAbstractManager<T> manager) {
         return new EBDeferredRegister<>(modid, manager);
     }
 

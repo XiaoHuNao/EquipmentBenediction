@@ -4,7 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.xiaohunao.equipment_benediction.api.BenedictionManager;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -15,6 +17,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +26,9 @@ import java.util.*;
 /**
  * 通用的资源管理器基类
  */
-public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListener implements EBRegisteredEvent.EBRegistry<T> {
+public abstract class EBAbstractManager<T extends IBenediction<?>> extends SimpleJsonResourceReloadListener implements EBRegisteredEvent.EBRegistry<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EBAbstractManager.class);
-    
+    private final BenedictionManager benedictionManager = BenedictionManager.getInstance();
     protected final Map<ResourceLocation, T> staticResources = new HashMap<>();
     protected final Map<ResourceLocation, T> dynamicResources = new HashMap<>();
     protected final Set<ResourceLocation> expectedDynamicResources = new HashSet<>();
@@ -34,6 +37,7 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
 
     protected EBAbstractManager(Gson gson, String folder) {
         super(gson, folder);
+        benedictionManager.registerManager(this);
     }
 
     public void init(IEventBus modBus) {
@@ -77,6 +81,7 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
             throw new IllegalArgumentException("Duplicate static registration " + id);
         }
         allResources.put(id, value);
+        benedictionManager.registerBenediction(this.directory, id, value);
     }
 
     protected void registerDynamic(ResourceLocation id, T value) {
@@ -89,6 +94,7 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
             throw new IllegalArgumentException("Duplicate dynamic registration " + id);
         }
         allResources.put(id, value);
+        benedictionManager.registerBenediction(this.directory, id, value);
     }
 
 
@@ -115,13 +121,17 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
     public ResourceLocation getResource(T resource){
         ResourceLocation location = allResources.inverse().get(resource);
         if (location == null) {
-            throw new IllegalArgumentException("Resource not found: " + resource);
+            LOGGER.error("Resource not found: {}", resource);
         }
         return location;
     }
 
     public boolean hasResource(ResourceLocation id) {
         return allResources.containsKey(id);
+    }
+
+    public boolean hasResource(T resource){
+        return allResources.containsValue(resource);
     }
 
     protected void clearDynamicData() {
@@ -139,7 +149,7 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    protected void apply(@NotNull Map<ResourceLocation, JsonElement> pObject, @NotNull ResourceManager pResourceManager, @NotNull ProfilerFiller pProfiler) {
         long startTime = System.nanoTime();
         seenRegisterEvent = true;
         
@@ -176,5 +186,4 @@ public abstract class EBAbstractManager<T> extends SimpleJsonResourceReloadListe
     protected abstract void loadDynamicResource(ResourceLocation id, JsonElement json, ResourceManager manager, ProfilerFiller profiler);
 
     protected abstract String getManagerName();
-
 }
