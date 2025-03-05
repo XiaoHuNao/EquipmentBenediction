@@ -34,7 +34,7 @@ public class CommonHook {
             }, livingEntity);
         }
 
-        EquipmentSetManager.getInstance().updateSet(changeContext);
+//        EquipmentSetManager.getInstance().updateSet(changeContext);
 
         if (!changeContext.to().isEmpty()) {
             HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook) -> {

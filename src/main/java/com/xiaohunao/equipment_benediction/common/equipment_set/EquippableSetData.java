@@ -34,6 +34,10 @@ public final class EquippableSetData {
         return this;
     }
 
+    public Integer getRequiredMatchCount() {
+        return requiredMatchCount;
+    }
+
     public boolean isValid(LivingEntity livingEntity) {
         boolean match;
         if (requiredMatchCount == null){

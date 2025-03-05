@@ -123,7 +123,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     }
 
     private void registerEquipmentSet(EquipmentSet set){
-        for (EquippableSetData setData : set.getEquippableGroup().getEquippableSets().keySet()) {
+        for (EquippableSetData setData : set.getEquippableGroup().getEquippableSets()) {
             setData.equipages().values().forEach(ingredient -> {
                 if (!ingredient.isEmpty()) {
                     equipmentSetMap.put(set, ingredient);

@@ -1,55 +1,61 @@
 package com.xiaohunao.equipment_benediction.common.equipment_set;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
-import com.xiaohunao.equipment_benediction.common.hook.HookMap;
+import com.google.common.collect.Sets;
 
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.HashMap;
 
 public class EquippableGroup {
-    protected final Map<EquippableSetData, Integer> equippableSets;
+    private final Set<EquippableSetData> equippableSets;
+    private final Map<EquippableSetData, Boolean> exclusivityMap; // true表示独占，false表示非独占
 
-    public EquippableGroup(Map<EquippableSetData, Integer> equippableSets) {
+    public EquippableGroup(Set<EquippableSetData> equippableSets, Map<EquippableSetData, Boolean> exclusivityMap) {
         this.equippableSets = equippableSets;
+        this.exclusivityMap = exclusivityMap;
     }
 
-    public Map<EquippableSetData, Integer> getEquippableSets() {
+    public Set<EquippableSetData> getEquippableSets() {
         return equippableSets;
     }
 
-    public static class Builder {
-        private final Map<EquippableSetData, Integer> equippableSets = Maps.newLinkedHashMap();
+    public Map<EquippableSetData, Boolean> getExclusivityMap() {
+        return exclusivityMap;
+    }
 
-        public Builder addEquippableSet(EquippableSetData equippableSetData){
-            return addEquippableSet(1, equippableSetData);
+    // 设置某个效果是否独占
+    public void setExclusive(EquippableSetData data, boolean exclusive) {
+        if (equippableSets.contains(data)) {
+            exclusivityMap.put(data, exclusive);
         }
+    }
 
-        public Builder addEquippableSet(int priority, EquippableSetData equippableSetData) {
+    // 检查某个效果是否独占
+    public boolean isExclusive(EquippableSetData data) {
+        return exclusivityMap.getOrDefault(data, true);
+    }
+
+    public static class Builder {
+        private final LinkedHashSet<EquippableSetData> equippableSets = Sets.newLinkedHashSet();
+        protected final Map<EquippableSetData, Boolean> exclusivityMap = Maps.newHashMap();
+
+        public Builder addEquippableSet(EquippableSetData equippableSetData, boolean exclusivity) {
             if (equippableSetData == null) {
                 throw new IllegalArgumentException("EquippableSetData cannot be null");
             }
-            equippableSets.put(equippableSetData, priority);
-            LinkedHashMap<EquippableSetData, Integer> collect = equippableSets.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue())
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
-            equippableSets.clear();
-            equippableSets.putAll(collect);
+            equippableSets.add(equippableSetData);
+            this.exclusivityMap.put(equippableSetData, exclusivity);
             return this;
         }
 
-        public EquippableGroup build() {
-            return new EquippableGroup(equippableSets);
+        public Builder addEquippableSet(EquippableSetData equippableSetData) {
+            return addEquippableSet(equippableSetData, false);
         }
-        
+
+        public EquippableGroup build() {
+            return new EquippableGroup(equippableSets, exclusivityMap);
+        }
     }
-
-
 }

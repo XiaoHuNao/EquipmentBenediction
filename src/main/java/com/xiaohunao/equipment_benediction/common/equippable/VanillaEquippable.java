@@ -32,4 +32,8 @@ public class VanillaEquippable implements IEquippable {
         return new VanillaEquippable(EquipmentSlot.byName(slotType));
     }
 
+    public EquipmentSlot getSlotType() {
+        return slotType;
+    }
+
 }

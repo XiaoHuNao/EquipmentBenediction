@@ -28,7 +28,7 @@ public class EquipmentSet  implements IBenediction<CompoundTag> {
 
         HookMapManager.getInstance().register(this,hookMap);
 
-        equippableGroup.equippableSets.keySet().forEach(setData -> {
+        equippableGroup.getEquippableSets().forEach(setData -> {
             HookMap dataHookMap = setData.getHookMap();
             HookMapManager.getInstance().register(this, dataHookMap);
             setDataHookMap.put(setData, dataHookMap);
@@ -51,16 +51,6 @@ public class EquipmentSet  implements IBenediction<CompoundTag> {
 
     public EquippableSetData getEquippableSet(LivingEntity livingEntity) {
         EquippableSetData bestSetData = null;
-        int maxValue = 0;
-
-        for (Map.Entry<EquippableSetData, Integer> entry : equippableGroup.equippableSets.entrySet()) {
-            if (entry.getKey().isValid(livingEntity)) {
-                if (entry.getValue() > maxValue) {
-                    maxValue = entry.getValue();
-                    bestSetData = entry.getKey();
-                }
-            }
-        }
         return bestSetData;
     }
 
