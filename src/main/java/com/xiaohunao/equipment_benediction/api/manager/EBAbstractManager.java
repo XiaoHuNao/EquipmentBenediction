@@ -1,10 +1,9 @@
-package com.xiaohunao.equipment_benediction.common.manager;
+package com.xiaohunao.equipment_benediction.api.manager;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.xiaohunao.equipment_benediction.api.BenedictionManager;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;

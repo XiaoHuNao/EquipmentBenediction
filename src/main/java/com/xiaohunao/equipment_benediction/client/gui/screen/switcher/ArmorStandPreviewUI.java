@@ -1,0 +1,221 @@
+package com.xiaohunao.equipment_benediction.client.gui.screen.switcher;
+
+import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
+import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.*;
+
+public class ArmorStandPreviewUI {
+    private static final int ROTATION_INTERVAL = 1000;
+    private final int previewX1;
+    private final int previewX2;
+    private final int previewY1;
+    private final int previewY2;
+    
+    private final ArmorStand previewArmorStand;
+    private final Player player;
+    private long lastRotationTime = 0;
+    private Map<EquippableSetData, List<Map<EquipmentSlot, ItemStack>>> previewCombinations = new HashMap<>();
+
+    public ArmorStandPreviewUI(Player player, ArmorStand armorStand, int x1, int y1, int x2, int y2) {
+        this.player = player;
+        this.previewArmorStand = armorStand;
+        this.previewX1 = x1;
+        this.previewY1 = y1;
+        this.previewX2 = x2;
+        this.previewY2 = y2;
+    }
+
+    public void render(GuiGraphics guiGraphics, Set<EquippableSetData> selectedSets) {
+        if (previewArmorStand == null) return;
+
+        clearArmorStandEquipment();
+        updatePreviewIfNeeded(selectedSets);
+        applySelectedSetsToArmorStand(selectedSets);
+        renderArmorStand(guiGraphics);
+    }
+
+    private void clearArmorStandEquipment() {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            previewArmorStand.setItemSlot(slot, ItemStack.EMPTY);
+        }
+    }
+
+    private void updatePreviewIfNeeded(Set<EquippableSetData> selectedSets) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastRotationTime > ROTATION_INTERVAL) {
+            updatePreviewCombinations(selectedSets);
+            lastRotationTime = currentTime;
+        }
+    }
+
+    private void renderArmorStand(GuiGraphics guiGraphics) {
+        float rotationAngle = (float) ((player.tickCount % 1080) * 360) / 1080;
+        InventoryScreen.renderEntityInInventoryFollowsAngle(
+            guiGraphics,
+            previewX1, previewY1, previewX2, previewY2,
+            30, 0.0F, rotationAngle, 0.0F,
+            previewArmorStand
+        );
+    }
+
+    private void applySelectedSetsToArmorStand(Set<EquippableSetData> selectedSets) {
+        // 先处理独占的套装
+        for (EquippableSetData setData : selectedSets) {
+            // 获取所属的EquipmentSet和EquippableGroup
+            EquipmentSet equipmentSet = findEquipmentSetForData(setData);
+            if (equipmentSet != null && equipmentSet.getEquippableGroup().isExclusive(setData)) {
+                applySetToArmorStand(setData);
+                return;
+            }
+        }
+
+        // 处理非独占的套装
+        for (EquippableSetData setData : selectedSets) {
+            EquipmentSet equipmentSet = findEquipmentSetForData(setData);
+            if (equipmentSet != null && !equipmentSet.getEquippableGroup().isExclusive(setData)) {
+                applySetToArmorStand(setData);
+            }
+        }
+    }
+
+    private EquipmentSet findEquipmentSetForData(EquippableSetData setData) {
+        // 从EquipmentSetManager获取所有装备集
+        Map<ResourceLocation, EquipmentSet> allSets = EquipmentSetManager.getInstance().getAllResources();
+        
+        // 遍历查找包含该setData的EquipmentSet
+        for (EquipmentSet set : allSets.values()) {
+            if (set.getEquippableGroup().getEquippableSets().contains(setData)) {
+                return set;
+            }
+        }
+        return null;
+    }
+
+    private void applySetToArmorStand(EquippableSetData setData) {
+        if (setData.getRequiredMatchCount() != null) {
+            applyPartialSet(setData);
+        } else {
+            applyFullSet(setData);
+        }
+    }
+
+    private void applyPartialSet(EquippableSetData setData) {
+        List<Map<EquipmentSlot, ItemStack>> combinations = previewCombinations.get(setData);
+        if (combinations != null && !combinations.isEmpty()) {
+            int index = (int) ((System.currentTimeMillis() / ROTATION_INTERVAL) % combinations.size());
+            Map<EquipmentSlot, ItemStack> currentPreview = combinations.get(index);
+            for (Map.Entry<EquipmentSlot, ItemStack> entry : currentPreview.entrySet()) {
+                if (previewArmorStand.getItemBySlot(entry.getKey()).isEmpty()) {
+                    previewArmorStand.setItemSlot(entry.getKey(), entry.getValue().copy());
+                }
+            }
+        }
+    }
+
+    private void applyFullSet(EquippableSetData setData) {
+        Map<IEquippable, Ingredient> equipages = setData.equipages();
+        for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
+            if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
+                EquipmentSlot slot = vanillaEquippable.getSlotType();
+                if (previewArmorStand.getItemBySlot(slot).isEmpty()) {
+                    ItemStack[] matchingStacks = entry.getValue().getItems();
+                    if (matchingStacks.length > 0) {
+                        previewArmorStand.setItemSlot(slot, matchingStacks[0].copy());
+                    }
+                }
+            }
+        }
+    }
+
+    private void updatePreviewCombinations(Set<EquippableSetData> selectedSets) {
+        previewCombinations.clear();
+        for (EquippableSetData setData : selectedSets) {
+            if (setData.getRequiredMatchCount() != null) {
+                List<Map<EquipmentSlot, ItemStack>> combinations = generatePreviewCombinations(setData);
+                previewCombinations.put(setData, combinations);
+            }
+        }
+    }
+
+    private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquippableSetData setData) {
+        List<Map<EquipmentSlot, ItemStack>> combinations = new ArrayList<>();
+        Map<IEquippable, Ingredient> equipages = setData.equipages();
+        Integer requiredCount = setData.getRequiredMatchCount();
+        
+        if (requiredCount == null) return combinations;
+        
+        Map<EquipmentSlot, List<ItemStack>> slotItems = new HashMap<>();
+        for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
+            if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
+                EquipmentSlot slot = vanillaEquippable.getSlotType();
+                ItemStack[] items = entry.getValue().getItems();
+                if (items.length > 0) {
+                    slotItems.put(slot, Arrays.asList(items));
+                }
+            }
+        }
+
+        List<EquipmentSlot> availableSlots = new ArrayList<>(slotItems.keySet());
+        if (availableSlots.size() >= requiredCount) {
+            generateCombinationsHelper(new ArrayList<>(), availableSlots, 0, requiredCount, slotItems, combinations);
+        }
+
+        return combinations;
+    }
+
+    private void generateCombinationsHelper(
+        List<EquipmentSlot> current,
+        List<EquipmentSlot> slots,
+        int start,
+        int remaining,
+        Map<EquipmentSlot, List<ItemStack>> slotItems,
+        List<Map<EquipmentSlot, ItemStack>> result
+    ) {
+        if (remaining == 0) {
+            Map<EquipmentSlot, ItemStack> combination = new HashMap<>();
+            for (EquipmentSlot slot : current) {
+                List<ItemStack> items = slotItems.get(slot);
+                combination.put(slot, items.get(0));
+            }
+            result.add(combination);
+            return;
+        }
+
+        for (int i = start; i <= slots.size() - remaining; i++) {
+            current.add(slots.get(i));
+            generateCombinationsHelper(current, slots, i + 1, remaining - 1, slotItems, result);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    /**
+     * 渲染玩家当前装备到盔甲架上
+     */
+    public void renderPlayerEquipment(GuiGraphics guiGraphics, Player player) {
+        if (previewArmorStand == null) return;
+
+        clearArmorStandEquipment();
+        
+        // 复制玩家当前装备到盔甲架
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack playerItem = player.getItemBySlot(slot);
+            if (!playerItem.isEmpty()) {
+                previewArmorStand.setItemSlot(slot, playerItem.copy());
+            }
+        }
+        
+        renderArmorStand(guiGraphics);
+    }
+} 

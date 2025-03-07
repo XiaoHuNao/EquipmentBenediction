@@ -1,4 +1,4 @@
-package com.xiaohunao.equipment_benediction.api;
+package com.xiaohunao.equipment_benediction.api.manager;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -11,7 +11,6 @@ import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeC
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
-import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -54,18 +53,18 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
         if (hasEquipmentSet(from)) {
             getEquipmentSet(from).forEach((set) -> {
-                EquippableSetData equippableSetData = set.getEquippableSet(livingEntity);
-                if (equippableSetData == null) {
-                    removePlayerSet(set, livingEntity);
-                }
+//                EquippableSetData equippableSetData = set.getEquippableSet(livingEntity);
+//                if (equippableSetData == null) {
+//                    removePlayerSet(set, livingEntity);
+//                }
             });
         }
         if (hasEquipmentSet(to)) {
             getEquipmentSet(to).forEach((set) -> {
-                EquippableSetData equippableSetData = set.getEquippableSet(livingEntity);
-                if (equippableSetData != null) {
-                    addPlayerSet(set, livingEntity);
-                }
+//                EquippableSetData equippableSetData = set.getEquippableSet(livingEntity);
+//                if (equippableSetData != null) {
+//                    addPlayerSet(set, livingEntity,);
+//                }
             });
         }
     }
@@ -77,9 +76,9 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     }
 
     private void addPlayerSet(EquipmentSet equipmentSet, LivingEntity livingEntity) {
-        EntityHookManager entityHookManager = livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).addHookMap(equipmentSet, equipmentSet.getHookMap(livingEntity));
-        livingEntity.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
-        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),entityHookManager.serializeNBT(null)));
+//        EntityHookManager entityHookManager = livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).addHookMap(equipmentSet, equipmentSet.getHookMap(livingEntity));
+//        livingEntity.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
+//        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),entityHookManager.serializeNBT(null)));
     }
 
     private boolean hasEquipmentSet(LivingEntity livingEntity, EquipmentSet equipmentSet) {

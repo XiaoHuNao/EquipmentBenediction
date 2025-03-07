@@ -2,8 +2,7 @@ package com.xiaohunao.equipment_benediction.common.attachment;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.mojang.serialization.JsonOps;
-import com.xiaohunao.equipment_benediction.api.BenedictionManager;
+import com.xiaohunao.equipment_benediction.api.manager.BenedictionManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
@@ -15,8 +14,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
-
-import java.util.Map;
 
 public class EntityHookManager implements INBTSerializable<CompoundTag> {
     private final BiMap<IBenediction<?>, HookMap> hooks = HashBiMap.create();
@@ -90,14 +87,22 @@ public class EntityHookManager implements INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
         hooks.clear();
+        equipmentSetHookMap.clear();
+        modifierHookMap.clear();
         compoundTag.getAllKeys().forEach(key -> {
             ResourceLocation benedictionManagerId = ResourceLocation.tryParse(key);
             if (benedictionManagerId != null) {
-                IBenediction<?> benedictionByManagerId = BenedictionManager.getInstance().getBenedictionByManagerId(benedictionManagerId);
-                if (benedictionByManagerId != null) {
+                IBenediction<?> benediction = BenedictionManager.getInstance().getBenedictionByManagerId(benedictionManagerId);
+                if (benediction != null) {
                     Tag hookMapTag = compoundTag.get(key);
                     HookMap hookMap = HookMap.CODEC.parse(NbtOps.INSTANCE, hookMapTag).getOrThrow();
-                    hooks.put(benedictionByManagerId, hookMap);
+                    if (benediction instanceof EquipmentSet equipmentSet){
+                        equipmentSetHookMap.put(equipmentSet, hookMap);
+                    }
+                    if (benediction instanceof Modifier modifier){
+                        modifierHookMap.put(modifier, hookMap);
+                    }
+                    hooks.put(benediction, hookMap);
                 }
             }
         });

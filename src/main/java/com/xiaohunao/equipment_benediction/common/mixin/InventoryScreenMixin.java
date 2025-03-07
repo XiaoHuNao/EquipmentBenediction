@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.xiaohunao.equipment_benediction.client.gui.widget.TransparentButton;
-import com.xiaohunao.equipment_benediction.client.gui.screen.EquipmentSetSwitcherScreen;
+import com.xiaohunao.equipment_benediction.client.gui.screen.switcher.EquipmentSetSwitcherScreen;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu>{
@@ -28,8 +28,8 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     @Inject(method = "init", at = @At("RETURN"))
     private void init(CallbackInfo info) {
         this.setSwitching = new TransparentButton(
-            this.leftPos + 33, this.topPos + 14,
-            34, 60,
+            this.leftPos + 32, this.topPos + 12,
+            36, 65,
             Component.translatable("equipment.benediction.switch_set"),
             (button) -> {
                 openEquipmentSetUI();

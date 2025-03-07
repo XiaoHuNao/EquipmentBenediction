@@ -1,7 +1,6 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
-import com.xiaohunao.equipment_benediction.api.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import net.minecraft.world.entity.EquipmentSlot;

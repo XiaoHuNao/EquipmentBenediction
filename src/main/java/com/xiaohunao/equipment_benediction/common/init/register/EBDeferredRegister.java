@@ -2,17 +2,14 @@ package com.xiaohunao.equipment_benediction.common.init.register;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
-import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
+import com.xiaohunao.equipment_benediction.api.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**

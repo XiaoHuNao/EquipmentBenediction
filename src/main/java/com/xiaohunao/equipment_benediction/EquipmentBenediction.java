@@ -1,10 +1,9 @@
 package com.xiaohunao.equipment_benediction;
 
 import com.mojang.logging.LogUtils;
-import com.xiaohunao.equipment_benediction.api.BenedictionManager;
-import com.xiaohunao.equipment_benediction.api.EquipmentSetManager;
+import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.init.*;
-import com.xiaohunao.equipment_benediction.api.ModifierManager;
+import com.xiaohunao.equipment_benediction.api.manager.ModifierManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

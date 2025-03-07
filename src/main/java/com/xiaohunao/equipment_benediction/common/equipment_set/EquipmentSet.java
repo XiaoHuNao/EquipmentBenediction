@@ -49,15 +49,6 @@ public class EquipmentSet  implements IBenediction<CompoundTag> {
         return setDataHookMap;
     }
 
-    public EquippableSetData getEquippableSet(LivingEntity livingEntity) {
-        EquippableSetData bestSetData = null;
-        return bestSetData;
-    }
-
-    public HookMap getHookMap(LivingEntity livingEntity) {
-        return this.hookMap.merge(getEquippableSet(livingEntity).getHookMap());
-    }
-
     @Override
     public CompoundTag serializeNBT() {
         return null;

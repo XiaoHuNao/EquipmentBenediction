@@ -1,16 +1,12 @@
-package com.xiaohunao.equipment_benediction.api;
+package com.xiaohunao.equipment_benediction.api.manager;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
-import com.xiaohunao.equipment_benediction.common.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class BenedictionManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(BenedictionManager.class);

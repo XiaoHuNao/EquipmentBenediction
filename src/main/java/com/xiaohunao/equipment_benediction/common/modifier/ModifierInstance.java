@@ -2,7 +2,7 @@ package com.xiaohunao.equipment_benediction.common.modifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.xiaohunao.equipment_benediction.api.ModifierManager;
+import com.xiaohunao.equipment_benediction.api.manager.ModifierManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class ModifierInstance {

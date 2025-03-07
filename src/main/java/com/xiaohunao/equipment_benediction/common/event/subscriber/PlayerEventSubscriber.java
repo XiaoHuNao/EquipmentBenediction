@@ -1,7 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.google.common.collect.BiMap;
-import com.xiaohunao.equipment_benediction.api.BenedictionManager;
+import com.xiaohunao.equipment_benediction.api.manager.BenedictionManager;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
