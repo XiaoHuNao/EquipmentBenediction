@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,8 +18,8 @@ import com.xiaohunao.equipment_benediction.client.gui.screen.switcher.EquipmentS
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu>{
-    //套装切换按钮
-    public Button setSwitching;
+    @Unique
+    public Button equipmentBenediction$setSwitching;
 
 
     public InventoryScreenMixin(InventoryMenu menu, Inventory playerInventory, Component title) {
@@ -27,27 +28,23 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
 
     @Inject(method = "init", at = @At("RETURN"))
     private void init(CallbackInfo info) {
-        this.setSwitching = new TransparentButton(
+        this.equipmentBenediction$setSwitching = new TransparentButton(
             this.leftPos + 32, this.topPos + 12,
             36, 65,
             Component.translatable("equipment.benediction.switch_set"),
             (button) -> {
-                openEquipmentSetUI();
+                if (this.minecraft != null && this.minecraft.player != null) {
+                    this.minecraft.setScreen(new EquipmentSetSwitcherScreen(this.minecraft.player));
+                }
             }
         );
-
-        this.addRenderableWidget(this.setSwitching);
+        this.addWidget(this.equipmentBenediction$setSwitching);
     }
 
-    private void openEquipmentSetUI() {
-        if (this.minecraft != null && this.minecraft.player != null) {
-            this.minecraft.setScreen(new EquipmentSetSwitcherScreen(this.minecraft.player));
-        }
-    }
 
     @Inject(method = "renderBg", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/InventoryScreen;renderEntityInInventoryFollowsMouse(Lnet/minecraft/client/gui/GuiGraphics;IIIIIFFFLnet/minecraft/world/entity/LivingEntity;)V", shift = At.Shift.AFTER))
     private void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        this.setSwitching.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.equipmentBenediction$setSwitching.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
 

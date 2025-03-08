@@ -14,5 +14,5 @@ public class EBEquipmentSets {
     );
 
     public static final EBDeferredHolder<EquipmentSet> DIAMOND_SET = EQUIPMENT_SET.register("diamond_set", DiamondSet::new);
-    public static final EBDeferredHolder<EquipmentSet> GOLD_SET = EQUIPMENT_SET.register("gold_set", DiamondSet::new);
+//    public static final EBDeferredHolder<EquipmentSet> GOLD_SET = EQUIPMENT_SET.register("gold_set", DiamondSet::new);
 }

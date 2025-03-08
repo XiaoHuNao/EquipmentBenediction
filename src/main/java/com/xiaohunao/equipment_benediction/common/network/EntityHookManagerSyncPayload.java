@@ -32,17 +32,28 @@ public record EntityHookManagerSyncPayload(Integer entityId, CompoundTag entityH
     public void clientHandle(IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player().isLocalPlayer()) {
-                Level level = context.player().level();
-                Entity entity = level.getEntity(entityId);
-                if (entity != null) {
-                    EntityHookManager entityHookManager1 = new EntityHookManager();
-                    entityHookManager1.deserializeNBT(null, entityHookManager);
-                    entity.setData(EBAttachments.ENTITY_HOOK_MANAGER.get(), entityHookManager1);
-                } else {
-                    EquipmentBenediction.LOGGER.error("EntityHookManagerSyncPayload: entity is null, entityId: {}", entityId);
-                }
+                updateEntity(context);
             }
         });
     }
 
+    public void serverHandle(IPayloadContext payloadContext) {
+        payloadContext.enqueueWork(() -> {
+            if (!payloadContext.player().isLocalPlayer()) {
+                updateEntity(payloadContext);
+            }
+        });
+    }
+
+    private void updateEntity(IPayloadContext payloadContext) {
+        Level level = payloadContext.player().level();
+        Entity entity = level.getEntity(entityId);
+        if (entity != null) {
+            EntityHookManager entityHookManager1 = new EntityHookManager();
+            entityHookManager1.deserializeNBT(null, entityHookManager);
+            entity.setData(EBAttachments.ENTITY_HOOK_MANAGER.get(), entityHookManager1);
+        }else {
+            EquipmentBenediction.LOGGER.error("EntityHookManagerSyncPayload: entity is null, entityId: {}", entityId);
+        }
+    }
 }

@@ -2,6 +2,8 @@ package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.google.common.collect.BiMap;
 import com.xiaohunao.equipment_benediction.api.manager.BenedictionManager;
+import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
+import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -9,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 
@@ -23,18 +26,9 @@ public class PlayerEventSubscriber {
             return;
         }
 
-        if (player.isShiftKeyDown()){
-//            ItemStack mainHandItem = player.getMainHandItem();
-//            mainHandItem.set(EBDataComponentTypes.MODIFIER.get(),new ModifierComponent(List.of(new ModifierInstance(EquipmentBenediction.asResource("magnetic"),1))));
-
-            player.getActiveEffectsMap().forEach((effect, effectInstance) -> {
-                System.out.println(effect);
-                System.out.println(effectInstance);
-            });
-
-            BenedictionManager instance = BenedictionManager.getInstance();
-            BiMap<ResourceLocation, IBenediction<?>> allBenedictions = instance.getAllBenedictions();
-            System.out.println(allBenedictions);
+        if (player.isShiftKeyDown() && !FMLEnvironment.production){
+            EntityHookManager data = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
+            System.out.println(data);
         }
 
     }

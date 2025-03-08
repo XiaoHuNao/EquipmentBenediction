@@ -25,14 +25,10 @@ public class EquippableGroup {
         return exclusivityMap;
     }
 
-    // 设置某个效果是否独占
-    public void setExclusive(EquippableSetData data, boolean exclusive) {
-        if (equippableSets.contains(data)) {
-            exclusivityMap.put(data, exclusive);
-        }
-    }
 
-    // 检查某个效果是否独占
+
+
+
     public boolean isExclusive(EquippableSetData data) {
         return exclusivityMap.getOrDefault(data, true);
     }

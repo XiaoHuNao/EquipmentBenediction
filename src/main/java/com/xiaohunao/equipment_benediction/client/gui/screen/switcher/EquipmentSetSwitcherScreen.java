@@ -68,7 +68,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
             previewManager = new ArmorStandPreviewUI(player, createArmorStand(),
                 leftPos + 120, topPos + 10, leftPos + 170, topPos + 80);
         }
-        equipmentSetManager = new SetButtonUI(leftPos, topPos);
+        equipmentSetManager = new SetButtonUI(player,leftPos, topPos);
         scrollUI = new ScrollUI(leftPos, topPos);
     }
 

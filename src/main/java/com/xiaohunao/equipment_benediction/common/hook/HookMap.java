@@ -87,6 +87,54 @@ public class HookMap {
         return builder.build();
     }
 
+    public HookMap deduplicate(HookMap hookMap) {
+        Builder builder = new Builder();
+
+        for (Map.Entry<HookType<?>, IHook> entry : hookMap.hooks.entries()) {
+            if (!hooks.containsEntry(entry.getKey(), entry.getValue())) {
+                builder.addHook(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * 比较两个 HookMap 的内容是否相同
+     * 这个方法用于比较 HookMap 的内容，而不是对象引用
+     * 
+     * @param other 要比较的 HookMap
+     * @return 如果内容相同则返回 true
+     */
+    public boolean contentEquals(HookMap other) {
+        if (this == other) return true;
+        if (other == null) return false;
+        
+        // 比较两个 HookMap 的 hooks 内容是否相同
+        if (hooks.size() != other.hooks.size()) return false;
+        
+        // 检查每个 HookType 的 hooks 集合是否相同
+        for (HookType<?> type : hooks.keySet()) {
+            Collection<IHook> thisHooks = hooks.get(type);
+            Collection<IHook> otherHooks = other.hooks.get(type);
+            
+            if (thisHooks.size() != otherHooks.size()) return false;
+            
+            // 比较每个 hook 是否存在于另一个集合中
+            for (IHook hook : thisHooks) {
+                boolean found = false;
+                for (IHook otherHook : otherHooks) {
+                    if (hook.equals(otherHook)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return false;
+            }
+        }
+        
+        return true;
+    }
 
 //    public static final StreamCodec<ByteBuf, HookMap> STREAM_CODEC = new StreamCodec<>() {
 //        @Override
@@ -248,4 +296,6 @@ public class HookMap {
             return new HookMap(hooks, hooksById);
         }
     }
+
+    
 }
