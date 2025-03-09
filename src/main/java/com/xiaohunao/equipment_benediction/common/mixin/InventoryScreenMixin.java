@@ -1,6 +1,8 @@
 package com.xiaohunao.equipment_benediction.common.mixin;
 
 
+import com.xiaohunao.equipment_benediction.client.gui.screen.switcher.EquipmentSetSwitcherScreen;
+import com.xiaohunao.equipment_benediction.client.gui.widget.TransparentButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -13,8 +15,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.xiaohunao.equipment_benediction.client.gui.widget.TransparentButton;
-import com.xiaohunao.equipment_benediction.client.gui.screen.switcher.EquipmentSetSwitcherScreen;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenMixin extends EffectRenderingInventoryScreen<InventoryMenu>{
@@ -29,8 +29,8 @@ public abstract class InventoryScreenMixin extends EffectRenderingInventoryScree
     @Inject(method = "init", at = @At("RETURN"))
     private void init(CallbackInfo info) {
         this.equipmentBenediction$setSwitching = new TransparentButton(
-            this.leftPos + 32, this.topPos + 12,
-            36, 65,
+            this.leftPos + 32, this.topPos + 12 + 12,
+            36, 65 - 24,
             Component.translatable("equipment.benediction.switch_set"),
             (button) -> {
                 if (this.minecraft != null && this.minecraft.player != null) {

@@ -27,8 +27,8 @@ public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingIn
     @Inject(method = "init", at = @At("RETURN"))
     private void init(CallbackInfo info) {
         this.equipmentBenediction$setSwitching = new TransparentButton(
-            this.leftPos + 73, this.topPos + 6,
-            32, 43,
+            this.leftPos + 73, this.topPos + 6 + 12,
+            32, 43 - 24,
             Component.translatable("equipment.benediction.switch_set"),
             (button) -> {
                 if (this.minecraft != null && this.minecraft.player != null) {
