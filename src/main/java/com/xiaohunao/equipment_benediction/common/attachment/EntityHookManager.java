@@ -23,8 +23,7 @@ import java.util.Collections;
 
 public class EntityHookManager implements INBTSerializable<CompoundTag> {
     private final BiMap<IBenediction<?>, HookMap> hooks = HashBiMap.create();
-    private final BiMap<EquipmentSet, HookMap> equippedHooks = HashBiMap.create();
-    private final Multimap<EquipmentSet, EquippableSetData> equipmentSetHookMap = HashMultimap.create();
+    private final EquipmentSetHookManager setHookManager = new EquipmentSetHookManager(this);
 
     public BiMap<IBenediction<?>, HookMap> getHooks() {
         return hooks;
@@ -32,6 +31,11 @@ public class EntityHookManager implements INBTSerializable<CompoundTag> {
 
     public EntityHookManager removeHookMap(IBenediction<?> owner) {
         hooks.remove(owner);
+        return this;
+    }
+
+    public EntityHookManager addHookMap(IBenediction<?> owner, HookMap hookMap) {
+        hooks.put(owner, hookMap);
         return this;
     }
 
@@ -47,131 +51,21 @@ public class EntityHookManager implements INBTSerializable<CompoundTag> {
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
 
-        CompoundTag hooksTag = new CompoundTag();
-        hooks.forEach((owner, hookMap) -> {
-            Tag hookMapTag = HookMap.CODEC.encodeStart(NbtOps.INSTANCE, hookMap).getOrThrow();
-            ResourceLocation benedictionManagerId = BenedictionManager.getInstance().getBenedictionManagerId(owner);
-            hooksTag.put(benedictionManagerId.toString(), hookMapTag);
-        });
-        compoundTag.put("hooks", hooksTag);
-
-
-        CompoundTag equipmentSetDataTag = new CompoundTag();
-        equipmentSetHookMap.asMap().forEach((equipmentSet, setDataCollection) -> {
-            ResourceLocation setId = BenedictionManager.getInstance().getBenedictionManagerId(equipmentSet);
-
-            ListTag setDataListTag = new ListTag();
-            
-            for (EquippableSetData setData : setDataCollection) {
-                CompoundTag setDataTag = new CompoundTag();
-                Tag setDataHookMapTag = HookMap.CODEC.encodeStart(NbtOps.INSTANCE, setData.getHookMap()).getOrThrow();
-                setDataTag.put("hook_map", setDataHookMapTag);
-                setDataListTag.add(setDataTag);
-            }
-            
-            equipmentSetDataTag.put(setId.toString(), setDataListTag);
-        });
-        compoundTag.put("equipment_set_data", equipmentSetDataTag);
-        
+        compoundTag.put("equipped_hooks", setHookManager.serializeNBT(provider));
         return compoundTag;
     }
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
         hooks.clear();
-        equippedHooks.clear();
-        equipmentSetHookMap.clear();
-
-        if (compoundTag.contains("hooks")) {
-            CompoundTag hooksTag = compoundTag.getCompound("hooks");
-            hooksTag.getAllKeys().forEach(key -> {
-                ResourceLocation benedictionManagerId = ResourceLocation.tryParse(key);
-                if (benedictionManagerId != null) {
-                    IBenediction<?> benediction = BenedictionManager.getInstance().getBenedictionByManagerId(benedictionManagerId);
-                    if (benediction != null) {
-                        Tag hookMapTag = hooksTag.get(key);
-                        HookMap hookMap = HookMap.CODEC.parse(NbtOps.INSTANCE, hookMapTag).getOrThrow();
-                        hooks.put(benediction, hookMap);
-
-                        if (benediction instanceof EquipmentSet equipmentSet){
-                            equippedHooks.put(equipmentSet, hookMap);
-                        }
-                    }
-                }
-            });
-        }
-
-        if (compoundTag.contains("equipment_set_data")) {
-            CompoundTag equipmentSetDataTag = compoundTag.getCompound("equipment_set_data");
-            equipmentSetDataTag.getAllKeys().forEach(key -> {
-                ResourceLocation setId = ResourceLocation.tryParse(key);
-                if (setId != null) {
-                    IBenediction<?> benediction = BenedictionManager.getInstance().getBenedictionByManagerId(setId);
-                    ListTag list = equipmentSetDataTag.getList(key, Tag.TAG_COMPOUND);
-
-                    list.forEach(setData -> {
-                        if (setData instanceof CompoundTag setDataTag && benediction instanceof EquipmentSet equipmentSet) {
-                            if (setDataTag.contains("hook_map")) {
-                                Tag setDataHookMapTag = setDataTag.get("hook_map");
-                                HookMap setDataHookMap = HookMap.CODEC.parse(NbtOps.INSTANCE, setDataHookMapTag).getOrThrow();
-
-                                for (EquippableSetData equalsSetData : equipmentSet.getEquippableGroup().getEquippableSets()) {
-                                    if (equalsSetData.getHookMap().contentEquals(setDataHookMap)) {
-                                        equipmentSetHookMap.put(equipmentSet, equalsSetData);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        }
+        setHookManager.deserializeNBT(provider, compoundTag);
     }
 
-    public boolean contains(Object owner) {
+    public boolean contains(IBenediction<?> owner) {
         return hooks.containsKey(owner);
     }
 
-    public void updateEquippableSetData(EquipmentSet equipmentSet, EquippableSetData equippableSetData, boolean takeEffect) {
-        boolean containsKey = equipmentSetHookMap.containsKey(equipmentSet);
-        if (takeEffect){
-            if (!containsKey){
-                equipmentSetHookMap.put(equipmentSet, equippableSetData);
-                equippedHooks.put(equipmentSet, equippableSetData.getHookMap());
-                hooks.put(equipmentSet, equippableSetData.getHookMap());
-            }else {
-                equipmentSetHookMap.put(equipmentSet, equippableSetData);
-                HookMap hookMap = hooks.get(equipmentSet);
-                if (hookMap != null){
-                    HookMap merge = hookMap.merge(equippableSetData.getHookMap());
-                    hooks.put(equipmentSet, merge);
-                    equippedHooks.put(equipmentSet, merge);
-                }
-            }
-        }else {
-            if (containsKey) {
-                equipmentSetHookMap.remove(equipmentSet, equippableSetData);
-                HookMap hookMap = hooks.get(equipmentSet);
-                if (hookMap != null) {
-                    HookMap deduplicate = hookMap.deduplicate(equippableSetData.getHookMap());
-                    if (deduplicate.isEmpty()) {
-                        hooks.remove(equipmentSet);
-                        equippedHooks.remove(equipmentSet);
-                    } else {
-                        hooks.put(equipmentSet, deduplicate);
-                        equippedHooks.put(equipmentSet, deduplicate);
-                    }
-                }
-            }
-        }
-    }
-
-
-    public BiMap<EquipmentSet, HookMap> getEquipmentSetHookMap() {
-        return equippedHooks;
-    }
-    public Multimap<EquipmentSet, EquippableSetData> getEquipmentSetDataHookMap() {
-        return equipmentSetHookMap;
+    public EquipmentSetHookManager getSetHookManager() {
+        return setHookManager;
     }
 }

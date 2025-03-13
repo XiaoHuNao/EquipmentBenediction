@@ -6,18 +6,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
 import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
 import net.minecraft.resources.ResourceLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public class HookMap {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HookMap.class);
     private final Multimap<HookType<?>, IHook> hooks;
-    private final BiMap<Integer, IHook> hooksById;
 
     private HookMap(Multimap<HookType<?>, IHook> hooks, BiMap<Integer, IHook> hooksById) {
         this.hooks = ImmutableMultimap.copyOf(hooks);
-        this.hooksById = ImmutableBiMap.copyOf(hooksById);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,19 +40,6 @@ public class HookMap {
 
     public boolean isEmpty() {
         return hooks.isEmpty();
-    }
-
-    public IHook getHookById(int id) {
-        return hooksById.get(id);
-    }
-
-    public Integer getIdForHook(IHook hook) {
-        return hooksById.inverse().get(hook);
-    }
-
-
-    public Set<Integer> getAllHookIds() {
-        return hooksById.keySet();
     }
 
     public static Builder builder() {
@@ -99,28 +89,18 @@ public class HookMap {
         return builder.build();
     }
 
-    /**
-     * 比较两个 HookMap 的内容是否相同
-     * 这个方法用于比较 HookMap 的内容，而不是对象引用
-     * 
-     * @param other 要比较的 HookMap
-     * @return 如果内容相同则返回 true
-     */
     public boolean contentEquals(HookMap other) {
         if (this == other) return true;
         if (other == null) return false;
-        
-        // 比较两个 HookMap 的 hooks 内容是否相同
+
         if (hooks.size() != other.hooks.size()) return false;
-        
-        // 检查每个 HookType 的 hooks 集合是否相同
+
         for (HookType<?> type : hooks.keySet()) {
             Collection<IHook> thisHooks = hooks.get(type);
             Collection<IHook> otherHooks = other.hooks.get(type);
             
             if (thisHooks.size() != otherHooks.size()) return false;
-            
-            // 比较每个 hook 是否存在于另一个集合中
+
             for (IHook hook : thisHooks) {
                 boolean found = false;
                 for (IHook otherHook : otherHooks) {
@@ -136,133 +116,57 @@ public class HookMap {
         return true;
     }
 
-//    public static final StreamCodec<ByteBuf, HookMap> STREAM_CODEC = new StreamCodec<>() {
-//        @Override
-//        public void encode(@NotNull ByteBuf byteBuf, HookMap hookMap) {
-//            Map<ResourceLocation, List<Integer>> result = new HashMap<>();
-//            HookMapManager manager = HookMapManager.getInstance();
-//
-//            for (Map.Entry<HookType<?>, Collection<IHook>> entry : hookMap.hooks.asMap().entrySet()) {
-//                HookType<?> type = entry.getKey();
-//                Collection<IHook> hookList = entry.getValue();
-//
-//                ResourceLocation typeId = EBRegistries.Suppliers.HOOK_TYPES.get().getKey(type);
-//
-//                List<Integer> hookIds = new ArrayList<>();
-//                for (IHook hook : hookList) {
-//                    Integer id = manager.getIdForHook(hook);
-//                    if (id != null) {
-//                        hookIds.add(id);
-//                    }
-//                }
-//
-//                if (!hookIds.isEmpty()) {
-//                    result.put(typeId, hookIds);
-//                }
-//            }
-//
-//            // 写入映射大小
-//            FriendlyByteBuf buf = new FriendlyByteBuf(byteBuf);
-//            buf.writeVarInt(result.size());
-//
-//            // 写入每个条目
-//            for (Map.Entry<ResourceLocation, List<Integer>> entry : result.entrySet()) {
-//                // 写入ResourceLocation
-//                buf.writeResourceLocation(entry.getKey());
-//
-//                // 写入ID列表
-//                List<Integer> ids = entry.getValue();
-//                buf.writeVarInt(ids.size());
-//                for (Integer id : ids) {
-//                    buf.writeVarInt(id);
-//                }
-//            }
-//        }
-//
-//        @Override
-//        public @NotNull HookMap decode(@NotNull ByteBuf byteBuf) {
-//            FriendlyByteBuf buf = new FriendlyByteBuf(byteBuf);
-//            Builder builder = HookMap.builder();
-//            HookMapManager manager = HookMapManager.getInstance();
-//
-//            // 读取映射大小
-//            int size = buf.readVarInt();
-//
-//            // 读取每个条目
-//            for (int i = 0; i < size; i++) {
-//                // 读取ResourceLocation
-//                ResourceLocation typeId = buf.readResourceLocation();
-//
-//                // 读取ID列表
-//                int idsSize = buf.readVarInt();
-//                List<Integer> hookIds = new ArrayList<>(idsSize);
-//                for (int j = 0; j < idsSize; j++) {
-//                    hookIds.add(buf.readVarInt());
-//                }
-//
-//                HookType<?> type = EBRegistries.Suppliers.HOOK_TYPES.get().get(typeId);
-//                if (type != null) {
-//                    for (Integer hookId : hookIds) {
-//                        IHook hook = manager.getHookById(hookId);
-//                        if (hook != null) {
-//                            builder.addHook(type, hook);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            return builder.build();
-//        }
-//    };
 
     public static final Codec<HookMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            // 序列化为HookType的注册表ID和Hook的全局ID的映射
-            Codec.unboundedMap(
-                    ResourceLocation.CODEC, // HookType的注册表ID
-                    Codec.list(Codec.INT) // Hook的全局ID列表
-            ).fieldOf("hooks").forGetter(hookMap -> {
-                Map<ResourceLocation, List<Integer>> result = new HashMap<>();
-                HookMapManager manager = HookMapManager.getInstance();
+        Codec.unboundedMap(
+            ResourceLocation.CODEC,
+            Codec.list(Codec.INT)
+        ).fieldOf("hooks").forGetter(hookMap -> {
+            Map<ResourceLocation, List<Integer>> result = new HashMap<>();
+            HookMapManager manager = HookMapManager.getInstance();
 
-                for (Map.Entry<HookType<?>, Collection<IHook>> entry : hookMap.hooks.asMap().entrySet()) {
-                    HookType<?> type = entry.getKey();
-                    Collection<IHook> hookList = entry.getValue();
-
-                    ResourceLocation typeId = EBRegistries.Suppliers.HOOK_TYPES.get().getKey(type);
-
-                    List<Integer> hookIds = new ArrayList<>();
-                    for (IHook hook : hookList) {
-                        Integer id = manager.getIdForHook(hook);
-                        if (id != null) {
-                            hookIds.add(id);
-                        }
-                    }
-
-                    if (!hookIds.isEmpty()) {
-                        result.put(typeId, hookIds);
-                    }
+            hookMap.hooks.asMap().forEach((hookType, hooks) -> {
+                ResourceLocation typeId = EBRegistries.Suppliers.HOOK_TYPES.get().getKey(hookType);
+                if (typeId == null){
+                    LOGGER.error("Hook type {} is not registered", hookType);
                 }
 
-                return result;
-            })
+                hooks.forEach(hook -> {
+                    if (result.containsKey(typeId)) {
+                        result.get(typeId).add(manager.getIdForHook(hook));
+                    }else {
+                        result.put(typeId, new ArrayList<>(manager.getIdForHook(hook)));
+                    }
+                });
+
+            });
+
+            return result.isEmpty() ? Collections.emptyMap() : result;
+        })
     ).apply(instance, map -> {
         Builder builder = HookMap.builder();
         HookMapManager manager = HookMapManager.getInstance();
 
-        for (Map.Entry<ResourceLocation, List<Integer>> entry : map.entrySet()) {
-            ResourceLocation typeId = entry.getKey();
-            List<Integer> hookIds = entry.getValue();
-
-            HookType<?> type = EBRegistries.Suppliers.HOOK_TYPES.get().get(typeId);
-            if (type != null) {
-                for (Integer hookId : hookIds) {
-                    IHook hook = manager.getHookById(hookId);
-                    if (hook != null) {
-                        builder.addHook(type, hook);
-                    }
-                }
-            }
+        if (map.isEmpty()) {
+            LOGGER.error("Hook map: {} is empty", map);
+            return builder.build();
         }
+
+        map.forEach((typeId, hookIds) -> {
+            HookType<?> hookType = EBRegistries.Suppliers.HOOK_TYPES.get().get(typeId);
+            if (hookType == null) {
+                LOGGER.error("Hook type {} is not registered", typeId);
+                return;
+            }
+            hookIds.forEach(hookId -> {
+                IHook hook = manager.getHookById(hookId);
+                if (hook == null) {
+                    LOGGER.error("Hook {} is not registered", hookId);
+                    return;
+                }
+                builder.addHook(hookType, hook);
+            });
+        });
 
         return builder.build();
     }));

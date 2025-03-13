@@ -151,7 +151,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
         }
 
         EntityHookManager entityHookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-        equipmentSets.addAll(entityHookManager.getEquipmentSetHookMap().keySet());
+        equipmentSets.addAll(entityHookManager.getSetHookManager().getActivatedEquipped().keySet());
         return equipmentSets;
     }
 

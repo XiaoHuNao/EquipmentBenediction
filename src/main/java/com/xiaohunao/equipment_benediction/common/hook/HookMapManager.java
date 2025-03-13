@@ -47,18 +47,7 @@ public class HookMapManager {
         return globalHooksById.inverse().get(hook);
     }
     
-    public Set<Integer> getAllHookIds() {
-        return globalHooksById.keySet();
-    }
-    
-    public Object getOwnerByHook(IHook hook) {
-        for (Map.Entry<Object, HookMap> entry : hookMapRegistry.entrySet()) {
-            if (entry.getValue().getIdForHook(hook) != null) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
+
 
     public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
         EntityHookManager entityHookManager = entity.getData(EBAttachments.ENTITY_HOOK_MANAGER);

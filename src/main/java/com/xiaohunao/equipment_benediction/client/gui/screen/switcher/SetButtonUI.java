@@ -53,7 +53,7 @@ public class SetButtonUI {
 
         for (EquipmentSet equipmentSet : equipmentSets) {
             EntityHookManager hookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-            Collection<EquippableSetData> equippableSetData = hookManager.getEquipmentSetDataHookMap().get(equipmentSet);
+            Collection<EquippableSetData> equippableSetData = hookManager.getSetHookManager().getActivatedEquipped().get(equipmentSet);
 
 
             buttonY += GROUP_SPACING;
@@ -157,7 +157,7 @@ public class SetButtonUI {
     private void handleButtonClick(EquippableSetButton clickedButton,boolean selected) {
         EquipmentSet equipmentSet = clickedButton.getEquipmentSet();
         EntityHookManager entityHookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-        entityHookManager.updateEquippableSetData(equipmentSet, clickedButton.getSetData(), selected);
+        entityHookManager.getSetHookManager().updateEquippable(equipmentSet, clickedButton.getSetData(), selected);
         player.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
         PacketDistributor.sendToServer(new EntityHookManagerSyncPayload(player.getId(),entityHookManager.serializeNBT(null)));
     }

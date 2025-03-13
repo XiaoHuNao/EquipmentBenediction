@@ -29,6 +29,8 @@ public class EquipmentBenediction{
         EBHookTypes.HOOK_TYPES.register(modEventBus);
         EBDataComponentTypes.DATA_COMPONENT_TYPE.register(modEventBus);
         EBAttachments.TYPES.register(modEventBus);
+
+        EBCodecRegistries.init(modEventBus);
         modEventBus.addListener(EBRegistries::registerRegistries);
     }
 

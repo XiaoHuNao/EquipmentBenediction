@@ -128,7 +128,7 @@ public class ArmorStandPreviewUI {
         Map<IEquippable, Ingredient> equipages = setData.equipages();
         for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
             if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
-                EquipmentSlot slot = vanillaEquippable.getSlotType();
+                EquipmentSlot slot = vanillaEquippable.slotType();
                 if (previewArmorStand.getItemBySlot(slot).isEmpty()) {
                     ItemStack[] matchingStacks = entry.getValue().getItems();
                     if (matchingStacks.length > 0) {
@@ -152,14 +152,14 @@ public class ArmorStandPreviewUI {
     private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquippableSetData setData) {
         List<Map<EquipmentSlot, ItemStack>> combinations = new ArrayList<>();
         Map<IEquippable, Ingredient> equipages = setData.equipages();
-        Integer requiredCount = setData.getRequiredMatchCount();
-        
-        if (requiredCount == null) return combinations;
+        Optional<Integer> requiredMatchCount = setData.getRequiredMatchCount();
+
+        if (requiredMatchCount.isEmpty()) return combinations;
         
         Map<EquipmentSlot, List<ItemStack>> slotItems = new HashMap<>();
         for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
             if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
-                EquipmentSlot slot = vanillaEquippable.getSlotType();
+                EquipmentSlot slot = vanillaEquippable.slotType();
                 ItemStack[] items = entry.getValue().getItems();
                 if (items.length > 0) {
                     slotItems.put(slot, Arrays.asList(items));
@@ -168,8 +168,8 @@ public class ArmorStandPreviewUI {
         }
 
         List<EquipmentSlot> availableSlots = new ArrayList<>(slotItems.keySet());
-        if (availableSlots.size() >= requiredCount) {
-            generateCombinationsHelper(new ArrayList<>(), availableSlots, 0, requiredCount, slotItems, combinations);
+        if (availableSlots.size() >= requiredMatchCount.get()) {
+            generateCombinationsHelper(new ArrayList<>(), availableSlots, 0, requiredMatchCount.get(), slotItems, combinations);
         }
 
         return combinations;
