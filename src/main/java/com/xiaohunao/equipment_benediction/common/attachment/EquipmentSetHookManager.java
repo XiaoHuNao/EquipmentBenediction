@@ -98,9 +98,7 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
             ResourceLocation setId = benedictionManager.getBenedictionManagerId(equipmentSet);
             ListTag setDataListTag = new ListTag();
             equippableSetData.forEach(setData -> {
-                EquippableSetData.CODEC.encodeStart(NbtOps.INSTANCE, setData).result().ifPresent(tag1 -> {
-                    setDataListTag.add(tag1);
-                });
+                EquippableSetData.CODEC.encodeStart(NbtOps.INSTANCE, setData).result().ifPresent(setDataListTag::add);
             });
             tag.put(setId.toString(), setDataListTag);
         });
@@ -110,8 +108,9 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
     private void deserializeEquippedHooks(CompoundTag hooksTag) {
         LOGGER.debug("Deserializing equipped hooks from tag: {}", hooksTag);
         hooksTag.getAllKeys().forEach(key -> {
-            ResourceLocation setId = ResourceLocation.tryParse(key);
             Tag tag = hooksTag.get(key);
+            if (tag instanceof CompoundTag compoundTag && compoundTag.isEmpty()) return;
+            ResourceLocation setId = ResourceLocation.tryParse(key);
             LOGGER.debug("Deserializing HookMap for {}, tag: {}", key, tag);
             HookMap hookMap = HookMap.CODEC.parse(NbtOps.INSTANCE, tag).getOrThrow();
             LOGGER.debug("Deserialized HookMap: {}", hookMap);
