@@ -10,7 +10,7 @@ import net.neoforged.fml.event.IModBusEvent;
  * 注册事件类，用于处理对象的注册
  * @param <T> 要注册的对象类型
  */
-public class EBRegisteredEvent<T extends IBenediction<?>> extends Event implements IModBusEvent {
+public class EBRegisteredEvent<T extends IBenediction> extends Event implements IModBusEvent {
     private final EBRegistry<T> registry;
 
     public EBRegisteredEvent(EBRegistry<T> registry) {
@@ -63,7 +63,7 @@ public class EBRegisteredEvent<T extends IBenediction<?>> extends Event implemen
      * @param <T> 要注册的对象类型
      * @return 注册事件实例
      */
-    public static <T extends IBenediction<?>> EBRegisteredEvent<T> create(EBRegistry<T> registry) {
+    public static <T extends IBenediction> EBRegisteredEvent<T> create(EBRegistry<T> registry) {
         return new EBRegisteredEvent<>(registry);
     }
 }

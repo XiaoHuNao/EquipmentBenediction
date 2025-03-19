@@ -73,7 +73,6 @@ public class ArmorStandPreviewUI {
     private void applySelectedSetsToArmorStand(Set<EquippableSetData> selectedSets) {
         // 先处理独占的套装
         for (EquippableSetData setData : selectedSets) {
-            // 获取所属的EquipmentSet和EquippableGroup
             EquipmentSet equipmentSet = findEquipmentSetForData(setData);
             if (equipmentSet != null && equipmentSet.getEquippableGroup().isExclusive(setData)) {
                 applySetToArmorStand(setData);
@@ -91,12 +90,10 @@ public class ArmorStandPreviewUI {
     }
 
     private EquipmentSet findEquipmentSetForData(EquippableSetData setData) {
-        // 从EquipmentSetManager获取所有装备集
         Map<ResourceLocation, EquipmentSet> allSets = EquipmentSetManager.getInstance().getAllResources();
-        
-        // 遍历查找包含该setData的EquipmentSet
+
         for (EquipmentSet set : allSets.values()) {
-            if (set.getEquippableGroup().getEquippableSets().contains(setData)) {
+            if (set.getEquippableGroup().getEquippableMaps().inverse().containsKey(setData)) {
                 return set;
             }
         }
@@ -104,11 +101,8 @@ public class ArmorStandPreviewUI {
     }
 
     private void applySetToArmorStand(EquippableSetData setData) {
-        if (setData.getRequiredMatchCount() != null) {
-            applyPartialSet(setData);
-        } else {
-            applyFullSet(setData);
-        }
+        setData.requiredMatchCount()
+                .ifPresentOrElse(count -> applyPartialSet(setData),() -> applyFullSet(setData));
     }
 
     private void applyPartialSet(EquippableSetData setData) {
@@ -142,27 +136,26 @@ public class ArmorStandPreviewUI {
     private void updatePreviewCombinations(Set<EquippableSetData> selectedSets) {
         previewCombinations.clear();
         for (EquippableSetData setData : selectedSets) {
-            if (setData.getRequiredMatchCount() != null) {
+            setData.requiredMatchCount().ifPresent(count -> {
                 List<Map<EquipmentSlot, ItemStack>> combinations = generatePreviewCombinations(setData);
                 previewCombinations.put(setData, combinations);
-            }
+            });
         }
     }
 
     private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquippableSetData setData) {
         List<Map<EquipmentSlot, ItemStack>> combinations = new ArrayList<>();
         Map<IEquippable, Ingredient> equipages = setData.equipages();
-        Optional<Integer> requiredMatchCount = setData.getRequiredMatchCount();
+        Optional<Integer> requiredMatchCount = setData.requiredMatchCount();
 
         if (requiredMatchCount.isEmpty()) return combinations;
         
         Map<EquipmentSlot, List<ItemStack>> slotItems = new HashMap<>();
         for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
-            if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
-                EquipmentSlot slot = vanillaEquippable.slotType();
+            if (entry.getKey() instanceof VanillaEquippable(EquipmentSlot slotType)) {
                 ItemStack[] items = entry.getValue().getItems();
                 if (items.length > 0) {
-                    slotItems.put(slot, Arrays.asList(items));
+                    slotItems.put(slotType, Arrays.asList(items));
                 }
             }
         }
@@ -200,9 +193,6 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    /**
-     * 渲染玩家当前装备到盔甲架上
-     */
     public void renderPlayerEquipment(GuiGraphics guiGraphics, Player player) {
         if (previewArmorStand == null) return;
 

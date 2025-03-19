@@ -52,7 +52,7 @@ public class HookMapManager {
     public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
         EntityHookManager entityHookManager = entity.getData(EBAttachments.ENTITY_HOOK_MANAGER);
         R result = null;
-        for (Map.Entry<IBenediction<?>, HookMap> entry : entityHookManager.getHooks().entrySet()) {
+        for (Map.Entry<IBenediction, HookMap> entry : entityHookManager.getHooks().entrySet()) {
             Object owner = entry.getKey();
             HookMap hookMap = entry.getValue();
             if (hookMap.get(hookType).isEmpty()) {

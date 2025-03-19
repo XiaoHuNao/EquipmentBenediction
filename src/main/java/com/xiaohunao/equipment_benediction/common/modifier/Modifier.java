@@ -5,7 +5,7 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.nbt.CompoundTag;
 
-public class Modifier implements IBenediction<CompoundTag> {
+public class Modifier implements IBenediction {
     protected final HookMap hookMap;
 
     public Modifier() {
@@ -25,15 +25,5 @@ public class Modifier implements IBenediction<CompoundTag> {
 
     public HookMap getHookMap() {
         return hookMap;
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return null;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag tag) {
-
     }
 }

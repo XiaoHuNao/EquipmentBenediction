@@ -117,59 +117,60 @@ public class HookMap {
     }
 
 
-    public static final Codec<HookMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Codec.unboundedMap(
-            ResourceLocation.CODEC,
-            Codec.list(Codec.INT)
-        ).fieldOf("hooks").forGetter(hookMap -> {
-            Map<ResourceLocation, List<Integer>> result = new HashMap<>();
-            HookMapManager manager = HookMapManager.getInstance();
-
-            hookMap.hooks.asMap().forEach((hookType, hooks) -> {
-                ResourceLocation typeId = EBRegistries.Suppliers.HOOK_TYPES.get().getKey(hookType);
-                if (typeId == null){
-                    LOGGER.error("Hook type {} is not registered", hookType);
-                }
-
-                hooks.forEach(hook -> {
-                    if (result.containsKey(typeId)) {
-                        result.get(typeId).add(manager.getIdForHook(hook));
-                    }else {
-                        result.put(typeId, new ArrayList<>(manager.getIdForHook(hook)));
-                    }
-                });
-
-            });
-
-            return result.isEmpty() ? Collections.emptyMap() : result;
-        })
-    ).apply(instance, map -> {
-        Builder builder = HookMap.builder();
-        HookMapManager manager = HookMapManager.getInstance();
-
-        if (map.isEmpty()) {
-            LOGGER.error("Hook map: {} is empty", map);
-            return builder.build();
-        }
-
-        map.forEach((typeId, hookIds) -> {
-            HookType<?> hookType = EBRegistries.Suppliers.HOOK_TYPES.get().get(typeId);
-            if (hookType == null) {
-                LOGGER.error("Hook type {} is not registered", typeId);
-                return;
-            }
-            hookIds.forEach(hookId -> {
-                IHook hook = manager.getHookById(hookId);
-                if (hook == null) {
-                    LOGGER.error("Hook {} is not registered", hookId);
-                    return;
-                }
-                builder.addHook(hookType, hook);
-            });
-        });
-
-        return builder.build();
-    }));
+//    public static final Codec<HookMap> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+//        Codec.unboundedMap(
+//            ResourceLocation.CODEC,
+//            Codec.list(Codec.INT)
+//        ).fieldOf("hooks").forGetter(hookMap -> {
+//            Map<ResourceLocation, List<Integer>> result = new HashMap<>();
+//            HookMapManager manager = HookMapManager.getInstance();
+//
+//            hookMap.hooks.asMap().forEach((hookType, hooks) -> {
+//                ResourceLocation typeId = EBRegistries.Suppliers.HOOK_TYPES.get().getKey(hookType);
+//                if (typeId == null){
+//                    LOGGER.error("Hook type {} is not registered", hookType);
+//                }
+//
+//                hooks.forEach(hook -> {
+//                    Integer id = manager.getIdForHook(hook);
+//                    if (result.containsKey(typeId)) {
+//                        result.get(typeId).add(id);
+//                    }else {
+//                        result.put(typeId,Lists.newArrayList(id));
+//                    }
+//                });
+//
+//            });
+//
+//            return result.isEmpty() ? Collections.emptyMap() : result;
+//        })
+//    ).apply(instance, map -> {
+//        Builder builder = HookMap.builder();
+//        HookMapManager manager = HookMapManager.getInstance();
+//
+//        if (map.isEmpty()) {
+//            LOGGER.error("Hook map: {} is empty", map);
+//            return builder.build();
+//        }
+//
+//        map.forEach((typeId, hookIds) -> {
+//            HookType<?> hookType = EBRegistries.Suppliers.HOOK_TYPES.get().get(typeId);
+//            if (hookType == null) {
+//                LOGGER.error("Hook type {} is not registered", typeId);
+//                return;
+//            }
+//            hookIds.forEach(hookId -> {
+//                IHook hook = manager.getHookById(hookId);
+//                if (hook == null) {
+//                    LOGGER.error("Hook {} is not registered", hookId);
+//                    return;
+//                }
+//                builder.addHook(hookType, hook);
+//            });
+//        });
+//
+//        return builder.build();
+//    }));
 
     public static class Builder {
         private final Multimap<HookType<?>, IHook> hooks = HashMultimap.create();

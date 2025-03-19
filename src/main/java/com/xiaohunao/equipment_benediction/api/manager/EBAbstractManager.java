@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * 通用的资源管理器基类
  */
-public abstract class EBAbstractManager<T extends IBenediction<?>> extends SimpleJsonResourceReloadListener implements EBRegisteredEvent.EBRegistry<T> {
+public abstract class EBAbstractManager<T extends IBenediction> extends SimpleJsonResourceReloadListener implements EBRegisteredEvent.EBRegistry<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EBAbstractManager.class);
     private final BenedictionManager benedictionManager = BenedictionManager.getInstance();
     protected final Map<ResourceLocation, T> staticResources = new HashMap<>();

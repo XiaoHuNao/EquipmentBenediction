@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.hook.dynamic;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
+import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageType;
@@ -16,13 +17,13 @@ public record DamageTypeImmunityHook(List<Holder<DamageType>> damageTypes) imple
     ).apply(instance, DamageTypeImmunityHook::new));
 
     @Override
-    public boolean onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
+    public DamageResultContainer onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
         DamageContainer damageContainer = attackEntityContext.damageContainer();
         for (Holder<DamageType> type : damageTypes) {
             if (damageContainer.getSource().typeHolder().is(type)) {
-                return true;
+                return DamageResultContainer.cancel(true);
             }
         }
-        return false;
+        return DamageResultContainer.empty();
     }
 }

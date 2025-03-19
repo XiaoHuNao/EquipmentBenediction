@@ -2,6 +2,7 @@ package com.xiaohunao.equipment_benediction.common.init;
 
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
+import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -18,5 +19,7 @@ public class EBNetworks {
         registrar.playBidirectional(EntityHookManagerSyncPayload.TYPE, EntityHookManagerSyncPayload.STREAM_CODEC, new DirectionalPayloadHandler<>(
                 EntityHookManagerSyncPayload::clientHandle,EntityHookManagerSyncPayload::serverHandle)
         );
+
+        registrar.playToServer(PostEquipOrUnequipEquipmentHookPayload.TYPE, PostEquipOrUnequipEquipmentHookPayload.STREAM_CODEC, PostEquipOrUnequipEquipmentHookPayload::serverHandle);
     }
 }

@@ -13,5 +13,5 @@ public class EBAttachments {
     public static final DeferredRegister<AttachmentType<?>> TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EquipmentBenediction.MODID);
 
     public static final DeferredHolder<AttachmentType<?>,AttachmentType<EntityHookManager>> ENTITY_HOOK_MANAGER = TYPES.register("entity_hook_manager",
-            () -> AttachmentType.serializable(EntityHookManager::new).copyOnDeath().build());
+            () -> AttachmentType.serializable(EntityHookManager::new).build());
 }

@@ -13,7 +13,7 @@ public class BenedictionManager {
 
     private static final BenedictionManager Instance = new BenedictionManager();
     protected final BiMap<String,EBAbstractManager<?>> managers = HashBiMap.create();
-    protected final BiMap<ResourceLocation, IBenediction<?>> allBenedictions = HashBiMap.create();
+    protected final BiMap<ResourceLocation, IBenediction> allBenedictions = HashBiMap.create();
 
 
     private BenedictionManager() {
@@ -23,7 +23,7 @@ public class BenedictionManager {
         return Instance;
     }
 
-    public void registerBenediction(String managerID, ResourceLocation id, IBenediction<?> benediction){
+    public void registerBenediction(String managerID, ResourceLocation id, IBenediction benediction){
         ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(managerID, id.toDebugFileName());
         if (allBenedictions.containsKey(resourceLocation)) {
             LOGGER.error("Benediction already registered: {}", resourceLocation);
@@ -38,15 +38,15 @@ public class BenedictionManager {
         managers.put(manager.directory, manager);
     }
 
-    public IBenediction<?> getBenedictionByManagerId(ResourceLocation id){
+    public IBenediction getBenedictionByManagerId(ResourceLocation id){
         return allBenedictions.get(id);
     }
 
-    public IBenediction<?> getBenedictionByManager(String managerID, ResourceLocation id){
+    public IBenediction getBenedictionByManager(String managerID, ResourceLocation id){
         return allBenedictions.get(ResourceLocation.fromNamespaceAndPath(managerID, id.toDebugFileName()));
     }
 
-    public IBenediction<?> getBenedictionFromManagers(ResourceLocation id){
+    public IBenediction getBenedictionFromManagers(ResourceLocation id){
         for (String managerID : managers.keySet()) {
             if (managers.get(managerID).hasResource(id)) {
                 return managers.get(managerID).getResource(id);
@@ -55,11 +55,11 @@ public class BenedictionManager {
         return null;
     }
 
-    public ResourceLocation getBenedictionManagerId(IBenediction<?> benediction){
+    public ResourceLocation getBenedictionManagerId(IBenediction benediction){
         return allBenedictions.inverse().get(benediction);
     }
 
-    public ResourceLocation getBenedictionId(String managerID, IBenediction<?> benediction){
+    public ResourceLocation getBenedictionId(String managerID, IBenediction benediction){
         EBAbstractManager<?> manager = managers.get(managerID);
         if (manager == null) {
             return null;
@@ -75,7 +75,7 @@ public class BenedictionManager {
             return null;
         }
     }
-    public ResourceLocation getBenedictionIdFromManagers(IBenediction<?> benediction){
+    public ResourceLocation getBenedictionIdFromManagers(IBenediction benediction){
         ResourceLocation benedictionManagerId = getBenedictionManagerId(benediction);
         String namespace = benedictionManagerId.getNamespace();
         EBAbstractManager<?> manager = managers.get(namespace);
@@ -83,7 +83,7 @@ public class BenedictionManager {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends IBenediction<?>> ResourceLocation getResourceLocationFromManager(EBAbstractManager<T> manager, IBenediction<?> benediction) {
+    private <T extends IBenediction> ResourceLocation getResourceLocationFromManager(EBAbstractManager<T> manager, IBenediction benediction) {
         return manager.getResource((T) benediction);
     }
 
@@ -92,7 +92,7 @@ public class BenedictionManager {
         return ImmutableBiMap.copyOf(managers);
     }
 
-    public BiMap<ResourceLocation, IBenediction<?>> getAllBenedictions(){
+    public BiMap<ResourceLocation, IBenediction> getAllBenedictions(){
         return ImmutableBiMap.copyOf(allBenedictions);
     }
 

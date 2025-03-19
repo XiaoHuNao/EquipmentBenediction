@@ -10,6 +10,7 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import com.xiaohunao.equipment_benediction.common.utils.CodecUtils;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -23,32 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-public final class EquippableSetData {
-
-    public final static Codec<EquippableSetData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.unboundedMap(IEquippable.CODEC, Ingredient.CODEC).fieldOf("equipages").forGetter(EquippableSetData::equipages),
-            Codec.list(IEquippable.CODEC).optionalFieldOf("blacklist", Lists.newArrayList()).forGetter(EquippableSetData::blacklist),
-            Codec.INT.optionalFieldOf("required_match_count").forGetter(EquippableSetData::getRequiredMatchCount),
-            HookMap.CODEC.optionalFieldOf("hooks", new HookMap.Builder().build()).forGetter(EquippableSetData::getHookMap)
-    ).apply(instance, EquippableSetData::new));
-    private final Map<IEquippable, Ingredient> equipages;
-    private final List<IEquippable> blacklist;
-    private final Optional<Integer> requiredMatchCount;
-    private final HookMap hookMap;
-
-    public EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEquippable> blacklist,
-                             Optional<Integer> requiredMatchCount, HookMap hookMap) {
-        this.equipages = equipages;
-        this.blacklist = blacklist;
-        this.requiredMatchCount = requiredMatchCount;
-        this.hookMap = hookMap;
-    }
-
-
-    public Optional<Integer> getRequiredMatchCount() {
-        return requiredMatchCount;
-    }
-
+public record EquippableSetData(Map<IEquippable, Ingredient> equipages,List<IEquippable> blacklist,Optional<Integer> requiredMatchCount,HookMap hookMap) {
     public boolean isValid(LivingEntity livingEntity) {
         boolean match = requiredMatchCount.map(integer -> equipages.entrySet()
                         .stream()
@@ -64,27 +40,6 @@ public final class EquippableSetData {
 
         return match && black;
     }
-
-    public Map<IEquippable, Ingredient> equipages() {
-        return equipages;
-    }
-
-    public List<IEquippable> blacklist() {
-        return blacklist;
-    }
-
-    public HookMap getHookMap() {
-        return hookMap;
-    }
-
-    public Optional<Integer> requiredMatchCount() {
-        return requiredMatchCount;
-    }
-
-    public HookMap hookMap() {
-        return hookMap;
-    }
-
 
     public static class Builder {
         private final Map<IEquippable, Ingredient> equipages = Maps.newHashMap();
@@ -151,7 +106,7 @@ public final class EquippableSetData {
                 hookMap.addHook(EBHookTypes.MOB_EFFECT_APPLICABLE.get(), wearBonus);
             }
 
-            if (!wearBonus.damageTypes.isEmpty()) {
+            if (!wearBonus.damageTypeTagKeys.isEmpty() || !wearBonus.damageTypeResourceKeys.isEmpty()) {
                 hookMap.addHook(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), wearBonus);
             }
             return this;

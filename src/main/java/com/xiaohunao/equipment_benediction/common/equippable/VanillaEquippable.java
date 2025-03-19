@@ -48,4 +48,10 @@ public record VanillaEquippable(EquipmentSlot slotType) implements IEquippable {
         return new VanillaEquippable(slotType);
     }
 
+    @Override
+    public String toString() {
+        return "VanillaEquippable{" +
+                "slotType=" + slotType +
+                '}';
+    }
 }

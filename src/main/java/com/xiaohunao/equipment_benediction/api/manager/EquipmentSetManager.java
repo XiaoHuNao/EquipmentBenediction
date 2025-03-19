@@ -1,12 +1,10 @@
 package com.xiaohunao.equipment_benediction.api.manager;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
+import com.xiaohunao.equipment_benediction.common.attachment.EquipmentSetHookManager;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
@@ -33,8 +31,9 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     public static final String FOLDER = "equipment_set";
     private static final EquipmentSetManager INSTANCE = new EquipmentSetManager();
 
-    private static final Multimap<EquipmentSet, Ingredient> equipmentSetMap = HashMultimap.create();
-    private static final Multimap<EquipmentSet, EquippableSetData> equipmentSetDataMap = HashMultimap.create();
+    private static final Multimap<EquipmentSet, Ingredient> equipmentSetMaps = HashMultimap.create();
+    private static final Multimap<EquipmentSet, EquippableSetData> equipmentSetDataMaps = HashMultimap.create();
+    private static final BiMap<ResourceLocation,EquippableSetData> equipmentSetDataRegistry = HashBiMap.create();
 
 
     protected EquipmentSetManager() {
@@ -46,30 +45,42 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     }
 
     public void updateSet(LivingEquipmentChangeContext livingEquipmentChangeContext) {
-//        LivingEntity livingEntity = livingEquipmentChangeContext.livingEntity();
-//        if (livingEntity.level().isClientSide){
-//            return;
-//        }
-//        ItemStack to = livingEquipmentChangeContext.to();
-//        ItemStack from = livingEquipmentChangeContext.from();
-//
-//        EntityHookManager hookManager = livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-//        Multimap<EquipmentSet, EquippableSetData> equipmentSetDataHookMap = hookManager.getEquipmentSetDataHookMap();
-//
-//        // 创建一个列表来存储需要移除的数据，避免并发修改异常
-//        List<Map.Entry<EquipmentSet, EquippableSetData>> toRemove = Lists.newArrayList();
-//
-//        // 检查并收集无效的套装数据
-//        equipmentSetDataHookMap.entries().forEach(entry -> {
-//            if (!entry.getValue().isValid(livingEntity)) {
-//                toRemove.add(entry);
-//            }
-//        });
-//
-//        // 移除无效的套装数据
-//        toRemove.forEach(entry -> {
-//            hookManager.updateEquippableSetData(entry.getKey(), entry.getValue(), false);
-//        });
+        LivingEntity livingEntity = livingEquipmentChangeContext.livingEntity();
+        if (livingEntity.level().isClientSide){
+            return;
+        }
+        ItemStack to = livingEquipmentChangeContext.to();
+        ItemStack from = livingEquipmentChangeContext.from();
+
+        EquipmentSetHookManager setHookManager = livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).getSetHookManager();
+        Multimap<EquipmentSet, EquippableSetData> activatedEquipped = setHookManager.getActivatedEquipped();
+        Multimap<EquipmentSet, EquippableSetData> selectedEquipped = setHookManager.getSelectedEquipped();
+
+        List<Map.Entry<EquipmentSet, EquippableSetData>> toRemove = Lists.newArrayList();
+        activatedEquipped.entries().forEach(entry -> {
+            if (!entry.getValue().isValid(livingEntity)) {
+                toRemove.add(entry);
+            }
+        });
+
+        toRemove.forEach(entry -> {
+            setHookManager.updateEquippable(entry.getKey(), entry.getValue(), false);
+        });
+
+
+        Collection<EquipmentSet> allPossibleSets = getEquipmentSet(to);
+        selectedEquipped.forEach((set, setData) -> {
+            boolean contains = allPossibleSets.contains(set);
+            boolean valid = setData.isValid(livingEntity);
+
+            if (contains && valid) {
+                setHookManager.updateEquippable(set, setData, true);
+            }
+        });
+
+
+
+
 //
 //        // 处理新添加的装备
 //        if (hasEquipmentSet(to)) {
@@ -132,13 +143,15 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
     public Collection<EquipmentSet> getEquipmentSet(ItemStack stack) {
         List<EquipmentSet> sets = Lists.newArrayList();
-        equipmentSetMap.entries().forEach(entry -> {
+        equipmentSetMaps.entries().forEach(entry -> {
             if (entry.getValue().test(stack)) {
                 sets.add(entry.getKey());
             }
         });
         return ImmutableList.copyOf(sets);
     }
+
+
 
     @Override
     protected String getManagerName() {
@@ -162,12 +175,24 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     }
 
     private void registerEquipmentSet(EquipmentSet set){
-        for (EquippableSetData setData : set.getEquippableGroup().getEquippableSets()) {
-            setData.equipages().values().forEach(ingredient -> {
+        set.getEquippableGroup().getEquippableMaps().forEach((key,data) -> {
+            equipmentSetDataMaps.put(set, data);
+            equipmentSetDataRegistry.put(set.getBranchLocation(key), data);
+
+            data.equipages().values().forEach(ingredient -> {
                 if (!ingredient.isEmpty()) {
-                    equipmentSetMap.put(set, ingredient);
+                    equipmentSetMaps.put(set, ingredient);
                 }
             });
-            equipmentSetDataMap.put(set, setData);
-        }
-    }}
+        });
+
+    }
+
+    public EquippableSetData getBranchResource(ResourceLocation branchLocation) {
+        return equipmentSetDataRegistry.get(branchLocation);
+    }
+
+    public ResourceLocation getBranchResource(EquippableSetData setData) {
+        return equipmentSetDataRegistry.inverse().get(setData);
+    }
+}

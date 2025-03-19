@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
+import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.EquipEquipmentHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
@@ -28,13 +29,15 @@ import java.util.Map;
 public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobEffectApplicableHook, LivingIncomingDamageHook {
     protected final Map<Holder<Attribute>,AttributeModifier> attributes;
     protected final List<MobEffectInstance> mobEffectInstances;
-    protected final List<ResourceKey<DamageType>> damageTypes;
+    protected final List<ResourceKey<DamageType>> damageTypeResourceKeys;
+    protected final List<TagKey<DamageType>> damageTypeTagKeys;
     protected final List<Holder<MobEffect>> mobEffects;
 
-    public WearBonus(Map<Holder<Attribute>, AttributeModifier> attributes, List<MobEffectInstance> mobEffectInstances, List<ResourceKey<DamageType>> damageTypes, List<Holder<MobEffect>> mobEffects) {
+    public WearBonus(Map<Holder<Attribute>, AttributeModifier> attributes, List<MobEffectInstance> mobEffectInstances, List<ResourceKey<DamageType>> damageTypeResourceKeys, List<TagKey<DamageType>> damageTypeTagKeys, List<Holder<MobEffect>> mobEffects) {
         this.attributes = attributes;
         this.mobEffectInstances = mobEffectInstances;
-        this.damageTypes = damageTypes;
+        this.damageTypeResourceKeys = damageTypeResourceKeys;
+        this.damageTypeTagKeys = damageTypeTagKeys;
         this.mobEffects = mobEffects;
     }
 
@@ -68,14 +71,20 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
     }
 
     @Override
-    public boolean onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
+    public DamageResultContainer onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
         DamageContainer damageContainer = attackEntityContext.damageContainer();
-        for (ResourceKey<DamageType> type : damageTypes) {
+        for (ResourceKey<DamageType> type : damageTypeResourceKeys) {
             if (damageContainer.getSource().is(type)) {
-                return true;
+                return DamageResultContainer.cancel(true);
             }
         }
-        return false;
+
+        for (TagKey<DamageType> type : damageTypeTagKeys) {
+            if (damageContainer.getSource().is(type)) {
+                return DamageResultContainer.cancel(true);
+            }
+        }
+        return DamageResultContainer.empty();
     }
 
     @Override
@@ -126,7 +135,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
         }
 
         public WearBonus build() {
-            return new WearBonus(attributes, mobEffectInstances, damageTypeResourceKeys, mobEffects);
+            return new WearBonus(attributes, mobEffectInstances, damageTypeResourceKeys,damageTypeTagKeys, mobEffects);
         }
     }
 

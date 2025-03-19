@@ -11,6 +11,7 @@ import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetDat
 import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
+import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
@@ -60,7 +61,7 @@ public class SetButtonUI {
             buttonY += TITLE_HEIGHT;
 
             EquippableGroup equippableGroup = equipmentSet.getEquippableGroup();
-            Set<EquippableSetData> equippableSets = equippableGroup.getEquippableSets();
+            Collection<EquippableSetData> equippableSets = equippableGroup.getEquippableMaps().values();
             
             for (EquippableSetData setData : equippableSets) {
                 boolean isExclusive = equippableGroup.isExclusive(setData);
@@ -157,9 +158,20 @@ public class SetButtonUI {
     private void handleButtonClick(EquippableSetButton clickedButton,boolean selected) {
         EquipmentSet equipmentSet = clickedButton.getEquipmentSet();
         EntityHookManager entityHookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-        entityHookManager.getSetHookManager().updateEquippable(equipmentSet, clickedButton.getSetData(), selected);
-        player.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
+
+        if (!selected){
+            PacketDistributor.sendToServer(new PostEquipOrUnequipEquipmentHookPayload(selected));
+        }
+
+        entityHookManager.getSetHookManager()
+                .updateEquippable(equipmentSet, clickedButton.getSetData(), selected)
+                .updateSelectedEquipped(equipmentSet, clickedButton.getSetData(), selected)
+                .sync(player);
+
         PacketDistributor.sendToServer(new EntityHookManagerSyncPayload(player.getId(),entityHookManager.serializeNBT(null)));
+        if (selected){
+            PacketDistributor.sendToServer(new PostEquipOrUnequipEquipmentHookPayload(selected));
+        }
     }
 
     private void handleExclusiveButtonClick(EquippableSetButton clickedButton) {

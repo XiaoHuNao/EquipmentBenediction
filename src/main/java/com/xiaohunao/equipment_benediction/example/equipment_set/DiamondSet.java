@@ -77,9 +77,9 @@ public class DiamondSet extends EquipmentSet {
 
 
         equippableGroup
-                .addEquippableSet(setData1,true)
-                .addEquippableSet(setData2)
-                .addEquippableSet(setData3)
-                .addEquippableSet(setData4,true);
+                .addEquippableSet("111",setData1,true)
+                .addEquippableSet("222",setData2)
+                .addEquippableSet("333",setData3)
+                .addEquippableSet("444",setData4,true);
     }
 }

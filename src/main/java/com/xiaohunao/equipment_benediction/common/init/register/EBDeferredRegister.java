@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * 通用的延迟注册器，类似于 DeferredRegister
  * @param <T> 要注册的对象类型
  */
-public class EBDeferredRegister<T extends IBenediction<?>> {
+public class EBDeferredRegister<T extends IBenediction> {
     private final String modid;
     private final EBAbstractManager<T> manager;
     private final Map<ResourceLocation, EBDeferredHolder<T>> entries = new LinkedHashMap<>();
@@ -27,7 +27,7 @@ public class EBDeferredRegister<T extends IBenediction<?>> {
         this.manager = manager;
     }
 
-    public static <T extends IBenediction<?>> EBDeferredRegister<T> create(String modid, EBAbstractManager<T> manager) {
+    public static <T extends IBenediction> EBDeferredRegister<T> create(String modid, EBAbstractManager<T> manager) {
         return new EBDeferredRegister<>(modid, manager);
     }
 

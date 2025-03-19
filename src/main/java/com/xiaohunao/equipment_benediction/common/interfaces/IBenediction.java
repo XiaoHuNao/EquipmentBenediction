@@ -5,7 +5,7 @@ import com.xiaohunao.equipment_benediction.api.manager.BenedictionManager;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
-public interface IBenediction<T extends Tag> extends ISerializable<T> {
+public interface IBenediction{
     BenedictionManager benedictionManager = BenedictionManager.getInstance();
-    Codec<IBenediction<?>> CODEC_BY_ID = ResourceLocation.CODEC.xmap(benedictionManager::getBenedictionFromManagers, benedictionManager::getBenedictionIdFromManagers);
+    Codec<IBenediction> CODEC_BY_ID = ResourceLocation.CODEC.xmap(benedictionManager::getBenedictionFromManagers, benedictionManager::getBenedictionIdFromManagers);
 }

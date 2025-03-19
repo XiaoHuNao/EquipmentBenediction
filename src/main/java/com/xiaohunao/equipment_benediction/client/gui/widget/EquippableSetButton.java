@@ -107,7 +107,7 @@ public class EquippableSetButton extends Button {
 
     private int getSetIndex() {
         int index = 0;
-        for (EquippableSetData data : equipmentSet.getEquippableGroup().getEquippableSets()) {
+        for (EquippableSetData data : equipmentSet.getEquippableGroup().getEquippableMaps().values()) {
             if (data == this.setData) {
                 break;
             }
