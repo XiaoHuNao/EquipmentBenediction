@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -17,7 +18,7 @@ public record DamageTypeImmunityHook(List<Holder<DamageType>> damageTypes) imple
     ).apply(instance, DamageTypeImmunityHook::new));
 
     @Override
-    public DamageResultContainer onLivingIncomingDamage(Object owner, AttackEntityContext attackEntityContext) {
+    public DamageResultContainer onLivingIncomingDamage(IBenediction owner, AttackEntityContext attackEntityContext) {
         DamageContainer damageContainer = attackEntityContext.damageContainer();
         for (Holder<DamageType> type : damageTypes) {
             if (damageContainer.getSource().typeHolder().is(type)) {

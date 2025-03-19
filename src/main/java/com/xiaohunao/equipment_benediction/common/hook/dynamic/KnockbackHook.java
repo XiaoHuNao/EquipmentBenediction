@@ -7,6 +7,7 @@ import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.BeforeMeleeHitHook;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.world.entity.Entity;
@@ -88,7 +89,7 @@ public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
     }
 
     @Override
-    public void beforeMeleeHit(Object owner, AttackEntityContext attackEntityContext) {
+    public void beforeMeleeHit(IBenediction owner, AttackEntityContext attackEntityContext) {
 //        Entity hitEntity = attackEntityContext.hitEntity();
 //        Entity attacker = attackEntityContext.damageContainer().getSource().getEntity();
 //

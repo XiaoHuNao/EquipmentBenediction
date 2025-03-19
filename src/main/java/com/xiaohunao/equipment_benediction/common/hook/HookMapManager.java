@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HookMapManager {
     private static final HookMapManager INSTANCE = new HookMapManager();
-    private final Multimap<HookType<?>, Object> hookRegistry = HashMultimap.create();
-    private final BiMap<Object, HookMap> hookMapRegistry = HashBiMap.create();
+    private final Multimap<HookType<?>, IBenediction> hookRegistry = HashMultimap.create();
+    private final BiMap<IBenediction, HookMap> hookMapRegistry = HashBiMap.create();
     private final BiMap<Integer, IHook> globalHooksById = HashBiMap.create();
     private final AtomicInteger nextId = new AtomicInteger(1);
 
@@ -25,7 +25,7 @@ public class HookMapManager {
         return INSTANCE;
     }
 
-    public void register(Object owner, HookMap hookMap) {
+    public void register(IBenediction owner, HookMap hookMap) {
         hookMap.hooks().forEach((key, value) -> hookRegistry.put(key, owner));
         hookMapRegistry.put(owner, hookMap);
 
@@ -53,7 +53,7 @@ public class HookMapManager {
         EntityHookManager entityHookManager = entity.getData(EBAttachments.ENTITY_HOOK_MANAGER);
         R result = null;
         for (Map.Entry<IBenediction, HookMap> entry : entityHookManager.getHooks().entrySet()) {
-            Object owner = entry.getKey();
+            IBenediction owner = entry.getKey();
             HookMap hookMap = entry.getValue();
             if (hookMap.get(hookType).isEmpty()) {
                 continue;
@@ -70,6 +70,6 @@ public class HookMapManager {
 
     @FunctionalInterface
     public interface HookExecutor<T extends IHook, R> {
-        R execute(Object owner, T hook);
+        R execute(IBenediction owner, T hook);
     }
 }

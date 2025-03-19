@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.MobEffectApplicableHook;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,7 +19,7 @@ public record MobEffectImmunityHook(List<Holder<MobEffect>> effects) implements 
     ).apply(instance, MobEffectImmunityHook::new));
 
     @Override
-    public MobEffectEvent.Applicable.Result onMobEffectApplicable(Object owner, Entity entity, MobEffectInstance effectInstance) {
+    public MobEffectEvent.Applicable.Result onMobEffectApplicable(IBenediction owner, Entity entity, MobEffectInstance effectInstance) {
         for (Holder<MobEffect> effect : effects) {
             if (effect.is(effectInstance.getEffect())) {
                 return MobEffectEvent.Applicable.Result.DO_NOT_APPLY;
