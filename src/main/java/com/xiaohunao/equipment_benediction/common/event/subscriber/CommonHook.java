@@ -119,7 +119,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onPlayerBreakSpeed(PlayerEvent.BreakSpeed event) {
-        float originalSpeed = event.getOriginalSpeed();
+        float originalSpeed = event.getNewSpeed();
         Float newSpeed = HookMapManager.postHooks(EBHookTypes.BREAK_SPEED.get(), (owner, hook) -> hook.onBreakSpeed(owner, event.getEntity(), event.getState(), originalSpeed), event.getEntity());
         if (newSpeed != null && newSpeed != originalSpeed){
             event.setNewSpeed(newSpeed);
