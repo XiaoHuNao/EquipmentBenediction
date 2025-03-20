@@ -7,7 +7,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.jetbrains.annotations.Nullable;
 
 public record AttackEntityContext(Entity attackerEntity, LivingEntity hitEntity, DamageContainer damageContainer, @Nullable ItemStack hitItemStack) {
-    public static AttackEntityContext of(Entity attackerEntity,LivingEntity hitEntity, DamageContainer damageContainer, ItemStack weapon) {
-        return new AttackEntityContext(attackerEntity,hitEntity, damageContainer,weapon);
+    public static AttackEntityContext of(Entity attackerEntity, LivingEntity hitEntity, DamageContainer damageContainer, @Nullable ItemStack weapon) {
+        return new AttackEntityContext(attackerEntity, hitEntity, damageContainer, weapon);
     }
 }

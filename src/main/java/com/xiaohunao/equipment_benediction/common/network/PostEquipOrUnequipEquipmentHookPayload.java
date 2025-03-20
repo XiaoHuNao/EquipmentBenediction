@@ -28,12 +28,12 @@ public record PostEquipOrUnequipEquipmentHookPayload(boolean isEquip) implements
             Player player = payloadContext.player();
             if (!player.isLocalPlayer()) {
                 if (isEquip){
-                    HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook) -> {
+                    HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
                         hook.onEquipEquipment(owner, new LivingEquipmentChangeContext(null,null,null,player));
                         return null;
                     }, player);
                 }else {
-                    HookMapManager.postHooks(EBHookTypes.UNEQUIP_EQUIPMENT.get(), (owner, hook) -> {
+                    HookMapManager.postHooks(EBHookTypes.UNEQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
                         hook.onUnequipEquipment(owner, new LivingEquipmentChangeContext(null,null,null,player));
                         return null;
                     }, player);

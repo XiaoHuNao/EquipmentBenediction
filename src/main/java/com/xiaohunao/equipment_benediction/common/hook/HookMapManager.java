@@ -1,15 +1,15 @@
 package com.xiaohunao.equipment_benediction.common.hook;
 
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HookMapManager {
@@ -50,8 +50,12 @@ public class HookMapManager {
 
 
     public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
+        return postHooks(hookType, executor, entity, null);
+    }
+
+    public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity, R defaultValue) {
         EntityHookManager entityHookManager = entity.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-        R result = null;
+        R result = defaultValue;
         for (Map.Entry<IBenediction, HookMap> entry : entityHookManager.getHooks().entrySet()) {
             IBenediction owner = entry.getKey();
             HookMap hookMap = entry.getValue();
@@ -59,7 +63,7 @@ public class HookMapManager {
                 continue;
             }
             for (T hook : hookMap.get(hookType)) {
-                R hookResult = executor.execute(owner, hook);
+                R hookResult = executor.execute(owner, hook, result);
                 if (hookResult != null) {
                     result = hookResult;
                 }
@@ -70,6 +74,6 @@ public class HookMapManager {
 
     @FunctionalInterface
     public interface HookExecutor<T extends IHook, R> {
-        R execute(IBenediction owner, T hook);
+        R execute(IBenediction owner, T hook, R original);
     }
 }

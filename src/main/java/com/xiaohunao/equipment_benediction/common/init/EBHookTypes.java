@@ -16,7 +16,7 @@ public class EBHookTypes {
     public static final DeferredRegister<HookType<?>> HOOK_TYPES = DeferredRegister.create(EBRegistries.Keys.HOOK_TYPES, EquipmentBenediction.MODID);
 
     public static final DeferredHolder<HookType<?>, HookType<BeforeMeleeHitHook>> BEFORE_MELEE_HIT = register("before_melee_hit", BeforeMeleeHitHook.class);
-    public static final DeferredHolder<HookType<?>, HookType<BeforeRangedHitHook>> BEFORE_RANGED_HIT = register("before_ranged_hit", BeforeRangedHitHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<BeforeLivingDamageHook>> BEFORE_LIVING_DAMAGE = register("before_living_damage", BeforeLivingDamageHook.class);
     public static final DeferredHolder<HookType<?>, HookType<EquipEquipmentHook>> EQUIP_EQUIPMENT = register("equip_equipment", EquipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<UnequipEquipmentHook>> UNEQUIP_EQUIPMENT = register("unequip_equipment", UnequipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<LivingIncomingDamageHook>> LIVING_INCOMING_DAMAGE = register("living_incoming_damage", LivingIncomingDamageHook.class);
@@ -36,6 +36,4 @@ public class EBHookTypes {
     private static <T extends ISerializableHook> DeferredHolder<HookType<?>, HookType<T>> registerSerializable(String id, Class<T> hookClass, MapCodec<T> codec) {
         return HOOK_TYPES.register(id, () -> HookType.createSerializableHook(EquipmentBenediction.asResource(id), hookClass, codec));
     }
-
-
 }

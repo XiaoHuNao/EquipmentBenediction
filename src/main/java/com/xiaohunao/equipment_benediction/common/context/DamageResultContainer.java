@@ -2,10 +2,11 @@ package com.xiaohunao.equipment_benediction.common.context;
 
 import java.util.Optional;
 
-public record DamageResultContainer(Optional<Boolean> isCanceled, Optional<Float> damage,Optional<Integer> InvulnerabilityTick) {
+public record DamageResultContainer(Optional<Boolean> isCanceled, Optional<Float> damage, Optional<Integer> InvulnerabilityTick) {
+    private static final DamageResultContainer EMPTY = new DamageResultContainer(Optional.empty(), Optional.empty(), Optional.empty());
 
     public static DamageResultContainer empty() {
-        return new DamageResultContainer(Optional.empty(), Optional.empty(), Optional.empty());
+        return EMPTY;
     }
 
     public static DamageResultContainer invulnerability(int invulnerabilityTick) {

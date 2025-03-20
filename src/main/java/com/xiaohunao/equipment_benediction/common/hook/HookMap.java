@@ -1,11 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.hook;
 
 import com.google.common.collect.*;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
-import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
-import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +51,9 @@ public class HookMap {
         for (HookType<?> type : hooks.keySet()) {
             if (type.isSerializable()) {
                 hooks.get(type).stream()
-                    .filter(hook -> hook instanceof ISerializableHook)
-                    .map(hook -> (ISerializableHook) hook)
-                    .forEach(serializableHooks::add);
+                        .filter(hook -> hook instanceof ISerializableHook)
+                        .map(hook -> (ISerializableHook) hook)
+                        .forEach(serializableHooks::add);
             }
         }
         return serializableHooks;
@@ -73,7 +69,7 @@ public class HookMap {
         for (Map.Entry<HookType<?>, IHook> entry : hookMap.hooks.entries()) {
             builder.addHook(entry.getKey(), entry.getValue());
         }
-        
+
         return builder.build();
     }
 
@@ -98,7 +94,7 @@ public class HookMap {
         for (HookType<?> type : hooks.keySet()) {
             Collection<IHook> thisHooks = hooks.get(type);
             Collection<IHook> otherHooks = other.hooks.get(type);
-            
+
             if (thisHooks.size() != otherHooks.size()) return false;
 
             for (IHook hook : thisHooks) {
@@ -112,7 +108,7 @@ public class HookMap {
                 if (!found) return false;
             }
         }
-        
+
         return true;
     }
 
@@ -202,5 +198,5 @@ public class HookMap {
         }
     }
 
-    
+
 }
