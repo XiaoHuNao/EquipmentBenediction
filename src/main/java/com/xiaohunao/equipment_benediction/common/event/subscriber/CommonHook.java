@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -30,7 +31,7 @@ public class CommonHook {
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
         LivingEntity livingEntity = event.getEntity();
-        if (!(livingEntity instanceof Player)){
+        if (!(livingEntity instanceof Player)) {
             return;
         }
         LivingEquipmentChangeContext changeContext = LivingEquipmentChangeContext.of(from, to, slot, livingEntity);
@@ -60,39 +61,38 @@ public class CommonHook {
     public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
         //药水应用Hook
         MobEffectEvent.Applicable.Result result = HookMapManager.postHooks(EBHookTypes.MOB_EFFECT_APPLICABLE.get(), (owner, hook) -> hook.onMobEffectApplicable(owner, event.getEntity(), event.getEffectInstance()), event.getEntity());
-        if (result == null){
+        if (result == null) {
             return;
         }
 
-        if (result != MobEffectEvent.Applicable.Result.DEFAULT){
+        if (result != MobEffectEvent.Applicable.Result.DEFAULT) {
             event.setResult(result);
         }
     }
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
-        LivingEntity entity = event.getEntity();
+        LivingEntity victim = event.getEntity();
         DamageContainer container = event.getContainer();
-        DamageSource source = container.getSource();
-        Entity entity1 = source.getEntity();
-        Entity directEntity = source.getDirectEntity();
-        ItemStack weaponItem = source.getWeaponItem();
-//        LOGGER.info("{} {} {} {}", entity1, directEntity, entity, source);
-        if (source.is(DamageTypeTags.IS_PLAYER_ATTACK) && weaponItem != null) {
-            AttackEntityContext attackEntityContext = AttackEntityContext.of(source.getEntity(), entity, container, weaponItem);
+        DamageSource damageSource = container.getSource();
+        Entity attacker = damageSource.getEntity();
+        if (attacker == null) return;
+        ItemStack weaponItem = damageSource.getWeaponItem();
+        if (damageSource.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
+            AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), victim, container, weaponItem);
             //近战攻击命中Hook
             HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook) -> {
-                hook.beforeMeleeHit(owner, attackEntityContext);
+                hook.beforeMeleeHit(owner, context);
                 return null;
-            },directEntity);
+            }, attacker);
         }
-//
-//        if (source.is(DamageTypeTags.IS_PROJECTILE)) {
-//            LOGGER.info("projectile attack");
-//        }
-//        if (source.is(Tags.DamageTypes.IS_MAGIC)) {
-//            LOGGER.info("magic attack");
-//        }
+        if (damageSource.is(Tags.DamageTypes.IS_MAGIC)) {
+            AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), victim, container, weaponItem);
+            HookMapManager.postHooks(EBHookTypes.BEFORE_RANGED_HIT.get(), (owner, hook) -> {
+                hook.beforeRangedHit(owner, context);
+                return null;
+            }, attacker);
+        }
     }
 
     @SubscribeEvent
@@ -106,7 +106,7 @@ public class CommonHook {
         //传入伤害Hook
         DamageResultContainer damageResultContainer = HookMapManager.postHooks(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), (owner, hook) -> hook.onLivingIncomingDamage(owner, attackEntityContext), event.getEntity());
 
-        if (damageResultContainer == null){
+        if (damageResultContainer == null) {
             damageResultContainer = DamageResultContainer.empty();
         }
 
@@ -121,7 +121,7 @@ public class CommonHook {
     public static void onPlayerBreakSpeed(PlayerEvent.BreakSpeed event) {
         float originalSpeed = event.getNewSpeed();
         Float newSpeed = HookMapManager.postHooks(EBHookTypes.BREAK_SPEED.get(), (owner, hook) -> hook.onBreakSpeed(owner, event.getEntity(), event.getState(), originalSpeed), event.getEntity());
-        if (newSpeed != null && newSpeed != originalSpeed){
+        if (newSpeed != null && newSpeed != originalSpeed) {
             event.setNewSpeed(newSpeed);
         }
     }

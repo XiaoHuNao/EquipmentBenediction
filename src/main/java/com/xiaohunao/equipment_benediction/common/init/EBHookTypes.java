@@ -2,10 +2,12 @@ package com.xiaohunao.equipment_benediction.common.init;
 
 import com.mojang.serialization.MapCodec;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
-import com.xiaohunao.equipment_benediction.common.equipment_set.WearBonus;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import com.xiaohunao.equipment_benediction.common.hook.dynamic.*;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.DamageTypeImmunityHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.KnockbackHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.MobEffectImmunityHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.*;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -14,6 +16,7 @@ public class EBHookTypes {
     public static final DeferredRegister<HookType<?>> HOOK_TYPES = DeferredRegister.create(EBRegistries.Keys.HOOK_TYPES, EquipmentBenediction.MODID);
 
     public static final DeferredHolder<HookType<?>, HookType<BeforeMeleeHitHook>> BEFORE_MELEE_HIT = register("before_melee_hit", BeforeMeleeHitHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<BeforeRangedHitHook>> BEFORE_RANGED_HIT = register("before_ranged_hit", BeforeRangedHitHook.class);
     public static final DeferredHolder<HookType<?>, HookType<EquipEquipmentHook>> EQUIP_EQUIPMENT = register("equip_equipment", EquipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<UnequipEquipmentHook>> UNEQUIP_EQUIPMENT = register("unequip_equipment", UnequipEquipmentHook.class);
     public static final DeferredHolder<HookType<?>, HookType<LivingIncomingDamageHook>> LIVING_INCOMING_DAMAGE = register("living_incoming_damage", LivingIncomingDamageHook.class);

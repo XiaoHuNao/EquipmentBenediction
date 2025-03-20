@@ -2,29 +2,21 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import com.xiaohunao.equipment_benediction.common.utils.CodecUtils;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.units.qual.C;
+import net.minecraft.world.level.ItemLike;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-public record EquippableSetData(Map<IEquippable, Ingredient> equipages,List<IEquippable> blacklist,Optional<Integer> requiredMatchCount,HookMap hookMap) {
+public record EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEquippable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
     public boolean isValid(LivingEntity livingEntity) {
         boolean match = requiredMatchCount.map(integer -> equipages.entrySet()
                         .stream()
@@ -64,13 +56,16 @@ public record EquippableSetData(Map<IEquippable, Ingredient> equipages,List<IEqu
             }
 
             for (int i = 0; i < equipPairs.length; i += 2) {
-                if (!(equipPairs[i] instanceof IEquippable equippable) || !(equipPairs[i + 1] instanceof Ingredient ingredient)) {
-                    throw new IllegalArgumentException(
-                            "Invalid pair type at index " + i +
-                                    ". Expected IEquippable and Ingredient"
-                    );
+                Object o = equipPairs[i + 1];
+                boolean isIngredient = o instanceof Ingredient;
+                if (!(equipPairs[i] instanceof IEquippable equippable) || (!isIngredient && !(o instanceof ItemLike))) {
+                    throw new IllegalArgumentException("Invalid pair type at index " + i + ". Expected IEquippable and Ingredient");
                 }
-                equipages.put(equippable, ingredient);
+                if (isIngredient) {
+                    equipages.put(equippable, (Ingredient) o);
+                } else {
+                    equipages.put(equippable, Ingredient.of((ItemLike) o));
+                }
             }
             return this;
         }
@@ -94,8 +89,10 @@ public record EquippableSetData(Map<IEquippable, Ingredient> equipages,List<IEqu
             return this;
         }
 
-        public Builder bindHook(Function<WearBonus.Builder, WearBonus.Builder> wearBonusHook) {
-            WearBonus wearBonus = wearBonusHook.apply(new WearBonus.Builder()).build();
+        public Builder bindHook(Consumer<WearBonus.Builder> wearBonusHook) {
+            WearBonus.Builder builder = new WearBonus.Builder();
+            wearBonusHook.accept(builder);
+            WearBonus wearBonus = builder.build();
 
             if (!wearBonus.attributes.isEmpty() || !wearBonus.mobEffectInstances.isEmpty()) {
                 hookMap.addHook(EBHookTypes.EQUIP_EQUIPMENT.get(), wearBonus);
