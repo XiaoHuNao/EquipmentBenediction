@@ -47,7 +47,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
         attributes.forEach((attribute, attributeModifier) -> {
             AttributeInstance attributeInstance = changeContext.livingEntity().getAttribute(attribute);
             if (attributeInstance != null) {
-                attributeInstance.addTransientModifier(attributeModifier);
+                attributeInstance.addOrUpdateTransientModifier(attributeModifier);
             }
         });
 
