@@ -125,4 +125,12 @@ public class CommonHook {
             return original;
         }, event.getEntity(), event);
     }
+
+    @SubscribeEvent
+    public static void livingGetProjectile(LivingGetProjectileEvent event) {
+        HookMapManager.postHooks(EBHookTypes.LIVING_GET_PROJECTILE.get(), (owner, hook, original) -> {
+            hook.onLivingGetProjectile(owner, original);
+            return original;
+        }, event.getEntity(), event);
+    }
 }
