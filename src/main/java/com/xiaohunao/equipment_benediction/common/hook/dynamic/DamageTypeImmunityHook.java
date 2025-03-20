@@ -2,13 +2,12 @@ package com.xiaohunao.equipment_benediction.common.hook.dynamic;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
-import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.List;
 
@@ -18,13 +17,13 @@ public record DamageTypeImmunityHook(List<Holder<DamageType>> damageTypes) imple
     ).apply(instance, DamageTypeImmunityHook::new));
 
     @Override
-    public DamageResultContainer onLivingIncomingDamage(IBenediction owner, AttackEntityContext attackEntityContext) {
-        DamageContainer damageContainer = attackEntityContext.damageContainer();
+    public void onLivingIncomingDamage(IBenediction owner, LivingIncomingDamageEvent event) {
+        DamageContainer damageContainer = event.getContainer();
         for (Holder<DamageType> type : damageTypes) {
             if (damageContainer.getSource().typeHolder().is(type)) {
-                return DamageResultContainer.cancel(true);
+                event.setCanceled(true);
+                return;
             }
         }
-        return DamageResultContainer.empty();
     }
 }

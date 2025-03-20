@@ -23,6 +23,8 @@ public class EBHookTypes {
     public static final DeferredHolder<HookType<?>, HookType<MobEffectApplicableHook>> MOB_EFFECT_APPLICABLE = register("mob_effect_applicable", MobEffectApplicableHook.class);
     public static final DeferredHolder<HookType<?>, HookType<BreakSpeedHook>> BREAK_SPEED = register("break_speed", BreakSpeedHook.class);
     public static final DeferredHolder<HookType<?>, HookType<LivingHealHook>> LIVING_HEAL = register("living_heal", LivingHealHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<LivingBreatheHook>> LIVING_BREATHE = register("living_breathe", LivingBreatheHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<LivingShieldBlockHook>> LIVING_SHIELD_BLOCK = register("living_shield_block", LivingShieldBlockHook.class);
 
 
     public static final DeferredHolder<HookType<?>, HookType<KnockbackHook>> KNOCKBACK = registerSerializable("knockback", KnockbackHook.class, KnockbackHook.CODEC);

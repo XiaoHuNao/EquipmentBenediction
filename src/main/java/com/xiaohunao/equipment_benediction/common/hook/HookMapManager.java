@@ -49,8 +49,8 @@ public class HookMapManager {
     
 
 
-    public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
-        return postHooks(hookType, executor, entity, null);
+    public static <T extends IHook, R> void postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
+        postHooks(hookType, executor, entity, null);
     }
 
     public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity, R defaultValue) {

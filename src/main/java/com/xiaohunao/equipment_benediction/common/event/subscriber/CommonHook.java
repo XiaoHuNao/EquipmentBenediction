@@ -2,7 +2,6 @@ package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
-import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
@@ -17,7 +16,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.living.*;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @EventBusSubscriber
 public class CommonHook {
@@ -50,32 +48,25 @@ public class CommonHook {
                 return null;
             }, livingEntity);
         }
-
     }
 
     @SubscribeEvent
     public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
-        //药水应用Hook
-        MobEffectEvent.Applicable.Result result = HookMapManager.postHooks(EBHookTypes.MOB_EFFECT_APPLICABLE.get(), (owner, hook, original) -> hook.onMobEffectApplicable(owner, event.getEntity(), event.getEffectInstance()), event.getEntity());
-        if (result == null) {
-            return;
-        }
-
-        if (result != MobEffectEvent.Applicable.Result.DEFAULT) {
-            event.setResult(result);
-        }
+        if (event.getResult() != MobEffectEvent.Applicable.Result.DEFAULT) return;
+        HookMapManager.postHooks(EBHookTypes.MOB_EFFECT_APPLICABLE.get(), (owner, hook, original) -> {
+            hook.onMobEffectApplicable(owner, original);
+            return original;
+        }, event.getEntity(), event);
     }
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
-        LivingEntity victim = event.getEntity();
         DamageContainer container = event.getContainer();
         DamageSource damageSource = container.getSource();
         Entity attacker = damageSource.getEntity();
         if (attacker == null) return;
-        ItemStack weaponItem = damageSource.getWeaponItem();
         if (damageSource.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
-            AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), victim, container, weaponItem);
+            AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), event.getEntity(), container, damageSource.getWeaponItem());
             //近战攻击命中Hook
             HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook, original) -> {
                 hook.beforeMeleeHit(owner, context);
@@ -84,45 +75,44 @@ public class CommonHook {
         }
 
         HookMapManager.postHooks(EBHookTypes.BEFORE_LIVING_DAMAGE.get(), (owner, hook, original) -> {
-            hook.beforeLivingDamage(owner, victim, damageSource);
-            return null;
-        }, attacker);
+            hook.beforeLivingDamage(owner, original);
+            return original;
+        }, attacker, event);
     }
 
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        LivingEntity entity = event.getEntity();
-        DamageContainer container = event.getContainer();
-        DamageSource source = container.getSource();
-        Entity directEntity = source.getDirectEntity();
-        ItemStack weaponItem = source.getWeaponItem();
-        AttackEntityContext attackEntityContext = new AttackEntityContext(directEntity, entity, container, weaponItem);
-        //传入伤害Hook
-        DamageResultContainer damageResultContainer = HookMapManager.postHooks(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), (owner, hook, original) -> hook.onLivingIncomingDamage(owner, attackEntityContext), entity);
-
-        if (damageResultContainer == null) return;
-
-        damageResultContainer.InvulnerabilityTick().ifPresent(event::setInvulnerabilityTicks);
-        damageResultContainer.damage().ifPresent(event::setAmount);
-//        damageResultContainer.reduction().ifPresent(event::addReductionModifier);
-        damageResultContainer.isCanceled().ifPresent(event::setCanceled);
-
-    }
-
-    @SubscribeEvent
-    public static void onPlayerBreakSpeed(PlayerEvent.BreakSpeed event) {
-        float originalSpeed = event.getNewSpeed();
-        Float newSpeed = HookMapManager.postHooks(EBHookTypes.BREAK_SPEED.get(), (owner, hook, original) -> hook.onBreakSpeed(owner, event.getEntity(), event.getState(), original), event.getEntity(), originalSpeed);
-        if (newSpeed != null && newSpeed != originalSpeed) {
-            event.setNewSpeed(newSpeed);
-        }
+        if (event.isCanceled()) return;
+        HookMapManager.postHooks(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), (owner, hook, original) -> {
+            hook.onLivingIncomingDamage(owner, original);
+            return original;
+        }, event.getEntity(), event);
     }
 
     @SubscribeEvent
     public static void onLivingHeal(LivingHealEvent event) {
-        Float posted = HookMapManager.postHooks(EBHookTypes.LIVING_HEAL.get(), (owner, hook, original) -> hook.onLivingHeal(owner, event.getEntity(), original), event.getEntity(), event.getAmount());
-        if (posted != null && posted != event.getAmount()) {
-            event.setAmount(posted);
-        }
+        if (event.isCanceled()) return;
+        HookMapManager.postHooks(EBHookTypes.LIVING_HEAL.get(), (owner, hook, original) -> {
+            hook.onLivingHeal(owner, original);
+            return original;
+        }, event.getEntity(), event);
+    }
+
+    @SubscribeEvent
+    public static void onLivingBreathe(LivingBreatheEvent event) {
+        if (event.canBreathe()) return;
+        HookMapManager.postHooks(EBHookTypes.LIVING_BREATHE.get(), (owner, hook, original) -> {
+            hook.onLivingBreathe(owner, original);
+            return original;
+        }, event.getEntity(), event);
+    }
+
+    @SubscribeEvent
+    public static void onLivingShieldBlock(LivingShieldBlockEvent event) {
+        if (event.isCanceled()) return;
+        HookMapManager.postHooks(EBHookTypes.LIVING_SHIELD_BLOCK.get(), (owner, hook, original) -> {
+            hook.onLivingShieldBlock(owner, original);
+            return original;
+        }, event.getEntity(), event);
     }
 }

@@ -2,8 +2,6 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
-import com.xiaohunao.equipment_benediction.common.context.DamageResultContainer;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.EquipEquipmentHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.LivingIncomingDamageHook;
@@ -16,11 +14,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 import java.util.List;
@@ -28,7 +26,7 @@ import java.util.Map;
 
 
 public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobEffectApplicableHook, LivingIncomingDamageHook {
-    protected final Map<Holder<Attribute>,AttributeModifier> attributes;
+    protected final Map<Holder<Attribute>, AttributeModifier> attributes;
     protected final List<MobEffectInstance> mobEffectInstances;
     protected final List<ResourceKey<DamageType>> damageTypeResourceKeys;
     protected final List<TagKey<DamageType>> damageTypeTagKeys;
@@ -72,35 +70,37 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
     }
 
     @Override
-    public DamageResultContainer onLivingIncomingDamage(IBenediction owner, AttackEntityContext attackEntityContext) {
-        DamageContainer damageContainer = attackEntityContext.damageContainer();
+    public void onLivingIncomingDamage(IBenediction owner, LivingIncomingDamageEvent event) {
+        DamageContainer damageContainer = event.getContainer();
         for (ResourceKey<DamageType> type : damageTypeResourceKeys) {
             if (damageContainer.getSource().is(type)) {
-                return DamageResultContainer.cancel(true);
+                event.setCanceled(true);
+                return;
             }
         }
 
         for (TagKey<DamageType> type : damageTypeTagKeys) {
             if (damageContainer.getSource().is(type)) {
-                return DamageResultContainer.cancel(true);
+                event.setCanceled(true);
+                return;
             }
         }
-        return DamageResultContainer.empty();
     }
 
     @Override
-    public MobEffectEvent.Applicable.Result onMobEffectApplicable(IBenediction owner, Entity entity, MobEffectInstance effectInstance) {
+    public void onMobEffectApplicable(IBenediction owner, MobEffectEvent.Applicable event) {
+        MobEffectInstance effectInstance = event.getEffectInstance();
         for (Holder<MobEffect> effect : mobEffects) {
             if (effect.is(effectInstance.getEffect())) {
-                return MobEffectEvent.Applicable.Result.DO_NOT_APPLY;
+                event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+                return;
             }
         }
-        return MobEffectEvent.Applicable.Result.DEFAULT;
     }
 
 
     public static class Builder {
-        private final Map<Holder<Attribute>,AttributeModifier> attributes = Maps.newHashMap();
+        private final Map<Holder<Attribute>, AttributeModifier> attributes = Maps.newHashMap();
         private final List<MobEffectInstance> mobEffectInstances = Lists.newArrayList();
         private final List<ResourceKey<DamageType>> damageTypeResourceKeys = Lists.newArrayList();
         private final List<TagKey<DamageType>> damageTypeTagKeys = Lists.newArrayList();
@@ -125,6 +125,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
             damageTypeResourceKeys.add(damageType);
             return this;
         }
+
         public Builder addDamageTypeImmunity(TagKey<DamageType> damageType) {
             damageTypeTagKeys.add(damageType);
             return this;
@@ -136,7 +137,7 @@ public class WearBonus implements EquipEquipmentHook, UnequipEquipmentHook, MobE
         }
 
         public WearBonus build() {
-            return new WearBonus(attributes, mobEffectInstances, damageTypeResourceKeys,damageTypeTagKeys, mobEffects);
+            return new WearBonus(attributes, mobEffectInstances, damageTypeResourceKeys, damageTypeTagKeys, mobEffects);
         }
     }
 
