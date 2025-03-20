@@ -17,10 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @EventBusSubscriber
@@ -126,5 +123,11 @@ public class CommonHook {
         }
     }
 
-
+    @SubscribeEvent
+    public static void onLivingHeal(LivingHealEvent event) {
+        Float posted = HookMapManager.postHooks(EBHookTypes.LIVING_HEAL.get(), (owner, hook) -> hook.onLivingHeal(owner, event.getEntity(), event.getAmount()), event.getEntity());
+        if (posted != null && posted != event.getAmount()) {
+            event.setAmount(posted);
+        }
+    }
 }
