@@ -33,7 +33,7 @@ public abstract class EquipmentSet implements IBenediction {
     }
 
     public ResourceLocation getBranchLocation(String branchName) {
-        if (getEquippableGroup().getEquippableMaps().containsKey(branchName)) {
+        if (getEquippableGroup().equippableMaps().containsKey(branchName)) {
             ResourceLocation resource = manager.getResource(this);
             return ResourceLocation.fromNamespaceAndPath(resource.getNamespace(), resource.getPath() + "/" + branchName);
         }

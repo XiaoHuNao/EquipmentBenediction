@@ -6,10 +6,10 @@ import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -107,7 +107,7 @@ public class EquippableSetButton extends Button {
 
     private int getSetIndex() {
         int index = 0;
-        for (EquippableSetData data : equipmentSet.getEquippableGroup().getEquippableMaps().values()) {
+        for (EquippableSetData data : equipmentSet.getEquippableGroup().equippableMaps().values()) {
             if (data == this.setData) {
                 break;
             }

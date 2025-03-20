@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 
 @EventBusSubscriber
@@ -112,6 +113,15 @@ public class CommonHook {
         if (event.isCanceled()) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_SHIELD_BLOCK.get(), (owner, hook, original) -> {
             hook.onLivingShieldBlock(owner, original);
+            return original;
+        }, event.getEntity(), event);
+    }
+
+    @SubscribeEvent
+    public static void onEntityInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
+        if (event.isInvulnerable()) return;
+        HookMapManager.postHooks(EBHookTypes.ENTITY_INVULNERABILITY_CHECK.get(), (owner, hook, original) -> {
+            hook.onEntityInvulnerabilityCheck(owner, original);
             return original;
         }, event.getEntity(), event);
     }

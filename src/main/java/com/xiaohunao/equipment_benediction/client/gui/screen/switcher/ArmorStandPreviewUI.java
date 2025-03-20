@@ -6,13 +6,13 @@ import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetDat
 import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 
@@ -93,7 +93,7 @@ public class ArmorStandPreviewUI {
         Map<ResourceLocation, EquipmentSet> allSets = EquipmentSetManager.getInstance().getAllResources();
 
         for (EquipmentSet set : allSets.values()) {
-            if (set.getEquippableGroup().getEquippableMaps().inverse().containsKey(setData)) {
+            if (set.getEquippableGroup().equippableMaps().inverse().containsKey(setData)) {
                 return set;
             }
         }

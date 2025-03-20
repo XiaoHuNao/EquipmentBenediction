@@ -3,21 +3,17 @@ package com.xiaohunao.equipment_benediction.api.manager;
 import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.attachment.EquipmentSetHookManager;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
-import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +171,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     }
 
     private void registerEquipmentSet(EquipmentSet set){
-        set.getEquippableGroup().getEquippableMaps().forEach((key,data) -> {
+        set.getEquippableGroup().equippableMaps().forEach((key, data) -> {
             equipmentSetDataMaps.put(set, data);
             equipmentSetDataRegistry.put(set.getBranchLocation(key), data);
 

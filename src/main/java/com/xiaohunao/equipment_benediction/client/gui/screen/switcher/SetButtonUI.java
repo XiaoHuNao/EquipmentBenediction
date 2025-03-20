@@ -1,25 +1,28 @@
 package com.xiaohunao.equipment_benediction.client.gui.screen.switcher;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
+import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableGroup;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
-import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class SetButtonUI {
     public static final ResourceLocation SET_SEPARATOR_BAR = EquipmentBenediction.asResource("textures/gui/set_switcher/set_separator_bar.png");
@@ -61,7 +64,7 @@ public class SetButtonUI {
             buttonY += TITLE_HEIGHT;
 
             EquippableGroup equippableGroup = equipmentSet.getEquippableGroup();
-            Collection<EquippableSetData> equippableSets = equippableGroup.getEquippableMaps().values();
+            Collection<EquippableSetData> equippableSets = equippableGroup.equippableMaps().values();
             
             for (EquippableSetData setData : equippableSets) {
                 boolean isExclusive = equippableGroup.isExclusive(setData);
