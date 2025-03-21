@@ -6,8 +6,10 @@ import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton;
+import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -15,7 +17,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.Map;
 import java.util.Set;
 
 public class EquipmentSetSwitcherScreen extends Screen {
@@ -45,7 +49,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
     private ArmorStandPreviewUI previewManager;
     private SetButtonUI equipmentSetManager;
     private ScrollUI scrollUI;
-    private boolean showAllSet = true;
+    private boolean showAllSet = false;
     private EquippableSetButton hoveredButton = null;
 
     public EquipmentSetSwitcherScreen(Player player) {
@@ -142,16 +146,28 @@ public class EquipmentSetSwitcherScreen extends Screen {
         guiGraphics.enableScissor(x, y, x + CONTENT_AREA_WIDTH, y + CONTENT_AREA_HEIGHT);
     }
 
-    private Set<EquipmentSet> getShowSet(){
+    private Set<EquipmentSet> getShowSet() {
         Set<EquipmentSet> equipmentSets = Sets.newHashSet();
+        EquipmentSetManager setManager = EquipmentSetManager.getInstance();
 
-        if (showAllSet){
-            equipmentSets.addAll(EquipmentSetManager.getInstance().getAllResources().values());
+        if (showAllSet) {
+            equipmentSets.addAll(setManager.getAllResources().values());
             return equipmentSets;
         }
 
-        EntityHookManager entityHookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-        equipmentSets.addAll(entityHookManager.getSetHookManager().getActivatedEquipped().keySet());
+
+        for (EquipmentSet set : setManager.getAllResources().values()) {
+            setLoop:
+            for (EquippableSetData branch : set.allBranch()) {
+                for (Map.Entry<IEquippable, Ingredient> entry : branch.equipages().entrySet()) {
+                    if (entry.getKey().checkEquippable(player, entry.getValue())) {
+                        equipmentSets.add(set);
+                        continue setLoop;
+                    }
+                }
+            }
+        }
+
         return equipmentSets;
     }
 
@@ -170,7 +186,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {  // 左键点击
             // 更新按钮点击检测位置
-            int buttonX = leftPos - SHOW_ALL_BUTTON_WIDTH - 2;
+            int buttonX = leftPos - EquipmentSetSwitcherScreen.SHOW_ALL_BUTTON_WIDTH - 2;
             int buttonY = topPos;
             if (mouseX >= buttonX && mouseX < buttonX + SHOW_ALL_BUTTON_WIDTH &&
                 mouseY >= buttonY && mouseY < buttonY + SHOW_ALL_BUTTON_HEIGHT) {

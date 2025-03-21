@@ -27,7 +27,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     public static final String FOLDER = "equipment_set";
     private static final EquipmentSetManager INSTANCE = new EquipmentSetManager();
 
-    private static final Multimap<EquipmentSet, Ingredient> equipmentSetMaps = HashMultimap.create();
+    private static final Multimap<EquipmentSet, Ingredient> equipmentSetIngredientMaps = HashMultimap.create();
     private static final Multimap<EquipmentSet, EquippableSetData> equipmentSetDataMaps = HashMultimap.create();
     private static final BiMap<ResourceLocation,EquippableSetData> equipmentSetDataRegistry = HashBiMap.create();
 
@@ -73,63 +73,6 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
                 setHookManager.updateEquippable(set, setData, true);
             }
         });
-
-
-
-
-//
-//        // 处理新添加的装备
-//        if (hasEquipmentSet(to)) {
-//            getEquipmentSet(to).forEach(set -> {
-//                // 获取该套装的所有可装备数据
-//                Collection<EquippableSetData> setDataCollection = equipmentSetDataMap.get(set);
-//
-//                // 获取该套装当前已激活的数据
-//                Collection<EquippableSetData> activeSetData = equipmentSetDataHookMap.get(set);
-//
-//                // 检查每个可装备数据
-//                for (EquippableSetData setData : setDataCollection) {
-//                    // 检查该数据是否有效
-//                    if (setData.isValid(livingEntity)) {
-//                        boolean isExclusive = set.getEquippableGroup().isExclusive(setData);
-//
-//                        // 如果是独占的，需要先移除该套装的所有已激活数据
-//                        if (isExclusive && !activeSetData.isEmpty()) {
-//                            // 移除该套装的所有已激活数据
-//                            for (EquippableSetData activeData : Lists.newArrayList(activeSetData)) {
-//                                hookManager.updateEquippableSetData(set, activeData, false);
-//                            }
-//                            // 添加新的数据
-//                            hookManager.updateEquippableSetData(set, setData, true);
-//                        }
-//                        // 如果不是独占的，或者当前没有激活的数据
-//                        else if (!isExclusive || activeSetData.isEmpty()) {
-//                            // 检查是否已经激活了独占的数据
-//                            boolean hasExclusiveActive = false;
-//                            for (EquippableSetData activeData : activeSetData) {
-//                                if (set.getEquippableGroup().isExclusive(activeData)) {
-//                                    hasExclusiveActive = true;
-//                                    break;
-//                                }
-//                            }
-//
-//                            // 如果没有激活独占数据，或者当前数据是独占的
-//                            if (!hasExclusiveActive || isExclusive) {
-//                                // 如果当前数据不在激活列表中，则添加
-//                                if (!activeSetData.contains(setData)) {
-//                                    hookManager.updateEquippableSetData(set, setData, true);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            });
-//        }
-//
-//        // 同步数据到客户端
-//        if (livingEntity instanceof ServerPlayer serverPlayer) {
-//            PacketDistributor.sendToPlayer(serverPlayer, new EntityHookManagerSyncPayload(livingEntity.getId(), hookManager.serializeNBT(null)));
-//        }
     }
     
     public boolean hasEquipmentSet(ItemStack stack) {
@@ -139,7 +82,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
     public Collection<EquipmentSet> getEquipmentSet(ItemStack stack) {
         List<EquipmentSet> sets = Lists.newArrayList();
-        equipmentSetMaps.entries().forEach(entry -> {
+        equipmentSetIngredientMaps.entries().forEach(entry -> {
             if (entry.getValue().test(stack)) {
                 sets.add(entry.getKey());
             }
@@ -147,6 +90,9 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         return ImmutableList.copyOf(sets);
     }
 
+    public Multimap<EquipmentSet,Ingredient> getEquipmentSetIngredientMaps() {
+        return equipmentSetIngredientMaps;
+    }
 
 
     @Override
@@ -177,7 +123,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
             data.equipages().values().forEach(ingredient -> {
                 if (!ingredient.isEmpty()) {
-                    equipmentSetMaps.put(set, ingredient);
+                    equipmentSetIngredientMaps.put(set, ingredient);
                 }
             });
         });

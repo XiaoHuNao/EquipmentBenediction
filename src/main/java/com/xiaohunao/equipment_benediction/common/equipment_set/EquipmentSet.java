@@ -7,6 +7,8 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collection;
+
 
 public abstract class EquipmentSet implements IBenediction {
     private final static EquipmentSetManager manager = EquipmentSetManager.getInstance();
@@ -38,5 +40,9 @@ public abstract class EquipmentSet implements IBenediction {
             return ResourceLocation.fromNamespaceAndPath(resource.getNamespace(), resource.getPath() + "/" + branchName);
         }
         return null;
+    }
+
+    public Collection<EquippableSetData> allBranch() {
+        return equippableGroup.equippableMaps().values();
     }
 }
