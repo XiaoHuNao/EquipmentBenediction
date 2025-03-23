@@ -89,6 +89,11 @@ public record EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEq
             return this;
         }
 
+        public <T extends IHook> Builder bindSimpleEventHook(HookType<T> type, T hook) {
+            hookMap.addHook(type, hook);
+            return this;
+        }
+
         public Builder bindHook(Consumer<WearBonus.Builder> wearBonusHook) {
             WearBonus.Builder builder = new WearBonus.Builder();
             wearBonusHook.accept(builder);

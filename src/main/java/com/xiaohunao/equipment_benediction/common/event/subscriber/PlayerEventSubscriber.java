@@ -37,8 +37,8 @@ public class PlayerEventSubscriber {
         if (player.isShiftKeyDown() && !FMLEnvironment.production) {
             EntityHookManager data = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
             HookMapManager hookMapManager = HookMapManager.getInstance();
-            System.out.println(data);
-            System.out.println(hookMapManager);
+//            System.out.println(data);
+//            System.out.println(hookMapManager);
         }
     }
 
