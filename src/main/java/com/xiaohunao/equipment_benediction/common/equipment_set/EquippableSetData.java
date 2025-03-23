@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
+import com.xiaohunao.equipment_benediction.common.hook.DelayHook;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
@@ -89,8 +90,8 @@ public record EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEq
             return this;
         }
 
-        public <T extends IHook> Builder bindSimpleEventHook(HookType<T> type, T hook) {
-            hookMap.addHook(type, hook);
+        public <T extends IHook> Builder bindDelayHook(HookType<T> type, T hook, long delay) {
+            hookMap.addHook(type, new DelayHook<>(type,hook,delay));
             return this;
         }
 

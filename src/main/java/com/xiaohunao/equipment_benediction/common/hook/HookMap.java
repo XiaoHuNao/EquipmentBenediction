@@ -23,7 +23,17 @@ public class HookMap {
     public <T extends IHook> Collection<T> get(HookType<T> type) {
         Set<T> result = new HashSet<>();
         hooks.forEach((hookType, hook) -> {
-            if (type.getHookClass().isAssignableFrom(hook.getClass())) {
+            IHook finalHook = null;
+
+            if (hook instanceof DelayHook<?> delayHook){
+                finalHook = delayHook.getHook();
+            }
+
+            if (finalHook == null){
+                finalHook = hook;
+            }
+
+            if (type.getHookClass().isAssignableFrom(finalHook.getClass())) {
                 result.add((T) hook);
             }
         });

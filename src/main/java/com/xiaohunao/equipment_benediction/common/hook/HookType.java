@@ -37,6 +37,7 @@ public class HookType<T extends IHook> {
     }
 
     public Class<T> getHookClass() {
+
         return hookClass;
     }
 

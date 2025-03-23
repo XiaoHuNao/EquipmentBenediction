@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.event.subscriber;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
+import com.xiaohunao.equipment_benediction.common.hook.DelayHookManager;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import net.minecraft.tags.DamageTypeTags;
@@ -17,9 +18,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 @EventBusSubscriber
 public class CommonHook {
+    @SubscribeEvent
+    public static void onLevelTick(LevelTickEvent.Pre event) {
+        DelayHookManager.getInstance().tick();
+    }
+
+
     @SubscribeEvent
     public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
         ItemStack from = event.getFrom();
@@ -110,9 +118,9 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingShieldBlock(LivingShieldBlockEvent event) {
-        if (event.isCanceled()) return;
+        if (event.isCanceled() || !event.getBlocked()) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_SHIELD_BLOCK.get(), (owner, hook, original) -> {
-            hook.onLivingShieldBlock(owner, original);
+            hook.onLivingShieldBlock(owner, event);
             return original;
         }, event.getEntity(), event);
     }

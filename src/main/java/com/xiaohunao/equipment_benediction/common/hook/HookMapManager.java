@@ -38,16 +38,6 @@ public class HookMapManager {
             }
         }
     }
-    
-    public IHook getHookById(int id) {
-        return globalHooksById.get(id);
-    }
-    
-    public Integer getIdForHook(IHook hook) {
-        return globalHooksById.inverse().get(hook);
-    }
-    
-
 
     public static <T extends IHook, R> void postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity) {
         postHooks(hookType, executor, entity, null);
@@ -56,6 +46,8 @@ public class HookMapManager {
     public static <T extends IHook, R> R postHooks(HookType<T> hookType, HookExecutor<T, R> executor, Entity entity, R defaultValue) {
         EntityHookManager entityHookManager = entity.getData(EBAttachments.ENTITY_HOOK_MANAGER);
         R result = defaultValue;
+        DelayHookManager delayHookManager = DelayHookManager.getInstance();
+        
         for (Map.Entry<IBenediction, HookMap> entry : entityHookManager.getHooks().entrySet()) {
             IBenediction owner = entry.getKey();
             HookMap hookMap = entry.getValue();
@@ -63,9 +55,15 @@ public class HookMapManager {
                 continue;
             }
             for (T hook : hookMap.get(hookType)) {
-                R hookResult = executor.execute(owner, hook, result);
-                if (hookResult != null) {
-                    result = hookResult;
+                if (hook instanceof DelayHook<?> delayHook) {
+                    if (!delayHookManager.isDelayed(delayHook.getHook())){
+                        delayHookManager.register(owner,delayHook,executor);
+                    }
+                } else {
+                    R hookResult = executor.execute(owner, hook, result);
+                    if (hookResult != null) {
+                        result = hookResult;
+                    }
                 }
             }
         }
