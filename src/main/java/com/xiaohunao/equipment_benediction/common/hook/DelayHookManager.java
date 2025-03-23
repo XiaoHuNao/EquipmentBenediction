@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class DelayHookManager {
                 if (remainingDelay <= 0) {
                     hooksToExecute.add(entry.getKey());
                 } else {
-                    System.out.println("Remaining delay for " + entry.getKey().owner + ": " + remainingDelay);
+                    //System.out.println("Remaining delay for " + entry.getKey().owner + ": " + remainingDelay);
                     updatedDelayHooks.put(entry.getKey(), remainingDelay);
                 }
             }
