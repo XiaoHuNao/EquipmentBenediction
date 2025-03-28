@@ -34,13 +34,13 @@ public class PlayerEventSubscriber {
         Level level = event.getLevel();
         InteractionHand hand = event.getHand();
         Player player = event.getEntity();
-        if (level.isClientSide() || hand != InteractionHand.MAIN_HAND) {
+        if (hand != InteractionHand.MAIN_HAND) {
             return;
         }
         if (player.isShiftKeyDown() && !FMLEnvironment.production) {
             EntityHookManager data = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
             HookMapManager hookMapManager = HookMapManager.getInstance();
-//            System.out.println(data);
+            System.out.println(data);
 //            System.out.println(hookMapManager);
         }
     }

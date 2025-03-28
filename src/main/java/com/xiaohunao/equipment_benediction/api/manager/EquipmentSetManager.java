@@ -8,12 +8,15 @@ import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeC
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
+import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
+import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +60,14 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
             if (!entry.getValue().isValid(livingEntity)) {
                 toRemove.add(entry);
             }
+//            PacketDistributor.sendToServer(new PostEquipOrUnequipEquipmentHookPayload(false));
         });
 
         toRemove.forEach(entry -> {
             setHookManager.updateEquippable(entry.getKey(), entry.getValue(), false);
         });
+
+
 
 
         Collection<EquipmentSet> allPossibleSets = getEquipmentSet(to);
@@ -73,6 +79,9 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
                 setHookManager.updateEquippable(set, setData, true);
             }
         });
+
+        setHookManager.sync(livingEntity);
+        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),setHookManager.serializeNBT(null)));
     }
     
     public boolean hasEquipmentSet(ItemStack stack) {

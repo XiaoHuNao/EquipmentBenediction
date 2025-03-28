@@ -172,6 +172,7 @@ public class SetButtonUI {
                 .sync(player);
 
         PacketDistributor.sendToServer(new EntityHookManagerSyncPayload(player.getId(),entityHookManager.serializeNBT(null)));
+
         if (selected){
             PacketDistributor.sendToServer(new PostEquipOrUnequipEquipmentHookPayload(selected));
         }

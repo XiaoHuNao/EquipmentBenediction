@@ -2,6 +2,7 @@ package com.xiaohunao.equipment_benediction.common.hook;
 
 import com.google.common.collect.*;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ public class HookMap {
         hooks.forEach((hookType, hook) -> {
             IHook finalHook = null;
 
-            if (hook instanceof DelayHook<?> delayHook){
-                finalHook = delayHook.getHook();
+            if (hook instanceof SpecialTimeHook specialTimeHook){
+                finalHook = specialTimeHook.getHook();
             }
 
             if (finalHook == null){

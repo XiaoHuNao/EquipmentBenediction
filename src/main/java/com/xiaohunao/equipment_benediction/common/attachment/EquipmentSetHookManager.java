@@ -8,6 +8,9 @@ import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHook;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookManager;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookWrapper;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
@@ -32,6 +35,7 @@ import java.util.Map;
 
 public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
     private static final Logger LOGGER = LoggerFactory.getLogger(EquipmentSetHookManager.class);
+    private final SpecialTimeHookManager specialTimeHookManager;
     private final EntityHookManager entityHookManager;
     private final EquipmentSetManager equipmentSetManager = EquipmentSetManager.getInstance();
 
@@ -42,6 +46,7 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
 
     public EquipmentSetHookManager(EntityHookManager entityHookManager) {
         this.entityHookManager = entityHookManager;
+        this.specialTimeHookManager = new SpecialTimeHookManager(entityHookManager);
     }
 
 
@@ -131,11 +136,26 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
             return;
         }
         activatedEquipped.remove(equipmentSet, equippableSetData);
+
+        List<SpecialTimeHookWrapper> wrappersToRemove = new ArrayList<>();
+        specialTimeHookManager.getSpecialTimeHooks().keySet().forEach(wrapper -> {
+            equippableSetData.hookMap().hooks().values().forEach(hook -> {
+                if (hook instanceof SpecialTimeHook specialTimeHook) {
+                    if (wrapper.owner() == equipmentSet && wrapper.specialTimeHook().getHook().equals(specialTimeHook.getHook())) {
+                        wrappersToRemove.add(wrapper);
+                    }
+                }
+            });
+        });
+
+        wrappersToRemove.forEach(wrapper -> {
+            specialTimeHookManager.getSpecialTimeHooks().remove(wrapper);
+        });
     }
 
 
-    public void sync(Player player) {
-        player.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
+    public void sync(LivingEntity livingEntity) {
+        livingEntity.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
     }
 
     public Map<IBenediction, HookMap> getHooks() {
@@ -170,5 +190,9 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
         });
         
         return this;
+    }
+
+    public SpecialTimeHookManager getSpecialTimeHookManager() {
+        return specialTimeHookManager;
     }
 }

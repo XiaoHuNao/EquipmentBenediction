@@ -3,9 +3,11 @@ package com.xiaohunao.equipment_benediction.common.event.subscriber;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
-import com.xiaohunao.equipment_benediction.common.hook.DelayHookManager;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookManager;
+import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -19,12 +21,19 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber
 public class CommonHook {
     @SubscribeEvent
-    public static void onLevelTick(LevelTickEvent.Pre event) {
-        DelayHookManager.getInstance().tick();
+    public static void onPlayerTick(PlayerTickEvent.Pre event) {
+        Player player = event.getEntity();
+        HookMapManager.postHooks(EBHookTypes.PLAYER_TICK.get(), (owner, hook, original) -> {
+            hook.onPlayerTick(owner, player);
+            return null;
+        }, player);
+
+        player.getData(EBAttachments.ENTITY_HOOK_MANAGER).tickSpecialTimeHook(player);
     }
 
 

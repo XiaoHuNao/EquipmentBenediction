@@ -1,11 +1,17 @@
 package com.xiaohunao.equipment_benediction.common.attachment;
 
 import com.google.common.collect.Maps;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
+import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
+import com.xiaohunao.equipment_benediction.common.hook.IHook;
+import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookWrapper;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -41,5 +47,23 @@ public class EntityHookManager implements INBTSerializable<CompoundTag> {
 
     public EquipmentSetHookManager getSetHookManager() {
         return setHookManager;
+    }
+
+    public void addSpecialTimeHook(SpecialTimeHookWrapper specialTimeHookWrapper) {
+        IBenediction owner = specialTimeHookWrapper.owner();
+        if (owner instanceof EquipmentSet){
+            setHookManager.getSpecialTimeHookManager().addHook(specialTimeHookWrapper);
+        }
+    }
+
+    public void tickSpecialTimeHook(Player player) {
+        setHookManager.getSpecialTimeHookManager().tick(player);
+    }
+
+    public <T extends IHook, R> boolean containsSpecialTimeHook(IBenediction owner, T hook, HookMapManager.HookExecutor<T, R> executor) {
+        if (owner instanceof EquipmentSet){
+            return setHookManager.getSpecialTimeHookManager().containsSpecialTimeHook(owner, hook,executor);
+        }
+        return false;
     }
 }
