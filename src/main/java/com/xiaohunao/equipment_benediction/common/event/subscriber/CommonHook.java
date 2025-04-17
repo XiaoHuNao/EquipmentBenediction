@@ -4,15 +4,13 @@ import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
-import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookManager;
+import com.xiaohunao.equipment_benediction.common.hook.hooks.AfterLivingHurtEntityHook;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,7 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber
@@ -42,11 +39,8 @@ public class CommonHook {
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
-        LivingEntity livingEntity = event.getEntity();
-        if (!(livingEntity instanceof Player)) {
-            return;
-        }
-        LivingEquipmentChangeContext changeContext = LivingEquipmentChangeContext.of(from, to, slot, livingEntity);
+        if (!(event.getEntity() instanceof Player player)) return;
+        LivingEquipmentChangeContext changeContext = LivingEquipmentChangeContext.of(from, to, slot, player);
 
 
         if (!changeContext.from().isEmpty()) {
@@ -54,7 +48,7 @@ public class CommonHook {
             HookMapManager.postHooks(EBHookTypes.UNEQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
                 hook.onUnequipEquipment(owner, changeContext);
                 return null;
-            }, livingEntity);
+            }, player);
         }
 
         EquipmentSetManager.getInstance().updateSet(changeContext);
@@ -64,17 +58,17 @@ public class CommonHook {
             HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
                 hook.onEquipEquipment(owner, changeContext);
                 return null;
-            }, livingEntity);
+            }, player);
         }
     }
 
     @SubscribeEvent
     public static void onMobEffectApplicable(MobEffectEvent.Applicable event) {
-        if (event.getResult() != MobEffectEvent.Applicable.Result.DEFAULT) return;
+        if (event.getResult() != MobEffectEvent.Applicable.Result.DEFAULT || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.MOB_EFFECT_APPLICABLE.get(), (owner, hook, original) -> {
             hook.onMobEffectApplicable(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
@@ -82,7 +76,7 @@ public class CommonHook {
         DamageContainer container = event.getContainer();
         DamageSource damageSource = container.getSource();
         Entity attacker = damageSource.getEntity();
-        if (attacker == null) return;
+        if (!(attacker instanceof Player)) return;
         if (damageSource.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
             AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), event.getEntity(), container, damageSource.getWeaponItem());
             //近战攻击命中Hook
@@ -99,55 +93,66 @@ public class CommonHook {
     }
 
     @SubscribeEvent
+    public static void afterLivingDamage(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof Player attacker) {
+            HookMapManager.postHooks(EBHookTypes.AFTER_LIVING_HURT_ENTITY.get(), (owner, hook, original) -> {
+                hook.afterLivingHurtEntity(owner, original);
+                return original;
+            }, attacker, new AfterLivingHurtEntityHook.Data(attacker, event.getEntity(), event.getSource(), event.getNewDamage()));
+        }
+    }
+
+    @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (event.isCanceled()) return;
+        if (event.isCanceled() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), (owner, hook, original) -> {
             hook.onLivingIncomingDamage(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
     public static void onLivingHeal(LivingHealEvent event) {
-        if (event.isCanceled()) return;
+        if (event.isCanceled() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_HEAL.get(), (owner, hook, original) -> {
             hook.onLivingHeal(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
     public static void onLivingBreathe(LivingBreatheEvent event) {
-        if (event.canBreathe()) return;
+        if (event.canBreathe() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_BREATHE.get(), (owner, hook, original) -> {
             hook.onLivingBreathe(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
     public static void onLivingShieldBlock(LivingShieldBlockEvent event) {
-        if (event.isCanceled() || !event.getBlocked()) return;
+        if (event.isCanceled() || !event.getBlocked() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_SHIELD_BLOCK.get(), (owner, hook, original) -> {
             hook.onLivingShieldBlock(owner, event);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
     public static void onEntityInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
-        if (event.isInvulnerable()) return;
+        if (event.isInvulnerable() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.ENTITY_INVULNERABILITY_CHECK.get(), (owner, hook, original) -> {
             hook.onEntityInvulnerabilityCheck(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 
     @SubscribeEvent
     public static void livingGetProjectile(LivingGetProjectileEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_GET_PROJECTILE.get(), (owner, hook, original) -> {
             hook.onLivingGetProjectile(owner, original);
             return original;
-        }, event.getEntity(), event);
+        }, player, event);
     }
 }

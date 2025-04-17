@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.hook;
 import com.google.common.collect.*;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
 import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHook;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,6 +205,7 @@ public class HookMap {
             return this;
         }
 
+        @ApiStatus.Internal
         public HookMap build() {
             return new HookMap(hooks, hooksById);
         }

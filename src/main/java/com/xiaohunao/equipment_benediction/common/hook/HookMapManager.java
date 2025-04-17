@@ -6,14 +6,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHook;
-import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookManager;
 import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookWrapper;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HookMapManager {
     private static final HookMapManager INSTANCE = new HookMapManager();

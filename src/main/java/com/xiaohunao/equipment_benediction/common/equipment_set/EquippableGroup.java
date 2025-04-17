@@ -3,6 +3,7 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
@@ -31,6 +32,7 @@ public record EquippableGroup(BiMap<String, EquippableSetData> equippableMaps, M
             return addEquippableSet(name, equippableSetData, false);
         }
 
+        @ApiStatus.Internal
         public EquippableGroup build() {
             return new EquippableGroup(equippableMaps, exclusivityMaps);
         }

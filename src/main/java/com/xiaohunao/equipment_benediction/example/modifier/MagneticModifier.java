@@ -1,27 +1,19 @@
 package com.xiaohunao.equipment_benediction.example.modifier;
 
-import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
-import com.xiaohunao.equipment_benediction.common.hook.hooks.BeforeMeleeHitHook;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
-import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import java.util.List;
 
 public class MagneticModifier extends Modifier {
     @Override
     protected void init(HookMap.Builder hookBuilder) {
-        hookBuilder.addHook(EBHookTypes.BEFORE_MELEE_HIT.get(), new BeforeMeleeHitHook() {
-            @Override
-            public void beforeMeleeHit(IBenediction owner, AttackEntityContext attackEntityContext) {
-                applyVelocity(attackEntityContext.attackerEntity(), 1, ItemEntity.class, 3, 0.5f, 100);
-            }
-        });
+        hookBuilder.addHook(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, attackEntityContext) -> applyVelocity(attackEntityContext.attackerEntity(), 1, ItemEntity.class, 3, 0.5f, 100));
     }
 
     public static <T extends Entity> void applyVelocity(Entity entity, int amplifier, Class<T> targetClass, int minRange, float speed, int maxPush) {

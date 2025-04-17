@@ -4,7 +4,10 @@ import com.mojang.serialization.MapCodec;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import com.xiaohunao.equipment_benediction.common.hook.dynamic.*;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.DamageTypeImmunityHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.KnockbackHook;
+import com.xiaohunao.equipment_benediction.common.hook.dynamic.MobEffectImmunityHook;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.*;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -25,6 +28,7 @@ public class EBHookTypes {
     public static final DeferredHolder<HookType<?>, HookType<EntityInvulnerabilityCheckHook>> ENTITY_INVULNERABILITY_CHECK = register("entity_invulnerability_check", EntityInvulnerabilityCheckHook.class);
     public static final DeferredHolder<HookType<?>, HookType<LivingGetProjectileHook>> LIVING_GET_PROJECTILE = register("living_get_projectile", LivingGetProjectileHook.class);
     public static final DeferredHolder<HookType<?>, HookType<PlayerTickHook>> PLAYER_TICK = register("player_tick", PlayerTickHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<AfterLivingHurtEntityHook>> AFTER_LIVING_HURT_ENTITY = register("after_living_hurt_entity", AfterLivingHurtEntityHook.class);
 
 
     public static final DeferredHolder<HookType<?>, HookType<KnockbackHook>> KNOCKBACK = registerSerializable("knockback", KnockbackHook.class, KnockbackHook.CODEC);
