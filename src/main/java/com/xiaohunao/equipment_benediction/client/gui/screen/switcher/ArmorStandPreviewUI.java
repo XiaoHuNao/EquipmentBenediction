@@ -61,13 +61,7 @@ public class ArmorStandPreviewUI {
     }
 
     private void renderArmorStand(GuiGraphics guiGraphics) {
-        float rotationAngle = (float) ((player.tickCount % 1080) * 360) / 1080;
-        InventoryScreen.renderEntityInInventoryFollowsAngle(
-            guiGraphics,
-            previewX1, previewY1, previewX2, previewY2,
-            30, 0.0F, rotationAngle, 0.0F,
-            previewArmorStand
-        );
+        renderArmorStandAt(guiGraphics, previewX1, previewY1, previewX2, previewY2);
     }
 
     private void applySelectedSetsToArmorStand(Set<EquippableSetData> selectedSets) {
@@ -207,5 +201,34 @@ public class ArmorStandPreviewUI {
         }
         
         renderArmorStand(guiGraphics);
+    }
+
+    public void renderAt(GuiGraphics guiGraphics, Set<EquippableSetData> previewSet, int x1, int y1, int x2, int y2) {
+        if (previewArmorStand == null) return;
+
+        clearArmorStandEquipment();
+        updatePreviewIfNeeded(previewSet);
+        applySelectedSetsToArmorStand(previewSet);
+        renderArmorStandAt(guiGraphics, x1, y1, x2, y2);
+    }
+
+    public void renderPlayerEquipmentAt(GuiGraphics guiGraphics, Player player, int x1, int y1, int x2, int y2) {
+        if (previewArmorStand == null) return;
+
+        clearArmorStandEquipment();
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            previewArmorStand.setItemSlot(slot, player.getItemBySlot(slot));
+        }
+        renderArmorStandAt(guiGraphics, x1, y1, x2, y2);
+    }
+
+    private void renderArmorStandAt(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2) {
+        float rotationAngle = (float) ((player.tickCount % 1080) * 360) / 1080;
+        InventoryScreen.renderEntityInInventoryFollowsAngle(
+            guiGraphics,
+            x1, y1, x2, y2,
+            30, 0.0F, rotationAngle, 0.0F,
+            previewArmorStand
+        );
     }
 } 
