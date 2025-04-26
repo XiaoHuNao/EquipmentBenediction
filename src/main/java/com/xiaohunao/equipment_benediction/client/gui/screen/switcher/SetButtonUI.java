@@ -23,8 +23,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.*;
 
 public class SetButtonUI {
-
-
     public static final ResourceLocation SET_SEPARATOR_BAR = EquipmentBenediction.asResource("textures/gui/set_switcher/set_separator_bar.png");
 
     public static final int SET_BUTTON_WIDTH = 92;
@@ -35,42 +33,57 @@ public class SetButtonUI {
     public static final int GROUP_SPACING = 4;
 
     private final List<EquippableSetButton> setButtons = new ArrayList<>();
-    private final List<SetTitleButton> titleButtons = new ArrayList<>();
-    private final Map<EquipmentSet, List<EquippableSetButton>> setButtonsMap = new HashMap<>();
+    private final Map<EquipmentSet, SetTitleButton> titleButtons = new HashMap<>();
     private final Multimap<EquipmentSet, EquippableSetData> selectedSets = HashMultimap.create();
     private final int leftPos;
     private final int topPos;
     private final Player player;
     private int maxScroll = 0;
-
+    
     public SetButtonUI(Player player, int leftPos, int topPos) {
         this.player = player;
         this.leftPos = leftPos;
         this.topPos = topPos;
     }
 
-    private void updateMaxScroll() {
+    private void recalculateHeight() {
         int totalHeight = 0;
-        
-        for (int i = 0; i < titleButtons.size(); i++) {
-            totalHeight += GROUP_SPACING;
+
+        // 使用LinkedHashMap保持顺序一致性
+        Map<EquipmentSet, List<EquippableSetButton>> buttonsBySet = new LinkedHashMap<>();
+        for (EquippableSetButton button : setButtons) {
+            buttonsBySet.computeIfAbsent(button.getEquipmentSet(), k -> new ArrayList<>()).add(button);
+        }
+
+        boolean isFirst = true;
+        for (Map.Entry<EquipmentSet, List<EquippableSetButton>> entry : buttonsBySet.entrySet()) {
+            if (!isFirst) {
+                totalHeight += GROUP_SPACING;
+            }
+            isFirst = false;
+
+            EquipmentSet equipmentSet = entry.getKey();
+            List<EquippableSetButton> buttons = entry.getValue();
+
             totalHeight += TITLE_HEIGHT;
-            
-            if (titleButtons.get(i).isExpanded() && i < setButtons.size()) {
-                EquipmentSet set = setButtons.get(i).getEquipmentSet();
-                List<EquippableSetButton> buttons = setButtonsMap.get(set);
+
+            SetTitleButton titleButton = titleButtons.get(equipmentSet);
+            if (titleButton != null && titleButton.isExpanded()) {
                 totalHeight += (SET_BUTTON_HEIGHT + BUTTON_SPACING) * buttons.size();
             }
         }
-        
+
+        if (!buttonsBySet.isEmpty()) {
+            totalHeight += GROUP_SPACING;
+        }
+
         maxScroll = Math.max(0, totalHeight - EquipmentSetSwitcherScreen.CONTENT_AREA_HEIGHT);
     }
 
     public void initButtons(Set<EquipmentSet> equipmentSets) {
         setButtons.clear();
-        selectedSets.clear();
         titleButtons.clear();
-        setButtonsMap.clear();
+        selectedSets.clear();
         
         int buttonX = leftPos + EquipmentSetSwitcherScreen.CONTENT_AREA_X;
         int buttonY = topPos + EquipmentSetSwitcherScreen.CONTENT_AREA_Y;
@@ -80,7 +93,8 @@ public class SetButtonUI {
             Collection<EquippableSetData> equippableSetData = hookManager.getSetHookManager().getActivatedEquipped().get(equipmentSet);
 
             buttonY += GROUP_SPACING;
-            
+
+            // 创建标题按钮
             ResourceLocation resource = EquipmentSetManager.getInstance().getResource(equipmentSet);
             String translationKey = "equipment_benediction.set_switcher." + resource.getNamespace() + "." + resource.getPath();
             Component name = Component.translatable(translationKey);
@@ -89,18 +103,10 @@ public class SetButtonUI {
                 buttonX, buttonY,
                 SET_BUTTON_WIDTH, TITLE_HEIGHT,
                 name,
-                button -> {
-                    SetTitleButton setTitleButton = (SetTitleButton) button;
-                    setTitleButton.toggleExpanded();
-                    updateMaxScroll();
-                }
+                button -> handleTitleButtonClick(equipmentSet)
             );
-            titleButtons.add(titleButton);
-            
+            titleButtons.put(equipmentSet, titleButton);
             buttonY += TITLE_HEIGHT;
-
-            List<EquippableSetButton> equipButtons = new ArrayList<>();
-            setButtonsMap.put(equipmentSet, equipButtons);
 
             EquippableGroup equippableGroup = equipmentSet.getEquippableGroup();
             Collection<EquippableSetData> equippableSets = equippableGroup.equippableMaps().values();
@@ -119,100 +125,78 @@ public class SetButtonUI {
                     button.setSelected(true);
                 }
                 setButtons.add(button);
-                equipButtons.add(button);
                 buttonY += SET_BUTTON_HEIGHT + BUTTON_SPACING;
             }
         }
 
-        updateMaxScroll();
+        recalculateHeight();
+    }
+
+    private void handleTitleButtonClick(EquipmentSet equipmentSet) {
+        SetTitleButton titleButton = titleButtons.get(equipmentSet);
+        if (titleButton != null) {
+            titleButton.toggleExpanded();
+            recalculateHeight();
+        }
     }
 
     public void renderEquipmentSets(GuiGraphics guiGraphics, int mouseX, int mouseY, float scrollOffset, float partialTick) {
+        scrollOffset = Math.max(0.0F, Math.min(1.0F, scrollOffset));
+        
         int buttonY = topPos + EquipmentSetSwitcherScreen.CONTENT_AREA_Y - (int)(maxScroll * scrollOffset);
         int buttonX = leftPos + EquipmentSetSwitcherScreen.CONTENT_AREA_X;
 
-        int titleIndex = 0;
-        int currentY = buttonY;
+        EquipmentSet lastSet = null;
 
-        // 先渲染所有标题和对应的按钮
-        for (SetTitleButton titleButton : titleButtons) {
-            if (isButtonVisible(currentY)) {
+        Map<EquipmentSet, List<EquippableSetButton>> buttonsBySet = new LinkedHashMap<>();
+        for (EquippableSetButton button : setButtons) {
+            buttonsBySet.computeIfAbsent(button.getEquipmentSet(), k -> new ArrayList<>()).add(button);
+        }
+
+        for (Map.Entry<EquipmentSet, List<EquippableSetButton>> entry : buttonsBySet.entrySet()) {
+            EquipmentSet equipmentSet = entry.getKey();
+            List<EquippableSetButton> buttons = entry.getValue();
+
+            if (lastSet != null) {
+                if (isButtonVisible(buttonY)) {
+                    renderSeparator(guiGraphics, buttonX, buttonY);
+                }
+                buttonY += GROUP_SPACING;
+            }
+
+            SetTitleButton titleButton = titleButtons.get(equipmentSet);
+            if (titleButton != null && isButtonVisible(buttonY)) {
                 titleButton.setX(buttonX);
-                titleButton.setY(currentY);
+                titleButton.setY(buttonY);
                 titleButton.render(guiGraphics, mouseX, mouseY, partialTick);
             }
-            currentY += TITLE_HEIGHT;
+            buttonY += TITLE_HEIGHT;
 
-            // 如果标题是展开状态，渲染对应的按钮
-            if (titleButton.isExpanded() && titleIndex < setButtons.size()) {
-                EquipmentSet set = setButtons.get(titleIndex).getEquipmentSet();
-                List<EquippableSetButton> buttons = setButtonsMap.get(set);
-                
+            if (titleButton != null && titleButton.isExpanded()) {
                 for (EquippableSetButton button : buttons) {
-                    if (isButtonVisible(currentY)) {
+                    if (isButtonVisible(buttonY)) {
                         button.setX(buttonX);
-                        button.setY(currentY);
+                        button.setY(buttonY);
                         button.render(guiGraphics, mouseX, mouseY, partialTick);
                     }
-                    currentY += SET_BUTTON_HEIGHT + BUTTON_SPACING;
+                    buttonY += SET_BUTTON_HEIGHT + BUTTON_SPACING;
                 }
             }
 
-            currentY += GROUP_SPACING;
-            titleIndex++;
+            lastSet = equipmentSet;
         }
 
-        // 渲染分隔线
-        currentY = buttonY;
-        for (int i = 0; i < titleButtons.size(); i++) {
-            if (i > 0) {
-                renderSeparator(guiGraphics, buttonX, currentY - GROUP_SPACING);
-            }
-            currentY += TITLE_HEIGHT;
-            
-            if (titleButtons.get(i).isExpanded() && i < setButtons.size()) {
-                EquipmentSet set = setButtons.get(i).getEquipmentSet();
-                List<EquippableSetButton> buttons = setButtonsMap.get(set);
-                currentY += (SET_BUTTON_HEIGHT + BUTTON_SPACING) * buttons.size();
-            }
-            
-            currentY += GROUP_SPACING;
+        if (lastSet != null && isButtonVisible(buttonY)) {
+            renderSeparator(guiGraphics, buttonX, buttonY);
         }
-    }
-
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        // 检查标题按钮点击
-        for (SetTitleButton titleButton : titleButtons) {
-            if (titleButton.isMouseOver(mouseX, mouseY)) {
-                return titleButton.mouseClicked(mouseX, mouseY, button);
-            }
-        }
-
-        // 只检查展开的套装的按钮点击
-        int titleIndex = 0;
-        for (SetTitleButton titleButton : titleButtons) {
-            if (titleButton.isExpanded() && titleIndex < setButtons.size()) {
-                EquipmentSet set = setButtons.get(titleIndex).getEquipmentSet();
-                List<EquippableSetButton> buttons = setButtonsMap.get(set);
-                
-                for (EquippableSetButton equipButton : buttons) {
-                    if (equipButton.isMouseOver(mouseX, mouseY)) {
-                        return equipButton.mouseClicked(mouseX, mouseY, button);
-                    }
-                }
-            }
-            titleIndex++;
-        }
-
-        return false;
     }
 
     private boolean isButtonVisible(int buttonY) {
         int contentAreaTop = topPos + EquipmentSetSwitcherScreen.CONTENT_AREA_Y;
         int contentAreaBottom = contentAreaTop + EquipmentSetSwitcherScreen.CONTENT_AREA_HEIGHT;
-        int buttonBottom = buttonY + SET_BUTTON_HEIGHT;
         
-        return !(buttonY > contentAreaBottom || buttonBottom < contentAreaTop);
+        int buttonBottom = buttonY + SET_BUTTON_HEIGHT;
+        return buttonY < contentAreaBottom && buttonBottom > contentAreaTop;
     }
 
     private void handleSetButtonClick(EquippableSetButton clickedButton) {
@@ -223,7 +207,7 @@ public class SetButtonUI {
         }
     }
 
-    private void handleButtonClick(EquippableSetButton clickedButton, boolean selected) {
+    private void handleButtonClick(EquippableSetButton clickedButton,boolean selected) {
         EquipmentSet equipmentSet = clickedButton.getEquipmentSet();
         EntityHookManager entityHookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
 
@@ -298,6 +282,10 @@ public class SetButtonUI {
 
     public List<EquippableSetButton> getSetButtons() {
         return setButtons;
+    }
+
+    public Collection<SetTitleButton> getTitleButtons() {
+        return titleButtons.values();
     }
 
     public int getMaxScroll() {

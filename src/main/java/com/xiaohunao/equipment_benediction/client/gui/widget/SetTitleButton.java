@@ -14,28 +14,33 @@ public class SetTitleButton extends TransparentButton {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (this.isHovered()) {
-            // 绘制半透明背景
             guiGraphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 
                 0x30FFFFFF, 0x30FFFFFF);
         }
-        
-        // 绘制文字
-        int textWidth = Minecraft.getInstance().font.width(this.getMessage());
-        int textX = this.getX() + (this.width - textWidth) / 2;
-        guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), textX, this.getY(), 0x808080);
 
-        // 绘制展开/折叠指示器
         String indicator = expanded ? "▼" : "▶";
         guiGraphics.drawString(Minecraft.getInstance().font, indicator, this.getX() + 2, this.getY(), 0x808080);
+
+        int textWidth = Minecraft.getInstance().font.width(this.getMessage());
+        int textX = this.getX() + 12 + (this.width - 12 - textWidth) / 2; // 12是为了给指示器留出空间
+        guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), textX, this.getY(), 0x808080);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isMouseOver(mouseX, mouseY)) {
-            this.onPress();
+            this.playDownSound(Minecraft.getInstance().getSoundManager());
+            this.onPress.onPress(this);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        boolean result = mouseX >= this.getX() && mouseY >= this.getY() &&
+                        mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
+        return result;
     }
 
     public boolean isExpanded() {
