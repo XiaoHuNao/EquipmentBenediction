@@ -11,6 +11,7 @@ import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +44,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         return INSTANCE;
     }
 
-    public void updateSet(LivingEquipmentChangeContext livingEquipmentChangeContext) {
+    public void updateSet(ServerPlayer player, LivingEquipmentChangeContext livingEquipmentChangeContext) {
         LivingEntity livingEntity = livingEquipmentChangeContext.livingEntity();
         if (livingEntity.level().isClientSide){
             return;
@@ -83,7 +84,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         setHookManager.sync(livingEntity);
         CompoundTag tag = new CompoundTag();
         tag.put("set_hook", setHookManager.serializeNBT(null));
-        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),tag));
+        PacketDistributor.sendToPlayer(player, new EntityHookManagerSyncPayload(livingEntity.getId(),tag));
     }
     
     public boolean hasEquipmentSet(ItemStack stack) {

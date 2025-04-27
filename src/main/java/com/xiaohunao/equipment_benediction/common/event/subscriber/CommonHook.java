@@ -7,6 +7,8 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.AfterLivingHurtEntityHook;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import com.xiaohunao.equipment_benediction.common.mixed.ILivingEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -36,10 +38,12 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
+        if (!((ILivingEntity) event.getEntity()).equipment_benediction$isFirstSynced()) return;
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
-        if (!(event.getEntity() instanceof Player player)) return;
         LivingEquipmentChangeContext changeContext = LivingEquipmentChangeContext.of(from, to, slot, player);
 
 
@@ -51,7 +55,7 @@ public class CommonHook {
             }, player);
         }
 
-        EquipmentSetManager.getInstance().updateSet(changeContext);
+        EquipmentSetManager.getInstance().updateSet(player, changeContext);
 
         if (!changeContext.to().isEmpty()) {
             //装备Hook
