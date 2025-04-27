@@ -9,6 +9,7 @@ import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -80,7 +81,9 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         });
 
         setHookManager.sync(livingEntity);
-        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),setHookManager.serializeNBT(null)));
+        CompoundTag tag = new CompoundTag();
+        tag.put("set_hook", setHookManager.serializeNBT(null));
+        PacketDistributor.sendToAllPlayers(new EntityHookManagerSyncPayload(livingEntity.getId(),tag));
     }
     
     public boolean hasEquipmentSet(ItemStack stack) {
