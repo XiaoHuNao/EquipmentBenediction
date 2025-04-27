@@ -10,16 +10,16 @@ import java.util.Map;
 /**
  * @param exclusivityMaps true表示独占，false表示非独占
  */
-public record EquippableGroup(BiMap<String, EquippableSetData> equippableMaps, Map<EquippableSetData, Boolean> exclusivityMaps) {
-    public boolean isExclusive(EquippableSetData data) {
+public record EquippableGroup(BiMap<String, EquipmentSetBranch> equippableMaps, Map<EquipmentSetBranch, Boolean> exclusivityMaps) {
+    public boolean isExclusive(EquipmentSetBranch data) {
         return exclusivityMaps.getOrDefault(data, true);
     }
 
     public static class Builder {
-        private final BiMap<String, EquippableSetData> equippableMaps = HashBiMap.create();
-        protected final Map<EquippableSetData, Boolean> exclusivityMaps = Maps.newHashMap();
+        private final BiMap<String, EquipmentSetBranch> equippableMaps = HashBiMap.create();
+        protected final Map<EquipmentSetBranch, Boolean> exclusivityMaps = Maps.newHashMap();
 
-        public Builder addEquippableSet(String name, EquippableSetData equippableSetData, boolean exclusivity) {
+        public Builder addEquippableSet(String name, EquipmentSetBranch equippableSetData, boolean exclusivity) {
             if (equippableSetData == null) {
                 throw new IllegalArgumentException("EquippableSetData cannot be null");
             }
@@ -28,7 +28,7 @@ public record EquippableGroup(BiMap<String, EquippableSetData> equippableMaps, M
             return this;
         }
 
-        public Builder addEquippableSet(String name, EquippableSetData equippableSetData) {
+        public Builder addEquippableSet(String name, EquipmentSetBranch equippableSetData) {
             return addEquippableSet(name, equippableSetData, false);
         }
 

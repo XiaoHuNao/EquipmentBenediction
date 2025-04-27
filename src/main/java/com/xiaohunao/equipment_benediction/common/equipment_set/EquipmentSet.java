@@ -42,7 +42,7 @@ public abstract class EquipmentSet implements IBenediction {
         return null;
     }
 
-    public Collection<EquippableSetData> allBranch() {
+    public Collection<EquipmentSetBranch> allBranch() {
         return equippableGroup.equippableMaps().values();
     }
 }

@@ -2,7 +2,7 @@ package com.xiaohunao.equipment_benediction.client.gui.screen.switcher;
 
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,7 +26,7 @@ public class ArmorStandPreviewUI {
     private final ArmorStand previewArmorStand;
     private final Player player;
     private long lastRotationTime = 0;
-    private Map<EquippableSetData, List<Map<EquipmentSlot, ItemStack>>> previewCombinations = new HashMap<>();
+    private Map<EquipmentSetBranch, List<Map<EquipmentSlot, ItemStack>>> previewCombinations = new HashMap<>();
 
     public ArmorStandPreviewUI(Player player, ArmorStand armorStand, int x1, int y1, int x2, int y2) {
         this.player = player;
@@ -37,7 +37,7 @@ public class ArmorStandPreviewUI {
         this.previewY2 = y2;
     }
 
-    public void render(GuiGraphics guiGraphics, Set<EquippableSetData> selectedSets) {
+    public void render(GuiGraphics guiGraphics, Set<EquipmentSetBranch> selectedSets) {
         if (previewArmorStand == null) return;
 
         clearArmorStandEquipment();
@@ -52,7 +52,7 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    private void updatePreviewIfNeeded(Set<EquippableSetData> selectedSets) {
+    private void updatePreviewIfNeeded(Set<EquipmentSetBranch> selectedSets) {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastRotationTime > ROTATION_INTERVAL) {
             updatePreviewCombinations(selectedSets);
@@ -70,9 +70,9 @@ public class ArmorStandPreviewUI {
         );
     }
 
-    private void applySelectedSetsToArmorStand(Set<EquippableSetData> selectedSets) {
+    private void applySelectedSetsToArmorStand(Set<EquipmentSetBranch> selectedSets) {
         // 先处理独占的套装
-        for (EquippableSetData setData : selectedSets) {
+        for (EquipmentSetBranch setData : selectedSets) {
             EquipmentSet equipmentSet = findEquipmentSetForData(setData);
             if (equipmentSet != null && equipmentSet.getEquippableGroup().isExclusive(setData)) {
                 applySetToArmorStand(setData);
@@ -81,7 +81,7 @@ public class ArmorStandPreviewUI {
         }
 
         // 处理非独占的套装
-        for (EquippableSetData setData : selectedSets) {
+        for (EquipmentSetBranch setData : selectedSets) {
             EquipmentSet equipmentSet = findEquipmentSetForData(setData);
             if (equipmentSet != null && !equipmentSet.getEquippableGroup().isExclusive(setData)) {
                 applySetToArmorStand(setData);
@@ -89,7 +89,7 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    private EquipmentSet findEquipmentSetForData(EquippableSetData setData) {
+    private EquipmentSet findEquipmentSetForData(EquipmentSetBranch setData) {
         Map<ResourceLocation, EquipmentSet> allSets = EquipmentSetManager.getInstance().getAllResources();
 
         for (EquipmentSet set : allSets.values()) {
@@ -100,12 +100,12 @@ public class ArmorStandPreviewUI {
         return null;
     }
 
-    private void applySetToArmorStand(EquippableSetData setData) {
+    private void applySetToArmorStand(EquipmentSetBranch setData) {
         setData.requiredMatchCount()
                 .ifPresentOrElse(count -> applyPartialSet(setData),() -> applyFullSet(setData));
     }
 
-    private void applyPartialSet(EquippableSetData setData) {
+    private void applyPartialSet(EquipmentSetBranch setData) {
         List<Map<EquipmentSlot, ItemStack>> combinations = previewCombinations.get(setData);
         if (combinations != null && !combinations.isEmpty()) {
             int index = (int) ((System.currentTimeMillis() / ROTATION_INTERVAL) % combinations.size());
@@ -118,7 +118,7 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    private void applyFullSet(EquippableSetData setData) {
+    private void applyFullSet(EquipmentSetBranch setData) {
         Map<IEquippable, Ingredient> equipages = setData.equipages();
         for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
             if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
@@ -133,9 +133,9 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    private void updatePreviewCombinations(Set<EquippableSetData> selectedSets) {
+    private void updatePreviewCombinations(Set<EquipmentSetBranch> selectedSets) {
         previewCombinations.clear();
-        for (EquippableSetData setData : selectedSets) {
+        for (EquipmentSetBranch setData : selectedSets) {
             setData.requiredMatchCount().ifPresent(count -> {
                 List<Map<EquipmentSlot, ItemStack>> combinations = generatePreviewCombinations(setData);
                 previewCombinations.put(setData, combinations);
@@ -143,7 +143,7 @@ public class ArmorStandPreviewUI {
         }
     }
 
-    private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquippableSetData setData) {
+    private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquipmentSetBranch setData) {
         List<Map<EquipmentSlot, ItemStack>> combinations = new ArrayList<>();
         Map<IEquippable, Ingredient> equipages = setData.equipages();
         Optional<Integer> requiredMatchCount = setData.requiredMatchCount();

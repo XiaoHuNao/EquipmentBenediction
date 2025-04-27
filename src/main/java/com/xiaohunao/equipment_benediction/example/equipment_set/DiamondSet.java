@@ -2,19 +2,17 @@ package com.xiaohunao.equipment_benediction.example.equipment_set;
 
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableGroup;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.Tags;
 
 public class DiamondSet extends EquipmentSet {
     @Override
@@ -24,7 +22,7 @@ public class DiamondSet extends EquipmentSet {
         }
 
 
-        EquippableSetData setData1 = new EquippableSetData.Builder()
+        EquipmentSetBranch setData1 = new EquipmentSetBranch.Builder()
                 .addEquippable(
                         VanillaEquippable.HEAD , Ingredient.of(Items.DIAMOND_HELMET),
                         VanillaEquippable.CHEST, Ingredient.of(Items.DIAMOND_CHESTPLATE),
@@ -36,7 +34,7 @@ public class DiamondSet extends EquipmentSet {
                 )
                 .build();
 
-        EquippableSetData setData2 = new EquippableSetData.Builder()
+        EquipmentSetBranch setData2 = new EquipmentSetBranch.Builder()
                 .addEquippable(
                         VanillaEquippable.FEET , Ingredient.of(Items.DIAMOND_BOOTS)
                 )
@@ -46,7 +44,7 @@ public class DiamondSet extends EquipmentSet {
                 .build();
 
 
-        EquippableSetData setData3 =  new EquippableSetData.Builder()
+        EquipmentSetBranch setData3 =  new EquipmentSetBranch.Builder()
                 .addEquippable(
                         VanillaEquippable.HEAD , Ingredient.of(Items.DIAMOND_HELMET),
                         VanillaEquippable.CHEST, Ingredient.of(Items.DIAMOND_CHESTPLATE),
@@ -58,7 +56,7 @@ public class DiamondSet extends EquipmentSet {
                 )
                 .build();
 
-        EquippableSetData setData4 =  new EquippableSetData.Builder()
+        EquipmentSetBranch setData4 =  new EquipmentSetBranch.Builder()
                 .addEquippable(
                         VanillaEquippable.HEAD , Ingredient.of(Items.DIAMOND_HELMET),
                         VanillaEquippable.CHEST, Ingredient.of(Items.DIAMOND_CHESTPLATE),

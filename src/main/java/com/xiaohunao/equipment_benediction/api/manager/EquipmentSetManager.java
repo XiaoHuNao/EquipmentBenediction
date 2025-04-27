@@ -6,10 +6,9 @@ import com.google.gson.JsonElement;
 import com.xiaohunao.equipment_benediction.common.attachment.EquipmentSetHookManager;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
-import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -31,8 +30,8 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
     private static final EquipmentSetManager INSTANCE = new EquipmentSetManager();
 
     private static final Multimap<EquipmentSet, Ingredient> equipmentSetIngredientMaps = HashMultimap.create();
-    private static final Multimap<EquipmentSet, EquippableSetData> equipmentSetDataMaps = HashMultimap.create();
-    private static final BiMap<ResourceLocation,EquippableSetData> equipmentSetDataRegistry = HashBiMap.create();
+    private static final Multimap<EquipmentSet, EquipmentSetBranch> equipmentSetDataMaps = HashMultimap.create();
+    private static final BiMap<ResourceLocation, EquipmentSetBranch> equipmentSetDataRegistry = HashBiMap.create();
 
 
     protected EquipmentSetManager() {
@@ -52,10 +51,10 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         ItemStack from = livingEquipmentChangeContext.from();
 
         EquipmentSetHookManager setHookManager = livingEntity.getData(EBAttachments.ENTITY_HOOK_MANAGER).getSetHookManager();
-        Multimap<EquipmentSet, EquippableSetData> activatedEquipped = setHookManager.getActivatedEquipped();
-        Multimap<EquipmentSet, EquippableSetData> selectedEquipped = setHookManager.getSelectedEquipped();
+        Multimap<EquipmentSet, EquipmentSetBranch> activatedEquipped = setHookManager.getActivatedSetBranch();
+        Multimap<EquipmentSet, EquipmentSetBranch> selectedEquipped = setHookManager.getSelectedEquipped();
 
-        List<Map.Entry<EquipmentSet, EquippableSetData>> toRemove = Lists.newArrayList();
+        List<Map.Entry<EquipmentSet, EquipmentSetBranch>> toRemove = Lists.newArrayList();
         activatedEquipped.entries().forEach(entry -> {
             if (!entry.getValue().isValid(livingEntity)) {
                 toRemove.add(entry);
@@ -64,7 +63,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
         });
 
         toRemove.forEach(entry -> {
-            setHookManager.updateEquippable(entry.getKey(), entry.getValue(), false);
+            setHookManager.updateEquippable(livingEntity,entry.getKey(), entry.getValue(), false);
         });
 
 
@@ -76,7 +75,7 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
             boolean valid = setData.isValid(livingEntity);
 
             if (contains && valid) {
-                setHookManager.updateEquippable(set, setData, true);
+                setHookManager.updateEquippable(livingEntity, set, setData, true);
             }
         });
 
@@ -139,11 +138,11 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
     }
 
-    public EquippableSetData getBranchResource(ResourceLocation branchLocation) {
+    public EquipmentSetBranch getBranchResource(ResourceLocation branchLocation) {
         return equipmentSetDataRegistry.get(branchLocation);
     }
 
-    public ResourceLocation getBranchResource(EquippableSetData setData) {
+    public ResourceLocation getBranchResource(EquipmentSetBranch setData) {
         return equipmentSetDataRegistry.inverse().get(setData);
     }
 }

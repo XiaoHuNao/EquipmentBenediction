@@ -4,7 +4,7 @@ import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton;
 import com.xiaohunao.equipment_benediction.client.gui.widget.SetTitleButton;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -60,7 +60,7 @@ public class SwitcherModuleUI {
         scrollUI.renderScrollBar(guiGraphics);
         
         if (hoveredButton != null) {
-            Set<EquippableSetData> previewSet = Set.of(hoveredButton.getSetData());
+            Set<EquipmentSetBranch> previewSet = Set.of(hoveredButton.getSetData());
             previewUI.render(guiGraphics, previewSet);
         } else {
             previewUI.renderPlayerEquipment(guiGraphics, player);

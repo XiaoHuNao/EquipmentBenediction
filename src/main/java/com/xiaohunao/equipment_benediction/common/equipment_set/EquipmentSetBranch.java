@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEquippable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
+public record EquipmentSetBranch(Map<IEquippable, Ingredient> equipages, List<IEquippable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
     public boolean isValid(LivingEntity livingEntity) {
         boolean match = requiredMatchCount.map(integer -> equipages.entrySet()
                         .stream()
@@ -127,8 +127,8 @@ public record EquippableSetData(Map<IEquippable, Ingredient> equipages, List<IEq
         }
 
 
-        public EquippableSetData build() {
-            return new EquippableSetData(equipages, blacklist, Optional.ofNullable(requiredMatchCount), hookMap.build());
+        public EquipmentSetBranch build() {
+            return new EquipmentSetBranch(equipages, blacklist, Optional.ofNullable(requiredMatchCount), hookMap.build());
         }
 
     }

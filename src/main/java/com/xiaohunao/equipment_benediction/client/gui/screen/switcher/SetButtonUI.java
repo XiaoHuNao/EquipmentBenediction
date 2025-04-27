@@ -9,11 +9,10 @@ import com.xiaohunao.equipment_benediction.client.gui.widget.SetTitleButton;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableGroup;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +33,7 @@ public class SetButtonUI {
 
     private final List<EquippableSetButton> setButtons = new ArrayList<>();
     private final Map<EquipmentSet, SetTitleButton> titleButtons = new HashMap<>();
-    private final Multimap<EquipmentSet, EquippableSetData> selectedSets = HashMultimap.create();
+    private final Multimap<EquipmentSet, EquipmentSetBranch> selectedSets = HashMultimap.create();
     private final int leftPos;
     private final int topPos;
     private final Player player;
@@ -90,7 +89,7 @@ public class SetButtonUI {
 
         for (EquipmentSet equipmentSet : equipmentSets) {
             EntityHookManager hookManager = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
-            Collection<EquippableSetData> equippableSetData = hookManager.getSetHookManager().getActivatedEquipped().get(equipmentSet);
+            Collection<EquipmentSetBranch> equippableSetData = hookManager.getSetHookManager().getActivatedSetBranch().get(equipmentSet);
 
             buttonY += GROUP_SPACING;
 
@@ -109,9 +108,9 @@ public class SetButtonUI {
             buttonY += TITLE_HEIGHT;
 
             EquippableGroup equippableGroup = equipmentSet.getEquippableGroup();
-            Collection<EquippableSetData> equippableSets = equippableGroup.equippableMaps().values();
+            Collection<EquipmentSetBranch> equippableSets = equippableGroup.equippableMaps().values();
             
-            for (EquippableSetData setData : equippableSets) {
+            for (EquipmentSetBranch setData : equippableSets) {
                 boolean isExclusive = equippableGroup.isExclusive(setData);
                 EquippableSetButton button = new EquippableSetButton(
                     buttonX, buttonY, 
@@ -216,7 +215,7 @@ public class SetButtonUI {
         }
 
         entityHookManager.getSetHookManager()
-                .updateEquippable(equipmentSet, clickedButton.getSetData(), selected)
+                .updateEquippable(player,equipmentSet, clickedButton.getSetData(), selected)
                 .updateSelectedEquipped(equipmentSet, clickedButton.getSetData(), selected)
                 .sync(player);
 
@@ -229,7 +228,7 @@ public class SetButtonUI {
 
     private void handleExclusiveButtonClick(EquippableSetButton clickedButton) {
         EquipmentSet equipmentSet = clickedButton.getEquipmentSet();
-        EquippableSetData setData = clickedButton.getSetData();
+        EquipmentSetBranch setData = clickedButton.getSetData();
         
         if (clickedButton.isSelected()) {
             clickedButton.setSelected(false);
@@ -252,7 +251,7 @@ public class SetButtonUI {
 
     private void handleNonExclusiveButtonClick(EquippableSetButton clickedButton) {
         EquipmentSet equipmentSet = clickedButton.getEquipmentSet();
-        EquippableSetData setData = clickedButton.getSetData();
+        EquipmentSetBranch setData = clickedButton.getSetData();
         
         boolean hasExclusiveSelected = setButtons.stream()
             .anyMatch(button -> button.getEquipmentSet() == equipmentSet && 
@@ -292,14 +291,14 @@ public class SetButtonUI {
         return maxScroll;
     }
 
-    public Set<EquippableSetData> getSelectedSets() {
+    public Set<EquipmentSetBranch> getSelectedSets() {
         return setButtons.stream()
             .filter(EquippableSetButton::isSelected)
             .map(EquippableSetButton::getSetData)
             .collect(java.util.stream.Collectors.toSet());
     }
     
-    public Multimap<EquipmentSet, EquippableSetData> getSelectedSetsMap() {
+    public Multimap<EquipmentSet, EquipmentSetBranch> getSelectedSetsMap() {
         return HashMultimap.create(selectedSets);
     }
 

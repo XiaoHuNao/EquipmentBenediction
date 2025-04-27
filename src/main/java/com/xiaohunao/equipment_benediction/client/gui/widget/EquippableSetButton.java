@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableSetData;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -43,7 +43,7 @@ public class EquippableSetButton extends Button {
     private long lastScrollTime = 0;                 // 上次滚动时间
     
     // 按钮数据
-    private final EquippableSetData setData;
+    private final EquipmentSetBranch setData;
     private final EquipmentSet equipmentSet;
     private final boolean exclusive;
     private boolean selected;
@@ -51,9 +51,9 @@ public class EquippableSetButton extends Button {
     /**
      * 创建一个装备集按钮
      */
-    public EquippableSetButton(int x, int y, int width, int height, 
-                              EquippableSetData setData, EquipmentSet equipmentSet, 
-                              boolean exclusive, OnPress onPress) {
+    public EquippableSetButton(int x, int y, int width, int height,
+                               EquipmentSetBranch setData, EquipmentSet equipmentSet,
+                               boolean exclusive, OnPress onPress) {
         super(x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION);
         this.setData = setData;
         this.equipmentSet = equipmentSet;
@@ -107,7 +107,7 @@ public class EquippableSetButton extends Button {
 
     private int getSetIndex() {
         int index = 0;
-        for (EquippableSetData data : equipmentSet.getEquippableGroup().equippableMaps().values()) {
+        for (EquipmentSetBranch data : equipmentSet.getEquippableGroup().equippableMaps().values()) {
             if (data == this.setData) {
                 break;
             }
@@ -182,7 +182,7 @@ public class EquippableSetButton extends Button {
         guiGraphics.disableScissor();
     }
 
-    public EquippableSetData getSetData() {
+    public EquipmentSetBranch getSetData() {
         return setData;
     }
 

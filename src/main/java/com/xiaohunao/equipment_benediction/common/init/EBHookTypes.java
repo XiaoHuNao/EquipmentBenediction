@@ -29,6 +29,9 @@ public class EBHookTypes {
     public static final DeferredHolder<HookType<?>, HookType<LivingGetProjectileHook>> LIVING_GET_PROJECTILE = register("living_get_projectile", LivingGetProjectileHook.class);
     public static final DeferredHolder<HookType<?>, HookType<PlayerTickHook>> PLAYER_TICK = register("player_tick", PlayerTickHook.class);
     public static final DeferredHolder<HookType<?>, HookType<AfterLivingHurtEntityHook>> AFTER_LIVING_HURT_ENTITY = register("after_living_hurt_entity", AfterLivingHurtEntityHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<ActivatedSetBranchHook>> ACTIVATED_SET_BRANCH = register("activated_set_branch", ActivatedSetBranchHook.class);
+    public static final DeferredHolder<HookType<?>, HookType<SuppressionSetBranchHook>> SUPPRESSION_SET_BRANCH = register("suppression_set_branch", SuppressionSetBranchHook.class);
+
 
 
     public static final DeferredHolder<HookType<?>, HookType<KnockbackHook>> KNOCKBACK = registerSerializable("knockback", KnockbackHook.class, KnockbackHook.CODEC);
