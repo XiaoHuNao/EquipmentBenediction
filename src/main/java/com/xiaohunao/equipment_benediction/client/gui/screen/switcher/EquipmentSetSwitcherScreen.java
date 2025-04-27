@@ -108,40 +108,40 @@ public class EquipmentSetSwitcherScreen extends Screen {
                 layoutExpandButton.setY(startY + ShowAllSetButton.BUTTON_SIZE);
             }
 
-            // 将装备集平均分配到各个模块
             Set<EquipmentSet> equipmentSets = getShowSet();
-            // 使用TreeSet来保持固定顺序
             List<EquipmentSet> setList = new ArrayList<>(equipmentSets);
-            // 根据装备集的ResourceLocation进行排序
             setList.sort(Comparator.comparing(set -> {
                 ResourceLocation resource = EquipmentSetManager.getInstance().getResource(set);
                 return resource.toString();
             }));
             
-            int setsPerModule = (int) Math.ceil((double) setList.size() / modules.size());
+            int setsPerModule = setList.isEmpty() ? 0 : (int) Math.ceil((double) setList.size() / modules.size());
 
             for (int i = 0; i < modules.size(); i++) {
                 int row = i / 2;
                 int col = i % 2;
                 int x = startX + (col * (moduleWidth + GRID_SPACING));
                 int y = startY + (row * (moduleHeight + GRID_SPACING));
-                
-                // 计算当前模块应该显示的装备集
+
                 int startIndex = i * setsPerModule;
                 int endIndex = Math.min(startIndex + setsPerModule, setList.size());
-                Set<EquipmentSet> moduleSets = new LinkedHashSet<>(setList.subList(startIndex, endIndex));
+
+                if (startIndex >= setList.size()) {
+                    modules.get(i).initButtons(new LinkedHashSet<>());
+                } else {
+                    Set<EquipmentSet> moduleSets = new LinkedHashSet<>(setList.subList(startIndex, endIndex));
+                    modules.get(i).initButtons(moduleSets);
+                }
                 
                 modules.get(i).setPosition(x, y);
-                modules.get(i).initButtons(moduleSets);
             }
         } else {
             int x = (this.width - SwitcherModuleUI.WIDTH) / 2;
             int y = (this.height - SwitcherModuleUI.HEIGHT) / 2;
-            
-            // 使用TreeSet来保持固定顺序
+
             Set<EquipmentSet> equipmentSets = getShowSet();
             List<EquipmentSet> setList = new ArrayList<>(equipmentSets);
-            // 根据装备集的ResourceLocation进行排序
+
             setList.sort(Comparator.comparing(set -> {
                 ResourceLocation resource = EquipmentSetManager.getInstance().getResource(set);
                 return resource.toString();
@@ -150,7 +150,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
             modules.get(0).setPosition(x, y);
             modules.get(0).initButtons(new LinkedHashSet<>(setList));
 
-            // Update button positions
+
             if (showAllSetButton != null && layoutExpandButton != null) {
                 showAllSetButton.setX(x - ShowAllSetButton.BUTTON_SIZE);
                 showAllSetButton.setY(y);
