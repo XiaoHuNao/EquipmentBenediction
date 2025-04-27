@@ -17,7 +17,7 @@ public class HookMap {
     private static final Logger LOGGER = LoggerFactory.getLogger(HookMap.class);
     private final Multimap<HookType<?>, IHook> hooks;
 
-    private HookMap(Multimap<HookType<?>, IHook> hooks, BiMap<Integer, IHook> hooksById) {
+    private HookMap(Multimap<HookType<?>, IHook> hooks) {
         this.hooks = ImmutableMultimap.copyOf(hooks);
     }
 
@@ -207,7 +207,7 @@ public class HookMap {
 
         @ApiStatus.Internal
         public HookMap build() {
-            return new HookMap(hooks, hooksById);
+            return new HookMap(hooks);
         }
     }
 
