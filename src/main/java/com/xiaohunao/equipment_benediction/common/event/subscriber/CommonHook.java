@@ -38,9 +38,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-        if (!((ILivingEntity) event.getEntity()).equipment_benediction$isFirstSynced()) return;
-
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player) || !((ILivingEntity) player).equipment_benediction$isFirstSynced()) return;
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
@@ -48,21 +46,21 @@ public class CommonHook {
 
 
         if (!changeContext.from().isEmpty()) {
-            //卸下装备Hook
+            // 卸下装备Hook
             HookMapManager.postHooks(EBHookTypes.UNEQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
-                hook.onUnequipEquipment(owner, changeContext);
-                return null;
-            }, player);
+                hook.onUnequipEquipment(owner, original);
+                return original;
+            }, player, changeContext);
         }
 
         EquipmentSetManager.getInstance().updateSet(player, changeContext);
 
         if (!changeContext.to().isEmpty()) {
-            //装备Hook
+            // 装备Hook
             HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
-                hook.onEquipEquipment(owner, changeContext);
-                return null;
-            }, player);
+                hook.onEquipEquipment(owner, original);
+                return original;
+            }, player, changeContext);
         }
     }
 
