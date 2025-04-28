@@ -1,5 +1,6 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
+import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
@@ -22,15 +23,15 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = EquipmentBenediction.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class CommonHook {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         Player player = event.getEntity();
         HookMapManager.postHooks(EBHookTypes.PLAYER_TICK.get(), (owner, hook, original) -> {
-            hook.onPlayerTick(owner, player);
-            return null;
-        }, player);
+            hook.onPlayerTick(owner, original);
+            return original;
+        }, player, player);
 
         player.getData(EBAttachments.ENTITY_HOOK_MANAGER).tickSpecialTimeHook(player);
     }
@@ -83,9 +84,9 @@ public class CommonHook {
             AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), event.getEntity(), container, damageSource.getWeaponItem());
             //近战攻击命中Hook
             HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook, original) -> {
-                hook.beforeMeleeHit(owner, context);
-                return null;
-            }, attacker);
+                hook.beforeMeleeHit(owner, original);
+                return original;
+            }, attacker, context);
         }
 
         HookMapManager.postHooks(EBHookTypes.BEFORE_LIVING_DAMAGE.get(), (owner, hook, original) -> {
