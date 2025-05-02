@@ -3,7 +3,6 @@ package com.xiaohunao.equipment_benediction.common.hook.special;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class SpecialTimeHook implements IHook {
@@ -29,7 +28,7 @@ public abstract class SpecialTimeHook implements IHook {
         return time;
     }
 
-    public abstract boolean canExecuteHook(SpecialTimeHookManager specialTimeHookManager, Player player, SpecialTimeHookWrapper wrapper, Long remainingTime);
+    public abstract boolean canExecuteHook(SpecialTimeHookManager specialTimeHookManager, Player player, SpecialTimeHookWrapper wrapper, long remainingTime);
 
     public <T extends IHook, R> void executeSpecialHook(SpecialTimeHookWrapper wrapper) {
         HookMapManager.HookExecutor<T, R> executor = (HookMapManager.HookExecutor<T, R>) wrapper.executor();

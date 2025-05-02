@@ -6,9 +6,6 @@ import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
-import com.xiaohunao.equipment_benediction.common.hook.hooks.PlayerTickHook;
-import com.xiaohunao.equipment_benediction.common.hook.special.SpecialDelayHook;
-import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimerHook;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -92,19 +89,19 @@ public record EquipmentSetBranch(Map<IEquippable, Ingredient> equipages, List<IE
             return this;
         }
 
-        public <T extends IHook> Builder bindDelayHook(HookType<T> type, T hook, long delay) {
-            hookMap.addHook(type, new SpecialDelayHook(type,hook,delay));
-            return this;
-        }
-
-        public <T extends IHook> Builder bindTimerHook(PlayerTickHook playerTickHook, long timer) {
-            hookMap.addHook(EBHookTypes.PLAYER_TICK.get(), new SpecialTimerHook(EBHookTypes.PLAYER_TICK.get(),playerTickHook,timer));
-            return this;
-        }
-        public <T extends IHook> Builder bindTimerHook(HookType<T> type, T hook, long timer) {
-            hookMap.addHook(type, new SpecialTimerHook(type,hook,timer));
-            return this;
-        }
+//        public <T extends IHook> Builder bindDelayHook(HookType<T> type, T hook, long delay) {
+//            hookMap.addHook(type, new SpecialDelayHook(type,hook,delay));
+//            return this;
+//        }
+//
+//        public <T extends IHook> Builder bindTimerHook(PlayerTickHook playerTickHook, long timer) {
+//            hookMap.addHook(EBHookTypes.PLAYER_TICK.get(), new SpecialTimerHook(EBHookTypes.PLAYER_TICK.get(),playerTickHook,timer));
+//            return this;
+//        }
+//        public <T extends IHook> Builder bindTimerHook(HookType<T> type, T hook, long timer) {
+//            hookMap.addHook(type, new SpecialTimerHook(type,hook,timer));
+//            return this;
+//        }
 
         public Builder bindHook(Consumer<WearBonus.Builder> wearBonusHook) {
             WearBonus.Builder builder = new WearBonus.Builder();
