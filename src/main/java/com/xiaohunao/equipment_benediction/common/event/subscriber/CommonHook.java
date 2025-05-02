@@ -1,5 +1,6 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
+import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
 import com.xiaohunao.equipment_benediction.common.context.LivingEquipmentChangeContext;
@@ -7,6 +8,8 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.AfterLivingHurtEntityHook;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
+import com.xiaohunao.equipment_benediction.common.mixed.ILivingEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -20,15 +23,15 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = EquipmentBenediction.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class CommonHook {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         Player player = event.getEntity();
         HookMapManager.postHooks(EBHookTypes.PLAYER_TICK.get(), (owner, hook, original) -> {
-            hook.onPlayerTick(owner, player);
-            return null;
-        }, player);
+            hook.onPlayerTick(owner, original);
+            return original;
+        }, player, player);
 
         player.getData(EBAttachments.ENTITY_HOOK_MANAGER).tickSpecialTimeHook(player);
     }
@@ -36,29 +39,29 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !((ILivingEntity) player).equipment_benediction$isFirstSynced()) return;
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
-        if (!(event.getEntity() instanceof Player player)) return;
         LivingEquipmentChangeContext changeContext = LivingEquipmentChangeContext.of(from, to, slot, player);
 
 
         if (!changeContext.from().isEmpty()) {
-            //卸下装备Hook
+            // 卸下装备Hook
             HookMapManager.postHooks(EBHookTypes.UNEQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
-                hook.onUnequipEquipment(owner, changeContext);
-                return null;
-            }, player);
+                hook.onUnequipEquipment(owner, original);
+                return original;
+            }, player, changeContext);
         }
 
-        EquipmentSetManager.getInstance().updateSet(changeContext);
+        EquipmentSetManager.getInstance().updateSet(player, changeContext);
 
         if (!changeContext.to().isEmpty()) {
-            //装备Hook
+            // 装备Hook
             HookMapManager.postHooks(EBHookTypes.EQUIP_EQUIPMENT.get(), (owner, hook, original) -> {
-                hook.onEquipEquipment(owner, changeContext);
-                return null;
-            }, player);
+                hook.onEquipEquipment(owner, original);
+                return original;
+            }, player, changeContext);
         }
     }
 
@@ -81,9 +84,9 @@ public class CommonHook {
             AttackEntityContext context = AttackEntityContext.of(damageSource.getEntity(), event.getEntity(), container, damageSource.getWeaponItem());
             //近战攻击命中Hook
             HookMapManager.postHooks(EBHookTypes.BEFORE_MELEE_HIT.get(), (owner, hook, original) -> {
-                hook.beforeMeleeHit(owner, context);
-                return null;
-            }, attacker);
+                hook.beforeMeleeHit(owner, original);
+                return original;
+            }, attacker, context);
         }
 
         HookMapManager.postHooks(EBHookTypes.BEFORE_LIVING_DAMAGE.get(), (owner, hook, original) -> {
