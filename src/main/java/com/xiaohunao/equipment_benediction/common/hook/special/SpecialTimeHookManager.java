@@ -36,16 +36,18 @@ public class SpecialTimeHookManager {
     }
 
     public void tick(Player player){
-        specialTimeHooks.forEach((wrapper, remainingTime) -> {
+        for (Map.Entry<SpecialTimeHookWrapper, Long> entry : specialTimeHooks.entrySet()) {
+            SpecialTimeHookWrapper wrapper = entry.getKey();
+            Long remainingTime = entry.getValue();
             SpecialTimeHook specialTimeHook = wrapper.specialTimeHook();
-            if (specialTimeHook.canExecuteHook(this,player,wrapper, remainingTime)){
+            if (specialTimeHook.canExecuteHook(this, player, wrapper, remainingTime)) {
                 specialTimeHook.executeSpecialHook(wrapper);
-                player.setData(EBAttachments.ENTITY_HOOK_MANAGER,entityHookManager);
+                player.setData(EBAttachments.ENTITY_HOOK_MANAGER, entityHookManager);
                 if (!player.level().isClientSide) {
                     PacketDistributor.sendToPlayer((ServerPlayer) player, new EntityHookManagerSyncPayload(player.getId(), entityHookManager.serializeNBT(null)));
                 }
             }
-        });
+        }
     }
 
     public <T extends IHook, R> boolean containsSpecialTimeHook(IBenediction owner, T hook, HookMapManager.HookExecutor<T, R> executor) {
