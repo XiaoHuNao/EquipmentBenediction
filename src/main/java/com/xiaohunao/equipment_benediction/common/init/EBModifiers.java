@@ -13,11 +13,11 @@ public class EBModifiers {
         ModifierManager.getInstance()
     );
 
-    // 静态修饰器 - 只注册一次
-    public static final EBDeferredHolder<Modifier> MAGNETIC = MODIFIERS.register("magnetic", MagneticModifier::new);
-    
-    // 动态修饰器
-    public static final EBDeferredHolder<Modifier> KNOCKBACK = MODIFIERS.registerDynamic("knockback");
+//    // 静态修饰器 - 只注册一次
+//    public static final EBDeferredHolder<Modifier> MAGNETIC = MODIFIERS.register("magnetic", MagneticModifier::new);
+//
+//    // 动态修饰器
+//    public static final EBDeferredHolder<Modifier> KNOCKBACK = MODIFIERS.registerDynamic("knockback");
 
     // 添加初始化方法
     public static void init() {

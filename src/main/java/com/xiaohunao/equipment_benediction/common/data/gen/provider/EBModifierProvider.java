@@ -16,6 +16,6 @@ public class EBModifierProvider extends AbstractModifierProvider {
     @Override
     protected void addModifiers() {
         SerializableModifier knockbackModifier = createModifier(new KnockbackHook());
-        add(EBModifiers.KNOCKBACK, knockbackModifier);
+//        add(EBModifiers.KNOCKBACK, knockbackModifier);
     }
 }
