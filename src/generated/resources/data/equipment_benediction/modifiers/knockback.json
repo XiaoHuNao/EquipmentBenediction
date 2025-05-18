@@ -1,7 +1,0 @@
-{
-  "hooks": [
-    {
-      "type": "equipment_benediction:knockback"
-    }
-  ]
-}
