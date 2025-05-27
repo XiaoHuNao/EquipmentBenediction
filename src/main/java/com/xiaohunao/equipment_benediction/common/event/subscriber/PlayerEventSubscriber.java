@@ -1,5 +1,6 @@
 package com.xiaohunao.equipment_benediction.common.event.subscriber;
 
+import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
@@ -40,8 +41,7 @@ public class PlayerEventSubscriber {
         if (player.isShiftKeyDown() && !FMLEnvironment.production) {
             EntityHookManager data = player.getData(EBAttachments.ENTITY_HOOK_MANAGER);
             HookMapManager hookMapManager = HookMapManager.getInstance();
-            System.out.println(data);
-//            System.out.println(hookMapManager);
+            EquipmentBenediction.LOGGER.debug("{}", data);
         }
     }
 

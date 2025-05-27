@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
+
 import java.util.Set;
 
 public class SwitcherModuleUI {
@@ -116,7 +117,7 @@ public class SwitcherModuleUI {
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        System.out.println("SwitcherModuleUI mouseClicked: x=" + mouseX + ", y=" + mouseY + ", button=" + button);
+        EquipmentBenediction.LOGGER.debug("SwitcherModuleUI mouseClicked: x={}, y={}, button={}", mouseX, mouseY, button);
         
         if (button == 0) {
             int scrollBarX = leftPos + 108;
@@ -130,7 +131,7 @@ public class SwitcherModuleUI {
             // 检查标题按钮的点击
             for (SetTitleButton titleButton : setButtonUI.getTitleButtons()) {
                 if (titleButton.isMouseOver(mouseX, mouseY)) {
-                    System.out.println("Title button clicked!");
+                    EquipmentBenediction.LOGGER.debug("Title button clicked!");
                     titleButton.mouseClicked(mouseX, mouseY, button);
                     return true;
                 }

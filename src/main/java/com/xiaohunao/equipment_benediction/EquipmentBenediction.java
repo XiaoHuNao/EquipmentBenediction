@@ -1,9 +1,8 @@
 package com.xiaohunao.equipment_benediction;
 
-import com.mojang.logging.LogUtils;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
-import com.xiaohunao.equipment_benediction.common.init.*;
 import com.xiaohunao.equipment_benediction.api.manager.ModifierManager;
+import com.xiaohunao.equipment_benediction.common.init.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -12,11 +11,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Mod(EquipmentBenediction.MODID)
 public class EquipmentBenediction{
     public static final String MODID = "equipment_benediction";
-    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("EquipmentBenediction");
 
     public EquipmentBenediction(IEventBus modEventBus, ModContainer modContainer) {
         ModifierManager.getInstance().init(modEventBus);

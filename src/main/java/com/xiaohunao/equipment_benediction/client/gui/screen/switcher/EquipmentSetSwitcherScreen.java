@@ -8,7 +8,6 @@ import com.xiaohunao.equipment_benediction.client.gui.widget.ShowAllSetButton;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -218,7 +217,7 @@ public class EquipmentSetSwitcherScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        System.out.println("EquipmentSetSwitcherScreen mouseClicked: x=" + mouseX + ", y=" + mouseY + ", button=" + button);
+        EquipmentBenediction.LOGGER.debug("EquipmentSetSwitcherScreen mouseClicked: x={}, y={}, button={}", mouseX, mouseY, button);
         
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
