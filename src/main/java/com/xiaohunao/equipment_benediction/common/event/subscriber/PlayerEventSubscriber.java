@@ -55,7 +55,6 @@ public class PlayerEventSubscriber {
 
     @SubscribeEvent
     public static void onPlayerBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (event.isCanceled()) return;
         HookMapManager.postHooks(EBHookTypes.BREAK_SPEED.get(), (owner, hook, original) -> {
             hook.onBreakSpeed(owner, original);
             return original;

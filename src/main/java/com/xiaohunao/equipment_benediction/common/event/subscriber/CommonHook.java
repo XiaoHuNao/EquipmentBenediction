@@ -107,7 +107,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (event.isCanceled() || !(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_INCOMING_DAMAGE.get(), (owner, hook, original) -> {
             hook.onLivingIncomingDamage(owner, original);
             return original;
@@ -116,7 +116,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingHeal(LivingHealEvent event) {
-        if (event.isCanceled() || !(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_HEAL.get(), (owner, hook, original) -> {
             hook.onLivingHeal(owner, original);
             return original;
@@ -125,7 +125,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingBreathe(LivingBreatheEvent event) {
-        if (event.canBreathe() || !(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_BREATHE.get(), (owner, hook, original) -> {
             hook.onLivingBreathe(owner, original);
             return original;
@@ -134,7 +134,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingShieldBlock(LivingShieldBlockEvent event) {
-        if (event.isCanceled() || !event.getBlocked() || !(event.getEntity() instanceof Player player)) return;
+        if (!event.getBlocked() || !(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.LIVING_SHIELD_BLOCK.get(), (owner, hook, original) -> {
             hook.onLivingShieldBlock(owner, event);
             return original;
@@ -143,7 +143,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onEntityInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
-        if (event.isInvulnerable() || !(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
         HookMapManager.postHooks(EBHookTypes.ENTITY_INVULNERABILITY_CHECK.get(), (owner, hook, original) -> {
             hook.onEntityInvulnerabilityCheck(owner, original);
             return original;
