@@ -2,9 +2,9 @@ package com.xiaohunao.equipment_benediction.common.init.register;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import com.xiaohunao.equipment_benediction.api.manager.EBAbstractManager;
 import com.xiaohunao.equipment_benediction.common.event.EBRegisteredEvent;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
-import com.xiaohunao.equipment_benediction.api.manager.EBAbstractManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 

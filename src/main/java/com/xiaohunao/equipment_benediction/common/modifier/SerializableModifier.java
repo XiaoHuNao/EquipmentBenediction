@@ -1,18 +1,10 @@
 package com.xiaohunao.equipment_benediction.common.modifier;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
-import com.xiaohunao.equipment_benediction.common.hook.IHook;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
-import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
-
-import java.util.Collection;
 
 public class SerializableModifier extends Modifier {
     public static final Codec<SerializableModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(

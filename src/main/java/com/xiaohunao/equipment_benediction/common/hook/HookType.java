@@ -6,8 +6,6 @@ import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook
 import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.function.Function;
-
 public class HookType<T extends IHook> {
     public static final Codec<HookType<?>> CODEC = ResourceLocation.CODEC.xmap(
             location -> EBRegistries.Suppliers.HOOK_TYPES.get().get(location),

@@ -8,8 +8,8 @@ import com.xiaohunao.equipment_benediction.client.gui.widget.EquippableSetButton
 import com.xiaohunao.equipment_benediction.client.gui.widget.SetTitleButton;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableGroup;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquippableGroup;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.network.EntityHookManagerSyncPayload;
 import com.xiaohunao.equipment_benediction.common.network.PostEquipOrUnequipEquipmentHookPayload;

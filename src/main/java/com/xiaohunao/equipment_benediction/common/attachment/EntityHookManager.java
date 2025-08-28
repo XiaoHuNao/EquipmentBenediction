@@ -9,7 +9,6 @@ import com.xiaohunao.equipment_benediction.common.hook.special.SpecialTimeHookWr
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.util.INBTSerializable;

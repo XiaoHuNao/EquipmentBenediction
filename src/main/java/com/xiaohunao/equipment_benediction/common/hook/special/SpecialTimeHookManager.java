@@ -2,8 +2,6 @@ package com.xiaohunao.equipment_benediction.common.hook.special;
 
 import com.google.common.collect.Maps;
 import com.xiaohunao.equipment_benediction.common.attachment.EntityHookManager;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
@@ -13,9 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SpecialTimeHookManager {
     private final EntityHookManager entityHookManager;

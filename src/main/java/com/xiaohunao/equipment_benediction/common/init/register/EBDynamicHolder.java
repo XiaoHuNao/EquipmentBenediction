@@ -1,8 +1,9 @@
 package com.xiaohunao.equipment_benediction.common.init.register;
 
-import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EBAbstractManager;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class EBDynamicHolder<T extends IBenediction> extends EBDeferredHolder<T> {

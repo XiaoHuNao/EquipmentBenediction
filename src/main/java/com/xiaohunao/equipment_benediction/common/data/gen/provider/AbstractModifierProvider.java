@@ -2,7 +2,6 @@ package com.xiaohunao.equipment_benediction.common.data.gen.provider;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.dynamic.ISerializableHook;
 import com.xiaohunao.equipment_benediction.common.init.register.EBDeferredHolder;
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;

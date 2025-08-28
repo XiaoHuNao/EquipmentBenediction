@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Tuple;
 
-import java.util.List;
 import java.util.Map;
 
 public class CodecUtils {

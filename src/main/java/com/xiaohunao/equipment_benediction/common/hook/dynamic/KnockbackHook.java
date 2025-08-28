@@ -4,16 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.xiaohunao.equipment_benediction.common.context.AttackEntityContext;
-import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.BeforeMeleeHitHook;
-import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
 import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
-import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
-import com.xiaohunao.equipment_benediction.common.modifier.ModifierInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.phys.Vec3;
 
 public class KnockbackHook implements ISerializableHook, BeforeMeleeHitHook {
     public static final MapCodec<KnockbackHook> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

@@ -3,7 +3,6 @@ package com.xiaohunao.equipment_benediction.api.manager;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-
 import com.xiaohunao.equipment_benediction.common.modifier.Modifier;
 import com.xiaohunao.equipment_benediction.common.modifier.SerializableModifier;
 import net.minecraft.resources.ResourceLocation;

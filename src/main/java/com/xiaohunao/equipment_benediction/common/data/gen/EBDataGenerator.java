@@ -2,7 +2,6 @@ package com.xiaohunao.equipment_benediction.common.data.gen;
 
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.common.data.gen.provider.EBModifierProvider;
-import com.xiaohunao.equipment_benediction.common.init.EBRegistries;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;

@@ -1,7 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.event;
 
-import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EBAbstractManager;
+import com.xiaohunao.equipment_benediction.common.interfaces.IBenediction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
