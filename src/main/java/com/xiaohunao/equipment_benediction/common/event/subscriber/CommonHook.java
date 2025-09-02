@@ -39,7 +39,7 @@ public class CommonHook {
 
     @SubscribeEvent
     public static void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || !((ILivingEntity) player).equipment_benediction$isFirstSynced()) return;
+        if (!(event.getEntity() instanceof ServerPlayer player) ) return;
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
         EquipmentSlot slot = event.getSlot();
