@@ -3,8 +3,8 @@ package com.xiaohunao.equipment_benediction.client.gui.screen.switcher;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
-import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
-import com.xiaohunao.equipment_benediction.common.equippable.VanillaEquippable;
+import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
+import com.xiaohunao.equipment_benediction.common.equippable.VanillaWearable;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -119,9 +119,9 @@ public class ArmorStandPreviewUI {
     }
 
     private void applyFullSet(EquipmentSetBranch setData) {
-        Map<IEquippable, Ingredient> equipages = setData.equipages();
-        for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
-            if (entry.getKey() instanceof VanillaEquippable vanillaEquippable) {
+        Map<IWearable, Ingredient> equipages = setData.equipages();
+        for (Map.Entry<IWearable, Ingredient> entry : equipages.entrySet()) {
+            if (entry.getKey() instanceof VanillaWearable vanillaEquippable) {
                 EquipmentSlot slot = vanillaEquippable.slotType();
                 if (previewArmorStand.getItemBySlot(slot).isEmpty()) {
                     ItemStack[] matchingStacks = entry.getValue().getItems();
@@ -145,14 +145,14 @@ public class ArmorStandPreviewUI {
 
     private List<Map<EquipmentSlot, ItemStack>> generatePreviewCombinations(EquipmentSetBranch setData) {
         List<Map<EquipmentSlot, ItemStack>> combinations = new ArrayList<>();
-        Map<IEquippable, Ingredient> equipages = setData.equipages();
+        Map<IWearable, Ingredient> equipages = setData.equipages();
         Optional<Integer> requiredMatchCount = setData.requiredMatchCount();
 
         if (requiredMatchCount.isEmpty()) return combinations;
         
         Map<EquipmentSlot, List<ItemStack>> slotItems = new HashMap<>();
-        for (Map.Entry<IEquippable, Ingredient> entry : equipages.entrySet()) {
-            if (entry.getKey() instanceof VanillaEquippable(EquipmentSlot slotType)) {
+        for (Map.Entry<IWearable, Ingredient> entry : equipages.entrySet()) {
+            if (entry.getKey() instanceof VanillaWearable(EquipmentSlot slotType)) {
                 ItemStack[] items = entry.getValue().getItems();
                 if (items.length > 0) {
                     slotItems.put(slotType, Arrays.asList(items));

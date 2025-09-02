@@ -6,7 +6,7 @@ import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.client.gui.widget.LayoutExpandButton;
 import com.xiaohunao.equipment_benediction.client.gui.widget.ShowAllSetButton;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
-import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
+import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -190,8 +190,8 @@ public class EquipmentSetSwitcherScreen extends Screen {
         for (EquipmentSet set : setManager.getAllResources().values()) {
             setLoop:
             for (var branch : set.allBranch()) {
-                for (Map.Entry<IEquippable, Ingredient> entry : branch.equipages().entrySet()) {
-                    if (entry.getKey().checkEquippable(player, entry.getValue())) {
+                for (Map.Entry<IWearable, Ingredient> entry : branch.equipages().entrySet()) {
+                    if (entry.getKey().checkWearable(player, entry.getValue())) {
                         equipmentSets.add(set);
                         continue setLoop;
                     }

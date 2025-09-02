@@ -2,7 +2,7 @@ package com.xiaohunao.equipment_benediction.common.equipment_set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.xiaohunao.equipment_benediction.common.equippable.IEquippable;
+import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
 import com.xiaohunao.equipment_benediction.common.hook.HookMap;
 import com.xiaohunao.equipment_benediction.common.hook.HookType;
 import com.xiaohunao.equipment_benediction.common.hook.IHook;
@@ -16,30 +16,30 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record EquipmentSetBranch(Map<IEquippable, Ingredient> equipages, List<IEquippable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
+public record EquipmentSetBranch(Map<IWearable, Ingredient> equipages, List<IWearable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
     public boolean isValid(LivingEntity livingEntity) {
         boolean match = requiredMatchCount.map(integer -> equipages.entrySet()
                         .stream()
-                        .filter(entry -> entry.getKey().checkEquippable(livingEntity, entry.getValue()))
+                        .filter(entry -> entry.getKey().checkWearable(livingEntity, entry.getValue()))
                         .count() >= integer)
                 .orElseGet(() -> equipages.entrySet()
                         .stream()
-                        .allMatch(entry -> entry.getKey().checkEquippable(livingEntity, entry.getValue()))
+                        .allMatch(entry -> entry.getKey().checkWearable(livingEntity, entry.getValue()))
                 );
 
         boolean black = blacklist.stream()
-                .allMatch(equippable -> equippable.checkEquippable(livingEntity, Ingredient.EMPTY));
+                .allMatch(equippable -> equippable.checkWearable(livingEntity, Ingredient.EMPTY));
 
         return match && black;
     }
 
     public static class Builder {
-        private final Map<IEquippable, Ingredient> equipages = Maps.newHashMap();
-        private final List<IEquippable> blacklist = Lists.newArrayList();
+        private final Map<IWearable, Ingredient> equipages = Maps.newHashMap();
+        private final List<IWearable> blacklist = Lists.newArrayList();
         private final HookMap.Builder hookMap = new HookMap.Builder();
         private Integer requiredMatchCount;
 
-        public Builder addEquippable(IEquippable equippable, Ingredient ingredient) {
+        public Builder addEquippable(IWearable equippable, Ingredient ingredient) {
             if (equippable == null || ingredient == null) {
                 throw new IllegalArgumentException("Equippable and Ingredient cannot be null");
             }
@@ -58,7 +58,7 @@ public record EquipmentSetBranch(Map<IEquippable, Ingredient> equipages, List<IE
             for (int i = 0; i < equipPairs.length; i += 2) {
                 Object o = equipPairs[i + 1];
                 boolean isIngredient = o instanceof Ingredient;
-                if (!(equipPairs[i] instanceof IEquippable equippable) || (!isIngredient && !(o instanceof ItemLike))) {
+                if (!(equipPairs[i] instanceof IWearable equippable) || (!isIngredient && !(o instanceof ItemLike))) {
                     throw new IllegalArgumentException("Invalid pair type at index " + i + ". Expected IEquippable and Ingredient");
                 }
                 if (isIngredient) {
@@ -76,7 +76,7 @@ public record EquipmentSetBranch(Map<IEquippable, Ingredient> equipages, List<IE
         }
 
 
-        public Builder addBlacklist(IEquippable equippable) {
+        public Builder addBlacklist(IWearable equippable) {
             if (equippable == null) {
                 throw new IllegalArgumentException("Equippable cannot be null");
             }
