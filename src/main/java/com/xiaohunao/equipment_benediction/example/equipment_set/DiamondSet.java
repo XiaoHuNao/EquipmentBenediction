@@ -27,7 +27,7 @@ public class DiamondSet extends EquipmentSet {
 
         EquipmentSetBranch setData1 = new EquipmentSetBranch.Builder()
                 .addEquippable(
-                        VanillaWearable.HEAD , Ingredient.of(Items.DIAMOND_HELMET),
+                        VanillaWearable.HEAD , Ingredient.of(Items.DIAMOND_HELMET,Items.CHAINMAIL_HELMET),
                         VanillaWearable.CHEST, Ingredient.of(Items.DIAMOND_CHESTPLATE),
                         VanillaWearable.LEGS , Ingredient.of(Items.DIAMOND_LEGGINGS),
                         VanillaWearable.FEET , Ingredient.of(Items.DIAMOND_BOOTS)

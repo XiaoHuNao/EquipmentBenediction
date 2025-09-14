@@ -4,12 +4,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class TransparentButton extends Button {
+public class OpenEquipmentSetSwitcherButton extends Button {
     private long pressStartTime = 0;
     private static final int PRESS_TIME_REQUIRED = 1000; // 3秒 = 3000毫秒
     private boolean isPressing = false;
 
-    public TransparentButton(int x, int y, int width, int height, Component message, OnPress onPress) {
+    public OpenEquipmentSetSwitcherButton(int x, int y, int width, int height, Component message, OnPress onPress) {
         super(Button.builder(message, onPress)
                 .pos(x, y)
                 .size(width, height));

@@ -142,6 +142,12 @@ public class EquipmentSetManager extends EBAbstractManager<EquipmentSet> {
 
     }
 
+    public Multimap<EquipmentSet, EquipmentSetBranch> getEquipmentSetDataMaps() {
+        return equipmentSetDataMaps;
+    }
+
+
+
     public EquipmentSetBranch getBranchResource(ResourceLocation branchLocation) {
         return equipmentSetDataRegistry.get(branchLocation);
     }

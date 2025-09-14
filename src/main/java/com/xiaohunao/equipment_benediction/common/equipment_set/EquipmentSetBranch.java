@@ -11,12 +11,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record EquipmentSetBranch(Map<IWearable, Ingredient> equipages, List<IWearable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
+public record EquipmentSetBranch(LinkedHashMap<IWearable, Ingredient> equipages, List<IWearable> blacklist, Optional<Integer> requiredMatchCount, HookMap hookMap) {
     public boolean isValid(LivingEntity livingEntity) {
         boolean match = requiredMatchCount.map(integer -> equipages.entrySet()
                         .stream()
@@ -34,7 +35,7 @@ public record EquipmentSetBranch(Map<IWearable, Ingredient> equipages, List<IWea
     }
 
     public static class Builder {
-        private final Map<IWearable, Ingredient> equipages = Maps.newHashMap();
+        private final LinkedHashMap<IWearable, Ingredient> equipages = Maps.newLinkedHashMap();
         private final List<IWearable> blacklist = Lists.newArrayList();
         private final HookMap.Builder hookMap = new HookMap.Builder();
         private Integer requiredMatchCount;

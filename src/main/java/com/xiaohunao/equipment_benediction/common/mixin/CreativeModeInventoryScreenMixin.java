@@ -1,7 +1,7 @@
 package com.xiaohunao.equipment_benediction.common.mixin;
 
-import com.xiaohunao.equipment_benediction.client.gui.screen.switcher.EquipmentSetSwitcherScreen;
-import com.xiaohunao.equipment_benediction.client.gui.widget.TransparentButton;
+import com.xiaohunao.equipment_benediction.client.gui.screen.NewEquipmentSetSwitcherScreen;
+import com.xiaohunao.equipment_benediction.client.gui.widget.OpenEquipmentSetSwitcherButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -26,13 +26,13 @@ public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingIn
 
     @Inject(method = "init", at = @At("RETURN"))
     private void init(CallbackInfo info) {
-        this.equipmentBenediction$setSwitching = new TransparentButton(
+        this.equipmentBenediction$setSwitching = new OpenEquipmentSetSwitcherButton(
             this.leftPos + 73, this.topPos + 6 + 12,
             32, 43 - 24,
             Component.translatable("equipment.benediction.switch_set"),
             (button) -> {
                 if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.setScreen(new EquipmentSetSwitcherScreen(this.minecraft.player));
+                    this.minecraft.setScreen(new NewEquipmentSetSwitcherScreen());
                 }
             }
         );
