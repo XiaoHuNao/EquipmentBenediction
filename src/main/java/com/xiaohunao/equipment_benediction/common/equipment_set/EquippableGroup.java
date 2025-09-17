@@ -13,14 +13,14 @@ import java.util.Map;
 /**
  * @param exclusivityMaps true表示独占，false表示非独占
  */
-public record EquippableGroup(BiMap<String, EquipmentSetBranch> equippableMaps, LinkedHashMap<EquipmentSetBranch, Boolean> exclusivityMaps) {
+public record EquippableGroup(LinkedHashMap<String, EquipmentSetBranch> equippableMaps, Map<EquipmentSetBranch, Boolean> exclusivityMaps) {
     public boolean isExclusive(EquipmentSetBranch data) {
         return exclusivityMaps.getOrDefault(data, true);
     }
 
     public static class Builder {
-        private final BiMap<String, EquipmentSetBranch> equippableMaps = HashBiMap.create();
-        protected final LinkedHashMap<EquipmentSetBranch, Boolean> exclusivityMaps = Maps.newLinkedHashMap();
+        private final LinkedHashMap<String, EquipmentSetBranch> equippableMaps = Maps.newLinkedHashMap();
+        protected final Map<EquipmentSetBranch, Boolean> exclusivityMaps = Maps.newHashMap();
 
         public Builder addEquippableSet(String name, EquipmentSetBranch equippableSetData, boolean exclusivity) {
             if (equippableSetData == null) {
