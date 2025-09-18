@@ -1,8 +1,12 @@
 package com.xiaohunao.equipment_benediction.client.gui.screen;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -12,7 +16,9 @@ import com.xiaohunao.equipment_benediction.client.gui.widget.BranchCardWidget;
 import com.xiaohunao.equipment_benediction.client.gui.widget.SetSwitcherTable;
 import com.xiaohunao.equipment_benediction.client.gui.widget.SpriteIconButton;
 import com.xiaohunao.equipment_benediction.client.gui.widget.VerticalScrollbar;
-import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
+import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
+import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
+import com.xiaohunao.equipment_benediction.common.equippable.VanillaWearable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,6 +30,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class NewEquipmentSetSwitcherScreen extends Screen {
 
@@ -76,6 +83,16 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
     // 自旋角度（度）
     private float spinYawDeg = 0.0f;
 
+    // 基础装备快照（用于在预览时作为底板）
+    private final Map<EquipmentSlot, ItemStack> baseEquipment = new LinkedHashMap<>();
+
+    // 悬停分支与组合轮播
+    private EquipmentSetBranch hoveredBranch;
+    private final List<Map<EquipmentSlot, ItemStack>> previewCombos = new ArrayList<>();
+    private int currentComboIndex = 0;
+    private long lastSwitchMillis = 0L;
+    private static final long SWITCH_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
+
     public NewEquipmentSetSwitcherScreen() {
         super(Component.translatable("screen.equipment_benediction.equipment_set_switcher"));
     }
@@ -83,7 +100,6 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
     @Override
     protected void init() {
         EquipmentSetManager equipmentSetManager = EquipmentSetManager.getInstance();
-
 
         int x = (this.width - WIDTH) / 2;
         int y = (this.height - HEIGHT) / 2;
@@ -131,6 +147,7 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack copy = player.getItemBySlot(slot).copy();
             this.previewArmorStand.setItemSlot(slot, copy);
+            this.baseEquipment.put(slot, copy.copy());
         }
     }
 
@@ -197,11 +214,12 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
         int viewW = RIGHT_PANE_W - 8; // 给滚动条与2px内边距留下空间
         int viewH = RIGHT_PANE_H;
 
-
         // 左侧：盔甲架预览
         guiGraphics.enableScissor(leftX, leftY, leftX + leftW, leftY + leftH);
 //        // 测试用：左区域半透明红色背景
 //        guiGraphics.fill(leftX, leftY, leftX + leftW, leftY + leftH, 0x40FF0000);
+        // 根据右侧悬浮状态映射装备到盔甲架
+        updateArmorStandPreview(mouseX, mouseY);
         if (previewArmorStand != null) {
             int centerX = leftX + leftW / 2;
             int centerY = leftY + leftH - (leftY / 2);
@@ -241,7 +259,7 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
             // 更新右侧内容总高度供滚动条使用
             this.contentHeight = branchCardWidget.getContentHeight();
         }
-        
+
         guiGraphics.disableScissor();
 
         // 滚动条
@@ -348,5 +366,136 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
         }
 
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    // ================= 盔甲架预览映射与轮播 =================
+    private void updateArmorStandPreview(int mouseX, int mouseY) {
+        if (branchCardWidget == null || previewArmorStand == null) {
+            return;
+        }
+        EquipmentSetBranch nowHovered = branchCardWidget.getHoveredBranch(mouseX, mouseY);
+        if (!Objects.equals(nowHovered, hoveredBranch)) {
+            hoveredBranch = nowHovered;
+            rebuildPreviewCombos();
+            currentComboIndex = 0;
+            lastSwitchMillis = 0L;
+            applyCurrentCombo();
+            return;
+        }
+
+        if (hoveredBranch == null) {
+            // 恢复基础装备
+            applyEquipmentMap(baseEquipment);
+            return;
+        }
+
+        if (previewCombos.size() > 1) {
+            long now = System.currentTimeMillis();
+            if (now - lastSwitchMillis >= SWITCH_INTERVAL_MS) {
+                currentComboIndex = (currentComboIndex + 1) % previewCombos.size();
+                applyCurrentCombo();
+                lastSwitchMillis = now;
+            }
+        } else {
+            applyCurrentCombo();
+        }
+    }
+
+    private void rebuildPreviewCombos() {
+        previewCombos.clear();
+        if (hoveredBranch == null) {
+            return;
+        }
+
+        // 收集所有可映射到盔甲架的候选（仅原版槽位）
+        List<Map.Entry<IWearable, Ingredient>> entries = new ArrayList<>(hoveredBranch.equipages().entrySet());
+        List<Map.Entry<VanillaWearable, ItemStack>> vanillaCandidates = new ArrayList<>();
+        for (Map.Entry<IWearable, Ingredient> e : entries) {
+            if (e.getKey() instanceof VanillaWearable vw) {
+                ItemStack stack = firstNonEmpty(e.getValue());
+                if (!stack.isEmpty()) {
+                    vanillaCandidates.add(Map.entry(vw, stack));
+                }
+            }
+        }
+
+        Optional<Integer> matchOpt = hoveredBranch.requiredMatchCount();
+        if (matchOpt.isPresent()) {
+            int m = Math.min(matchOpt.get(), vanillaCandidates.size());
+            if (m <= 0) {
+                return;
+            }
+            // 生成所有大小为 m 的组合
+            int n = vanillaCandidates.size();
+            int[] idx = new int[m];
+            for (int i = 0; i < m; i++) {
+                idx[i] = i;
+            }
+            while (true) {
+                LinkedHashMap<EquipmentSlot, ItemStack> combo = new LinkedHashMap<>();
+                for (int i = 0; i < m; i++) {
+                    Map.Entry<VanillaWearable, ItemStack> ent = vanillaCandidates.get(idx[i]);
+                    combo.put(ent.getKey().slotType(), ent.getValue());
+                }
+                previewCombos.add(combo);
+
+                int p = m - 1;
+                while (p >= 0 && idx[p] == n - m + p) {
+                    p--;
+                }
+                if (p < 0) {
+                    break;
+                }
+                idx[p]++;
+                for (int j = p + 1; j < m; j++) {
+                    idx[j] = idx[j - 1] + 1;
+                }
+            }
+        } else {
+            // 单一组合：全部映射
+            LinkedHashMap<EquipmentSlot, ItemStack> combo = new LinkedHashMap<>();
+            for (Map.Entry<VanillaWearable, ItemStack> ent : vanillaCandidates) {
+                combo.put(ent.getKey().slotType(), ent.getValue());
+            }
+            if (!combo.isEmpty()) {
+                previewCombos.add(combo);
+            }
+        }
+    }
+
+    private ItemStack firstNonEmpty(Ingredient ingredient) {
+        ItemStack[] items = ingredient.getItems();
+        for (ItemStack s : items) {
+            if (s != null && !s.isEmpty()) {
+                return s.copy();
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private void applyCurrentCombo() {
+        if (previewArmorStand == null) {
+            return;
+        }
+        if (hoveredBranch == null || previewCombos.isEmpty()) {
+            applyEquipmentMap(baseEquipment);
+            return;
+        }
+        Map<EquipmentSlot, ItemStack> combo = previewCombos.get(Math.max(0, Math.min(currentComboIndex, previewCombos.size() - 1)));
+        // 只映射分支组合自身（不叠加基础装备）
+        applyEquipmentMap(combo);
+    }
+
+    private void applyEquipmentMap(Map<EquipmentSlot, ItemStack> map) {
+        if (previewArmorStand == null) {
+            return;
+        }
+        // 先清空所有槽位
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            previewArmorStand.setItemSlot(slot, ItemStack.EMPTY);
+        }
+        for (Map.Entry<EquipmentSlot, ItemStack> e : map.entrySet()) {
+            previewArmorStand.setItemSlot(e.getKey(), e.getValue().copy());
+        }
     }
 }
