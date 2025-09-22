@@ -121,7 +121,6 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
         this.setSwitcherTable = new SetSwitcherTable(tablex, tableY, tableSize, tableSize);
 
         this.branchCardWidget = new BranchCardWidget(viewX + 2, viewY + 2);
-        this.branchCardWidget.setViewport(viewX + 2, viewY + 2, viewW - 4, viewH - 4);
 
         initArmorStand();
     }
@@ -245,19 +244,13 @@ public class NewEquipmentSetSwitcherScreen extends Screen {
 
         // 渲染分支卡片组件
         if (branchCardWidget != null) {
-            // 将当前选中的套装与滚动值传入组件
             if (setSwitcherTable != null) {
                 branchCardWidget.setEquipmentSet(setSwitcherTable.getSelectedEquipmentSet());
             }
             if (scrollbar != null) {
                 branchCardWidget.setScroll01(scrollbar.getScroll01());
             }
-            // 确保视口在窗口缩放时更新
-            branchCardWidget.setViewport(viewX + 2, viewY + 2, viewW - 4, viewH - 4);
-
             branchCardWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-            // 更新右侧内容总高度供滚动条使用
-            this.contentHeight = branchCardWidget.getContentHeight();
         }
 
         guiGraphics.disableScissor();
