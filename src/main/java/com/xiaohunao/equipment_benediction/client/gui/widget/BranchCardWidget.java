@@ -43,7 +43,6 @@ public class BranchCardWidget extends AbstractWidget {
     private final LinkedList<EquipmentSetBranch> branches = new LinkedList<>();
     private final Map<EquipmentSetBranch, SpriteIconButton> branchToConfirmButton = new LinkedHashMap<>();
     private final Map<EquipmentSetBranch, SpriteIconButton> branchToExpandButton = new LinkedHashMap<>();
-    private final Map<EquipmentSetBranch, SlotExpandTable> branchToSlotExpandTable = new LinkedHashMap<>();
 
 
 
@@ -71,13 +70,11 @@ public class BranchCardWidget extends AbstractWidget {
 
         //渲染Slot槽
         SpriteIconButton spriteIconButton = branchToExpandButton.get(branch);
-        SlotExpandTable slotExpandTable = branchToSlotExpandTable.get(branch);
         LinkedHashMap<IWearable, Ingredient> equipages = branch.equipages();
 
         if (spriteIconButton.isSelected()){
             //            guiGraphics.blit(BACKGROUND_TEXTURE, x, y + CARD_SIDE_HEIGHT, TEXTURE_WIDTH, expandTableHeight,0,CARD_SIDE_HEIGHT,0,CARD_SLOT_HEIGHT,TEXTURE_WIDTH,TEXTURE_HEIGHT);
             List<IWearable> blacklist = branch.blacklist();
-            int expandTableHeight = slotExpandTable.getHeight();
         }else {
             guiGraphics.blit(BACKGROUND_TEXTURE, x, currentY, TEXTURE_WIDTH, WEARABLE_ICON_SIZE + 1,0,0,TEXTURE_WIDTH,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
             int minSlotCount = Math.min(5, equipages.size());
@@ -142,7 +139,6 @@ public class BranchCardWidget extends AbstractWidget {
         this.branches.clear();
         this.branchToConfirmButton.clear();
         this.branchToExpandButton.clear();
-        this.branchToSlotExpandTable.clear();
 
         if (equipmentSet != null) {
 
@@ -170,9 +166,6 @@ public class BranchCardWidget extends AbstractWidget {
                         .stateFrame(SpriteIconButton.ButtonVisualState.SELECTED, 1)
                         .build();
                 branchToExpandButton.put(branch, expandBtn);
-
-                SlotExpandTable slotExpandTable = new SlotExpandTable(0, 0);
-                branchToSlotExpandTable.put(branch, slotExpandTable);
             }
         }
     }

@@ -97,6 +97,9 @@ repositories {
         dirs 'libs'
     }
     maven {
+        url = "https://www.cursemaven.com"
+    }
+    maven {
         name = "LatvianMaven"
         url = "https://maven.latvian.dev/releases"
         content {
@@ -119,8 +122,8 @@ repositories {
 }
 
 dependencies {
-    api("dev.latvian.mods:kubejs-neoforge:$kubejs_version")
-    interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:$kubejs_version")
+    implementation "curse.maven:rhino-416294:6886923"
+    implementation "curse.maven:kubejs-238086:5810100"
 
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
