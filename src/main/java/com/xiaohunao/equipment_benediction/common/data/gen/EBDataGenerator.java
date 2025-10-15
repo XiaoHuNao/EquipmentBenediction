@@ -12,7 +12,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(modid = EquipmentBenediction.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = EquipmentBenediction.MODID)
 public class EBDataGenerator {
 
     @SubscribeEvent

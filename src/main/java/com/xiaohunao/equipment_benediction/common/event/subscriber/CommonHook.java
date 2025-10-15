@@ -8,7 +8,6 @@ import com.xiaohunao.equipment_benediction.common.hook.HookMapManager;
 import com.xiaohunao.equipment_benediction.common.hook.hooks.AfterLivingHurtEntityHook;
 import com.xiaohunao.equipment_benediction.common.init.EBAttachments;
 import com.xiaohunao.equipment_benediction.common.init.EBHookTypes;
-import com.xiaohunao.equipment_benediction.common.mixed.ILivingEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,7 +22,7 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber(modid = EquipmentBenediction.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = EquipmentBenediction.MODID)
 public class CommonHook {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
