@@ -80,10 +80,14 @@ public class EquipmentSetHookManager implements INBTSerializable<CompoundTag> {
         data.asMap().forEach((equipmentSet, equippableSetData) -> {
             ResourceLocation setId = equipmentSetManager.getResource(equipmentSet);
             ListTag setDataListTag = new ListTag();
-            equippableSetData.forEach(setData -> {
+            for (EquipmentSetBranch setData : equippableSetData) {
                 ResourceLocation branchResource = equipmentSetManager.getBranchResource(setData);
-                setDataListTag.add(StringTag.valueOf(branchResource.toString()));
-            });
+                if (branchResource == null) {
+                    LOGGER.warn("Unknown set data: '{}', skipped.", setData);
+                } else {
+                    setDataListTag.add(StringTag.valueOf(branchResource.toString()));
+                }
+            }
             tag.put(setId.toString(), setDataListTag);
         });
         return tag;

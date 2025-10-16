@@ -1,13 +1,5 @@
 package com.xiaohunao.equipment_benediction.client.gui.screen;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
@@ -19,7 +11,6 @@ import com.xiaohunao.equipment_benediction.client.gui.widget.VerticalScrollbar;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
 import com.xiaohunao.equipment_benediction.common.equippable.VanillaWearable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -31,6 +22,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class NewEquipmentSetSwitcherScreen extends Screen {
 

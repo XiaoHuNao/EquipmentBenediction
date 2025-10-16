@@ -1,13 +1,10 @@
 package com.xiaohunao.equipment_benediction.client.gui.widget;
 
-import java.util.*;
-
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSetBranch;
 import com.xiaohunao.equipment_benediction.common.equippable.IWearable;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,6 +14,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class BranchCardWidget extends AbstractWidget {
     public static final ResourceLocation BACKGROUND_TEXTURE = EquipmentBenediction.asResource("textures/gui/baranch_card.png");

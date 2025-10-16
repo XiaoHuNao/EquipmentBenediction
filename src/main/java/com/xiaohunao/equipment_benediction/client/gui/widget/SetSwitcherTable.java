@@ -1,32 +1,30 @@
 package com.xiaohunao.equipment_benediction.client.gui.widget;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.xiaohunao.equipment_benediction.EquipmentBenediction;
 import com.xiaohunao.equipment_benediction.api.manager.EquipmentSetManager;
-
 import com.xiaohunao.equipment_benediction.common.equipment_set.EquipmentSet;
 import com.xiaohunao.equipment_benediction.common.utils.WidgetRenderUtils;
-
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.xiaohunao.equipment_benediction.client.gui.widget.SetSwitcherTable.SetSwitcherTableSlot.*;
 

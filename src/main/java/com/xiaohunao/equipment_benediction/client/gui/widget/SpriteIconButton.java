@@ -1,13 +1,13 @@
 package com.xiaohunao.equipment_benediction.client.gui.widget;
 
-import java.time.Duration;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+
+import java.time.Duration;
 
 public class SpriteIconButton extends Button {
 
